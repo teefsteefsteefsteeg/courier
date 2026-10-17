@@ -1,0 +1,51 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_trunk.tres" id="1_trunk"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_leaves.tres" id="2_leaves"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_leaves_light.tres" id="3_leaves_light"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_trunk"]
+top_radius = 0.2
+bottom_radius = 0.3
+height = 1.4
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_crown_low"]
+top_radius = 0.0
+bottom_radius = 1.4
+height = 1.8
+radial_segments = 7
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_crown_high"]
+top_radius = 0.0
+bottom_radius = 1.0
+height = 1.5
+radial_segments = 7
+rings = 1
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_trunk"]
+height = 1.6
+radius = 0.4
+
+[node name="PlaceholderTree" type="StaticBody3D"]
+
+[node name="Trunk" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+mesh = SubResource("CylinderMesh_trunk")
+surface_material_override/0 = ExtResource("1_trunk")
+
+[node name="CrownLow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+mesh = SubResource("CylinderMesh_crown_low")
+surface_material_override/0 = ExtResource("2_leaves")
+
+[node name="CrownHigh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 0)
+mesh = SubResource("CylinderMesh_crown_high")
+surface_material_override/0 = ExtResource("3_leaves_light")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CylinderShape3D_trunk")

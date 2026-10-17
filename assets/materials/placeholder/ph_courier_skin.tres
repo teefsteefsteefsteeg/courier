@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "ph_courier_skin"
+albedo_color = Color(0.96, 0.80, 0.66, 1)
+roughness = 0.95

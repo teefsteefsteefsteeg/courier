@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "ph_courier_coat"
+albedo_color = Color(0.20, 0.38, 0.75, 1)
+roughness = 0.95
