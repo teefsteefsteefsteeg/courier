@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="QuestDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_definition.gd" id="1_def"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_obj"]
+[ext_resource type="Script" path="res://scripts/quests/quest_reward.gd" id="3_rew"]
+[ext_resource type="Resource" path="res://data/packages/pkg_ordinary_parcel.tres" id="4_pkg"]
+
+[sub_resource type="Resource" id="Objective_talk"]
+script = ExtResource("2_obj")
+type = 0
+target_id = &"postmaster"
+description = "Talk to Postmaster Bram at the post office"
+completion_line = "Your first parcel is on the counter. Take it to Merchant Mira in the village."
+
+[sub_resource type="Resource" id="Objective_pickup"]
+script = ExtResource("2_obj")
+type = 1
+target_id = &"pkg_ordinary_parcel"
+description = "Pick up the Ordinary Parcel from the counter"
+
+[sub_resource type="Resource" id="Objective_deliver"]
+script = ExtResource("2_obj")
+type = 3
+target_id = &"village_merchant"
+description = "Deliver the parcel to Merchant Mira"
+completion_line = "My new scales! Right on time. Thank you, courier."
+
+[sub_resource type="Resource" id="Reward"]
+script = ExtResource("3_rew")
+gold = 50
+reputation = 5
+
+[resource]
+script = ExtResource("1_def")
+quest_id = &"q001_first_delivery"
+title = "First Delivery"
+description = "A simple parcel for the village market. Every courier starts somewhere."
+giver_id = &"postmaster"
+is_delivery = true
+package = ExtResource("4_pkg")
+recipient_name = "Merchant Mira"
+destination_name = "Village Market"
+objectives = Array[ExtResource("2_obj")]([SubResource("Objective_talk"), SubResource("Objective_pickup"), SubResource("Objective_deliver")])
+reward = SubResource("Reward")
+recipient_waiting_line = "Is that my parcel? The post office said it's on its way."
+recipient_after_line = "The scales work perfectly. Come back any time!"

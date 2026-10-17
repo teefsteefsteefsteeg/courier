@@ -1,0 +1,314 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/camera/iso_camera_rig.tscn" id="2_cam"]
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="3_npc"]
+[ext_resource type="PackedScene" path="res://scenes/props/placeholder_crate.tscn" id="4_crate"]
+[ext_resource type="PackedScene" path="res://scenes/props/placeholder_rock.tscn" id="5_rock"]
+[ext_resource type="PackedScene" path="res://scenes/props/placeholder_tree.tscn" id="6_tree"]
+[ext_resource type="PackedScene" path="res://scenes/ui/debug_hud.tscn" id="7_debug"]
+[ext_resource type="PackedScene" path="res://scenes/ui/interaction_prompt.tscn" id="8_prompt"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_grass.tres" id="9_grass"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_dirt_path.tres" id="10_dirt"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_fence.tres" id="11_fence"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/gameplay_services.tscn" id="12_services"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/world/quest_board.tscn" id="13_board"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/packages/package_pickup.tscn" id="14_pickup"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/world/destination_area.tscn" id="15_dest"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/ui/gameplay_hud.tscn" id="16_hud"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/ui/quest_board_ui.tscn" id="17_board_ui"]
+[ext_resource type="Script" path="res://scripts/quests/quest_npc_behaviour.gd" id="18_qnpc"]
+[ext_resource type="Resource" path="res://data/packages/pkg_ordinary_parcel.tres" id="19_pkg_parcel"]
+[ext_resource type="Resource" path="res://data/packages/pkg_dragon_egg.tres" id="20_pkg_egg"]
+[ext_resource type="Resource" path="res://data/packages/pkg_potion_crate.tres" id="21_pkg_potion"]
+
+[sub_resource type="Environment" id="Environment_sandbox"]
+background_mode = 1
+background_color = Color(0.56, 0.76, 0.92, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.78, 0.82, 0.98, 1)
+ambient_light_energy = 0.55
+tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_grass"]
+size = Vector2(100, 100)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(56.0, 1, 46.0)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_path_east"]
+size = Vector2(16, 2.4)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_path_west"]
+size = Vector2(2.4, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fence_x"]
+size = Vector3(52.3, 0.7, 0.25)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fence_z"]
+size = Vector3(0.25, 0.7, 42.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fence_x"]
+size = Vector3(52.3, 2, 0.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fence_z"]
+size = Vector3(0.25, 2, 42.3)
+
+[node name="Phase2DeliverySandbox" type="Node3D"]
+
+[node name="GameplayServices" parent="." instance=ExtResource("12_services")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_sandbox")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, 0.409576, -0.286788, 0, 0.573576, 0.819152, 0.5, -0.709406, 0.496732, 0, 10, 0)
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 1.1
+shadow_enabled = true
+directional_shadow_max_distance = 60.0
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("PlaneMesh_grass")
+surface_material_override/0 = ExtResource("9_grass")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_ground")
+
+[node name="PathEast" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.01, 0)
+mesh = SubResource("PlaneMesh_path_east")
+surface_material_override/0 = ExtResource("10_dirt")
+
+[node name="PathWest" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -8, 0.01, 6)
+mesh = SubResource("PlaneMesh_path_west")
+surface_material_override/0 = ExtResource("10_dirt")
+
+[node name="Boundary" type="Node3D" parent="."]
+
+[node name="FenceNorth" type="StaticBody3D" parent="Boundary"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21)
+
+[node name="Mesh" type="MeshInstance3D" parent="Boundary/FenceNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("BoxMesh_fence_x")
+surface_material_override/0 = ExtResource("11_fence")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundary/FenceNorth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_fence_x")
+
+[node name="FenceSouth" type="StaticBody3D" parent="Boundary"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 21)
+
+[node name="Mesh" type="MeshInstance3D" parent="Boundary/FenceSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("BoxMesh_fence_x")
+surface_material_override/0 = ExtResource("11_fence")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundary/FenceSouth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_fence_x")
+
+[node name="FenceWest" type="StaticBody3D" parent="Boundary"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Boundary/FenceWest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("BoxMesh_fence_z")
+surface_material_override/0 = ExtResource("11_fence")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundary/FenceWest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_fence_z")
+
+[node name="FenceEast" type="StaticBody3D" parent="Boundary"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="Boundary/FenceEast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("BoxMesh_fence_z")
+surface_material_override/0 = ExtResource("11_fence")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundary/FenceEast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_fence_z")
+
+[node name="Signs" type="Node3D" parent="."]
+
+[node name="PostOfficeSign" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 3.6, -6)
+pixel_size = 0.02
+billboard = 1
+modulate = Color(1, 0.95, 0.75, 1)
+outline_modulate = Color(0.15, 0.1, 0.05, 1)
+text = "POST OFFICE"
+font_size = 40
+outline_size = 10
+
+[node name="VillageSign" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 3.6, -1)
+pixel_size = 0.02
+billboard = 1
+modulate = Color(1, 0.95, 0.75, 1)
+outline_modulate = Color(0.15, 0.1, 0.05, 1)
+text = "VILLAGE"
+font_size = 40
+outline_size = 10
+
+[node name="ForestSign" type="Label3D" parent="Signs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 4.2, 12)
+pixel_size = 0.02
+billboard = 1
+modulate = Color(1, 0.95, 0.75, 1)
+outline_modulate = Color(0.15, 0.1, 0.05, 1)
+text = "FOREST"
+font_size = 40
+outline_size = 10
+
+[node name="PostOffice" type="Node3D" parent="."]
+
+[node name="QuestBoard" parent="PostOffice" instance=ExtResource("13_board")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+
+[node name="CounterA" parent="PostOffice" instance=ExtResource("4_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -5.4)
+
+[node name="CounterB" parent="PostOffice" instance=ExtResource("4_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -5.4)
+
+[node name="CounterC" parent="PostOffice" instance=ExtResource("4_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -5.4)
+
+[node name="CounterD" parent="PostOffice" instance=ExtResource("4_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -5.4)
+
+[node name="Pickups" type="Node3D" parent="PostOffice"]
+
+[node name="ParcelPickup" parent="PostOffice/Pickups" instance=ExtResource("14_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, -4)
+package_definition = ExtResource("19_pkg_parcel")
+
+[node name="DragonEggPickup" parent="PostOffice/Pickups" instance=ExtResource("14_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -4)
+package_definition = ExtResource("20_pkg_egg")
+
+[node name="PotionCratePickup" parent="PostOffice/Pickups" instance=ExtResource("14_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, -4)
+package_definition = ExtResource("21_pkg_potion")
+
+[node name="NPCs" type="Node3D" parent="."]
+
+[node name="Postmaster" parent="NPCs" instance=ExtResource("3_npc")]
+transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, -3, 0, -3.5)
+npc_id = &"postmaster"
+npc_name = "Postmaster Bram"
+lines = PackedStringArray("Contracts are on the board, courier.", "One delivery at a time. Our insurance insists.")
+body_color = Color(0.52, 0.3, 0.62, 1)
+
+[node name="QuestBehaviour" type="Node" parent="NPCs/Postmaster"]
+script = ExtResource("18_qnpc")
+
+[node name="Merchant" parent="NPCs" instance=ExtResource("3_npc")]
+transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, 16, 0, 4)
+npc_id = &"village_merchant"
+npc_name = "Merchant Mira"
+lines = PackedStringArray("Fresh apples! Well, fresh-ish.", "Business is slow without a courier.")
+body_color = Color(0.9, 0.62, 0.2, 1)
+
+[node name="QuestBehaviour" type="Node" parent="NPCs/Merchant"]
+script = ExtResource("18_qnpc")
+
+[node name="Alchemist" parent="NPCs" instance=ExtResource("3_npc")]
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 16, 0, -7)
+npc_id = &"village_alchemist"
+npc_name = "Alchemist Corvin"
+lines = PackedStringArray("Careful, that cauldron bites.", "Bring me ingredients and I'll brew wonders.")
+body_color = Color(0.25, 0.65, 0.55, 1)
+
+[node name="QuestBehaviour" type="Node" parent="NPCs/Alchemist"]
+script = ExtResource("18_qnpc")
+
+[node name="Mage" parent="NPCs" instance=ExtResource("3_npc")]
+transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -16, 0, 12)
+npc_id = &"forest_mage"
+npc_name = "Mage Elowen"
+lines = PackedStringArray("The forest hums today.", "Mind the roots, traveller.")
+body_color = Color(0.3, 0.4, 0.85, 1)
+
+[node name="QuestBehaviour" type="Node" parent="NPCs/Mage"]
+script = ExtResource("18_qnpc")
+
+[node name="Destinations" type="Node3D" parent="."]
+
+[node name="ForestClearing" parent="Destinations" instance=ExtResource("15_dest")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 12)
+destination_id = &"forest_clearing"
+display_name = "Forest Clearing"
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="Tree0" parent="Props" instance=ExtResource("6_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21, 0, 8.5)
+
+[node name="Tree1" parent="Props" instance=ExtResource("6_tree")]
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, -11, 0, 16.5)
+
+[node name="Tree2" parent="Props" instance=ExtResource("6_tree")]
+transform = Transform3D(0.173648, 0, 0.984808, 0, 1, 0, -0.984808, 0, 0.173648, -20.5, 0, 16)
+
+[node name="Tree3" parent="Props" instance=ExtResource("6_tree")]
+transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, -11.5, 0, 7)
+
+[node name="Tree4" parent="Props" instance=ExtResource("6_tree")]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -16, 0, 18)
+
+[node name="Tree5" parent="Props" instance=ExtResource("6_tree")]
+transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, -23, 0, 3)
+
+[node name="Tree6" parent="Props" instance=ExtResource("6_tree")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -7, 0, 18.5)
+
+[node name="VillageCrate0" parent="Props" instance=ExtResource("4_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5, 0, 6)
+
+[node name="VillageCrate1" parent="Props" instance=ExtResource("4_crate")]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 19.5, 0, 7.1)
+
+[node name="VillageCrate2" parent="Props" instance=ExtResource("4_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5, 0, -9)
+
+[node name="VillageCrate3" parent="Props" instance=ExtResource("4_crate")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 12, 0, 10)
+
+[node name="Rock0" parent="Props" instance=ExtResource("5_rock")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 9)
+
+[node name="Rock1" parent="Props" instance=ExtResource("5_rock")]
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, -6, 0, -12)
+
+[node name="Rock2" parent="Props" instance=ExtResource("5_rock")]
+transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, 12, 0, -14)
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+
+[node name="IsoCameraRig" parent="." node_paths=PackedStringArray("target") instance=ExtResource("2_cam")]
+target = NodePath("../Player")
+
+[node name="DebugHUD" parent="." node_paths=PackedStringArray("player", "camera_rig") instance=ExtResource("7_debug")]
+visible = false
+player = NodePath("../Player")
+camera_rig = NodePath("../IsoCameraRig")
+
+[node name="InteractionPrompt" parent="." node_paths=PackedStringArray("detector") instance=ExtResource("8_prompt")]
+detector = NodePath("../Player/InteractionDetector")
+
+[node name="GameplayHUD" parent="." node_paths=PackedStringArray("player") instance=ExtResource("16_hud")]
+player = NodePath("../Player")
+
+[node name="QuestBoardUI" parent="." instance=ExtResource("17_board_ui")]

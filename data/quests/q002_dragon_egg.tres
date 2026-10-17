@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="QuestDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_definition.gd" id="1_def"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_obj"]
+[ext_resource type="Script" path="res://scripts/quests/quest_reward.gd" id="3_rew"]
+[ext_resource type="Resource" path="res://data/packages/pkg_dragon_egg.tres" id="4_pkg"]
+
+[sub_resource type="Resource" id="Objective_pickup"]
+script = ExtResource("2_obj")
+type = 1
+target_id = &"pkg_dragon_egg"
+description = "Pick up the Dragon Egg at the post office"
+
+[sub_resource type="Resource" id="Objective_reach"]
+script = ExtResource("2_obj")
+type = 2
+target_id = &"forest_clearing"
+description = "Carry the egg to the Forest Clearing"
+
+[sub_resource type="Resource" id="Objective_deliver"]
+script = ExtResource("2_obj")
+type = 3
+target_id = &"forest_mage"
+description = "Deliver the Dragon Egg to Mage Elowen"
+completion_line = "Still warm! You have steady hands, courier."
+
+[sub_resource type="Resource" id="Reward"]
+script = ExtResource("3_rew")
+gold = 120
+reputation = 20
+
+[resource]
+script = ExtResource("1_def")
+quest_id = &"q002_dragon_egg"
+title = "The Dragon Egg"
+description = "A rare dragon egg must reach the forest mage before it hatches."
+giver_id = &"postmaster"
+is_delivery = true
+package = ExtResource("4_pkg")
+recipient_name = "Mage Elowen"
+destination_name = "Forest Clearing"
+objectives = Array[ExtResource("2_obj")]([SubResource("Objective_pickup"), SubResource("Objective_reach"), SubResource("Objective_deliver")])
+reward = SubResource("Reward")
+recipient_waiting_line = "The stars say an egg is coming my way..."
+recipient_after_line = "The little one is doing well. Thank you again."

@@ -1,0 +1,19 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/gameplay_ui/gameplay_hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/ui/quest_tracker.tscn" id="2_tracker"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/ui/package_indicator.tscn" id="3_pkg"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/ui/wallet_display.tscn" id="4_wallet"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/ui/quest_notification.tscn" id="5_toast"]
+
+[node name="GameplayHUD" type="CanvasLayer"]
+layer = 8
+script = ExtResource("1_hud")
+
+[node name="QuestTracker" parent="." instance=ExtResource("2_tracker")]
+
+[node name="PackageIndicator" parent="." instance=ExtResource("3_pkg")]
+
+[node name="WalletDisplay" parent="." instance=ExtResource("4_wallet")]
+
+[node name="QuestNotification" parent="." instance=ExtResource("5_toast")]

@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Mat_wood"]
+albedo_color = Color(0.5, 0.34, 0.2, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="Mat_potion"]
+albedo_color = Color(0.45, 0.95, 0.55, 1)
+emission_enabled = true
+emission = Color(0.3, 1, 0.45, 1)
+emission_energy_multiplier = 0.8
+
+[sub_resource type="BoxMesh" id="Box_crate"]
+size = Vector3(0.6, 0.32, 0.45)
+
+[sub_resource type="CylinderMesh" id="Cyl_bottle"]
+top_radius = 0.05
+bottom_radius = 0.08
+height = 0.26
+radial_segments = 6
+rings = 1
+
+[node name="PotionCrateVisual" type="Node3D"]
+
+[node name="Crate" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("Box_crate")
+surface_material_override/0 = SubResource("Mat_wood")
+
+[node name="BottleA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 0.4, 0)
+mesh = SubResource("Cyl_bottle")
+surface_material_override/0 = SubResource("Mat_potion")
+
+[node name="BottleB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.08)
+mesh = SubResource("Cyl_bottle")
+surface_material_override/0 = SubResource("Mat_potion")
+
+[node name="BottleC" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, 0.4, -0.04)
+mesh = SubResource("Cyl_bottle")
+surface_material_override/0 = SubResource("Mat_potion")

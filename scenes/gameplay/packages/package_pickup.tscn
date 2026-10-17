@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/packages/package_pickup.gd" id="1_pickup"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="2_interact"]
+
+[sub_resource type="SphereShape3D" id="Sphere_interact"]
+radius = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_marker"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.85, 0.3, 0.45)
+
+[sub_resource type="CylinderMesh" id="Cyl_marker"]
+top_radius = 0.55
+bottom_radius = 0.55
+height = 0.02
+radial_segments = 16
+rings = 1
+
+[node name="PackagePickup" type="Node3D"]
+script = ExtResource("1_pickup")
+
+[node name="Marker" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+cast_shadow = 0
+mesh = SubResource("Cyl_marker")
+surface_material_override/0 = SubResource("Mat_marker")
+
+[node name="VisualRoot" type="Node3D" parent="."]
+
+[node name="Interactable" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("2_interact")
+prompt_verb = "Pick up"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("Sphere_interact")

@@ -8,6 +8,8 @@
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_courier_satchel.tres" id="6_satchel"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_courier_skin.tres" id="7_skin"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_hat.tres" id="8_hat"]
+[ext_resource type="Script" path="res://scripts/packages/package_carrier.gd" id="9_carrier"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/packages/package_pickup.tscn" id="10_pickup"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -109,3 +111,8 @@ script = ExtResource("4_detect")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionDetector"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 shape = SubResource("SphereShape3D_detector")
+
+[node name="PackageCarrier" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.05, 0)
+script = ExtResource("9_carrier")
+dropped_pickup_scene = ExtResource("10_pickup")

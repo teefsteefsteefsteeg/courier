@@ -14,6 +14,12 @@ with properly licensed low-poly art.
 | Ground, path, fence | `scenes/levels/test_yard.tscn` | PlaneMesh / BoxMesh | Authored in-repo | PLACEHOLDER |
 | Flat materials (12) | `assets/materials/placeholder/ph_*.tres` | StandardMaterial3D | Authored in-repo | PLACEHOLDER |
 | UI font | engine default | Godot default font | Godot (MIT) | Temporary |
+| Parcel / Dragon egg / Potion crate visuals | `scenes/gameplay/packages/visuals/*.tscn` | Primitives + inline materials | Authored in-repo (Phase 2) | PLACEHOLDER |
+| Package pickup marker | `scenes/gameplay/packages/package_pickup.tscn` | Flat cylinder, unshaded | Authored in-repo (Phase 2) | PLACEHOLDER |
+| Quest board | `scenes/gameplay/world/quest_board.tscn` | BoxMesh posts/board/notes | Authored in-repo (Phase 2) | PLACEHOLDER |
+| Destination ring | `scenes/gameplay/world/destination_area.tscn` | TorusMesh, unshaded | Authored in-repo (Phase 2) | PLACEHOLDER |
+| Gameplay UI theme | `scenes/gameplay/ui/gameplay_ui_theme.tres` | Theme, StyleBoxFlat | Authored in-repo (Phase 2) | Temporary |
+| Phase 2 sandbox ground/fence/signs | `scenes/gameplay/sandbox/phase2_delivery_sandbox.tscn` | PlaneMesh / BoxMesh / Label3D | Authored in-repo (Phase 2) | PLACEHOLDER (test scene) |
 
 When adding an external asset, record: name, path, author, source URL, license (with a link), date
 imported, and any modifications.

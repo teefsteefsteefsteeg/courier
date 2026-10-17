@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PackageDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/packages/package_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/packages/visuals/parcel_visual.tscn" id="2_vis"]
+
+[resource]
+script = ExtResource("1_def")
+package_id = &"pkg_ordinary_parcel"
+package_name = "Ordinary Parcel"
+package_description = "A brown paper parcel tied with string. Nothing magical. Probably."
+recipient_id = &"village_merchant"
+quest_id = &"q001_first_delivery"
+package_scene = ExtResource("2_vis")
+integrity = 100.0

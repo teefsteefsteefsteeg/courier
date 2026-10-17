@@ -6,6 +6,8 @@ extends StaticBody3D
 
 signal spoke(npc_name: String, line: String)
 
+## Unique, stable identifier used by quests and deliveries (e.g. &"village_merchant").
+@export var npc_id: StringName
 @export var npc_name: String = "Villager"
 @export_multiline var lines: PackedStringArray = PackedStringArray(["Hello, courier!"])
 @export var body_color: Color = Color(0.8, 0.5, 0.3)
@@ -49,11 +51,28 @@ func _on_interacted(interactor: Node) -> void:
 		if Vector2(to_interactor.x, to_interactor.z).length_squared() > 0.0001:
 			# Visual yaw is local to this (possibly rotated) body.
 			_face_yaw = FacingComponent.yaw_for_direction(to_interactor) - global_rotation.y
-	if lines.is_empty():
-		return
-	var line := lines[_line_index % lines.size()]
-	_line_index += 1
+	# Child behaviours (e.g. QuestNPCBehaviour) may supply a context line first.
+	var line := _line_from_behaviours(interactor)
+	if line.is_empty():
+		if lines.is_empty():
+			return
+		line = lines[_line_index % lines.size()]
+		_line_index += 1
+	say(line)
+
+
+## Shows a speech bubble line above the NPC.
+func say(line: String) -> void:
 	speech_label.text = line
 	speech_label.visible = true
 	_bubble_time_left = bubble_duration
 	spoke.emit(npc_name, line)
+
+
+func _line_from_behaviours(interactor: Node) -> String:
+	for child in get_children():
+		if child.has_method(&"get_interaction_line"):
+			var line: String = child.get_interaction_line(self, interactor)
+			if not line.is_empty():
+				return line
+	return ""

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PackageDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/packages/package_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/packages/visuals/potion_crate_visual.tscn" id="2_vis"]
+
+[resource]
+script = ExtResource("1_def")
+package_id = &"pkg_potion_crate"
+package_name = "Unstable Potion Crate"
+package_description = "A crate of fizzing potion bottles. Stable for now."
+recipient_id = &"village_alchemist"
+quest_id = &"q003_unstable_potion"
+package_scene = ExtResource("2_vis")
+integrity = 100.0

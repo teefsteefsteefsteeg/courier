@@ -1,0 +1,81 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world_objects/quest_board.gd" id="1_board"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="2_interact"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_fence.tres" id="3_wood"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_paper"]
+albedo_color = Color(0.97, 0.93, 0.8, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_roof"]
+albedo_color = Color(0.62, 0.2, 0.22, 1)
+
+[sub_resource type="BoxMesh" id="Box_post"]
+size = Vector3(0.15, 2.2, 0.15)
+
+[sub_resource type="BoxMesh" id="Box_board"]
+size = Vector3(1.8, 1.1, 0.1)
+
+[sub_resource type="BoxMesh" id="Box_note"]
+size = Vector3(0.35, 0.45, 0.02)
+
+[sub_resource type="BoxMesh" id="Box_roof"]
+size = Vector3(2.1, 0.12, 0.5)
+
+[sub_resource type="BoxShape3D" id="Shape_board"]
+size = Vector3(2, 2.3, 0.4)
+
+[sub_resource type="SphereShape3D" id="Shape_interact"]
+radius = 1.0
+
+[node name="QuestBoard" type="StaticBody3D"]
+script = ExtResource("1_board")
+
+[node name="PostLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85, 1.1, 0)
+mesh = SubResource("Box_post")
+surface_material_override/0 = ExtResource("3_wood")
+
+[node name="PostRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.85, 1.1, 0)
+mesh = SubResource("Box_post")
+surface_material_override/0 = ExtResource("3_wood")
+
+[node name="Board" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+mesh = SubResource("Box_board")
+surface_material_override/0 = ExtResource("3_wood")
+
+[node name="Roof" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+mesh = SubResource("Box_roof")
+surface_material_override/0 = SubResource("Mat_roof")
+
+[node name="NoteA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1.5, 0.06)
+mesh = SubResource("Box_note")
+surface_material_override/0 = SubResource("Mat_paper")
+
+[node name="NoteB" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.996, -0.087, 0, 0.087, 0.996, 0, 0, 0, 1, 0, 1.42, 0.06)
+mesh = SubResource("Box_note")
+surface_material_override/0 = SubResource("Mat_paper")
+
+[node name="NoteC" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.5, 0.06)
+mesh = SubResource("Box_note")
+surface_material_override/0 = SubResource("Mat_paper")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+shape = SubResource("Shape_board")
+
+[node name="Interactable" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("2_interact")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0.6)
+shape = SubResource("Shape_interact")

@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Mat_egg"]
+albedo_color = Color(0.86, 0.32, 0.22, 1)
+roughness = 0.6
+emission_enabled = true
+emission = Color(1, 0.45, 0.15, 1)
+emission_energy_multiplier = 0.25
+
+[sub_resource type="StandardMaterial3D" id="Mat_spots"]
+albedo_color = Color(0.98, 0.78, 0.3, 1)
+
+[sub_resource type="SphereMesh" id="Sphere_egg"]
+radius = 0.25
+height = 0.5
+radial_segments = 10
+rings = 6
+
+[sub_resource type="SphereMesh" id="Sphere_spot"]
+radius = 0.06
+height = 0.12
+radial_segments = 6
+rings = 3
+
+[node name="DragonEggVisual" type="Node3D"]
+
+[node name="Egg" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1.35, 0, 0, 0, 1, 0, 0.34, 0)
+mesh = SubResource("Sphere_egg")
+surface_material_override/0 = SubResource("Mat_egg")
+
+[node name="SpotA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.42, 0.12)
+mesh = SubResource("Sphere_spot")
+surface_material_override/0 = SubResource("Mat_spots")
+
+[node name="SpotB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.3, 0.17)
+mesh = SubResource("Sphere_spot")
+surface_material_override/0 = SubResource("Mat_spots")

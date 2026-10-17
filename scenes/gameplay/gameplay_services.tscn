@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_manager.gd" id="1_qm"]
+[ext_resource type="Script" path="res://scripts/quests/courier_wallet.gd" id="2_wallet"]
+[ext_resource type="Script" path="res://scripts/quests/quest_definition.gd" id="3_def"]
+[ext_resource type="Resource" path="res://data/quests/q001_first_delivery.tres" id="4_q1"]
+[ext_resource type="Resource" path="res://data/quests/q002_dragon_egg.tres" id="5_q2"]
+[ext_resource type="Resource" path="res://data/quests/q003_unstable_potion.tres" id="6_q3"]
+
+[node name="GameplayServices" type="Node"]
+
+[node name="CourierWallet" type="Node" parent="."]
+script = ExtResource("2_wallet")
+
+[node name="QuestManager" type="Node" parent="." node_paths=PackedStringArray("wallet")]
+script = ExtResource("1_qm")
+quest_definitions = Array[ExtResource("3_def")]([ExtResource("4_q1"), ExtResource("5_q2"), ExtResource("6_q3")])
+wallet = NodePath("../CourierWallet")
