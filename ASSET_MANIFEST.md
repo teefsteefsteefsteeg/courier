@@ -12,7 +12,11 @@ with properly licensed low-poly art.
 | Rock | `scenes/props/placeholder_rock.tscn` | 6-sided CylinderMesh | Authored in-repo | PLACEHOLDER |
 | Tree | `scenes/props/placeholder_tree.tscn` | Cylinder trunk + 2 cones | Authored in-repo | PLACEHOLDER |
 | Ground, path, fence | `scenes/levels/test_yard.tscn` | PlaneMesh / BoxMesh | Authored in-repo | PLACEHOLDER |
-| Flat materials (12) | `assets/materials/placeholder/ph_*.tres` | StandardMaterial3D | Authored in-repo | PLACEHOLDER |
+| Flat materials (32) | `assets/materials/placeholder/ph_*.tres` | StandardMaterial3D (some emissive) | Authored in-repo | PLACEHOLDER |
+| Village buildings and props | `scenes/props/{cottage,well,lamp_post,market_stall,signpost,barrel,bench,bush,mushroom_cluster}.tscn` | Box/Prism/Cylinder/Sphere primitives | Authored in-repo | PLACEHOLDER |
+| Post office, forest entrance | `scenes/locations/*.tscn` | Primitives and Label3D signs | Authored in-repo | PLACEHOLDER |
+| NPC costumes (5) | `scenes/npc/characters/*.tscn` | Primitive accessories on npc.tscn | Authored in-repo | PLACEHOLDER |
+| UI theme | `assets/ui/courier_theme.tres` | Theme and StyleBoxFlat | Authored in-repo | Temporary |
 | UI font | engine default | Godot default font | Godot (MIT) | Temporary |
 
 When adding an external asset, record: name, path, author, source URL, license (with a link), date

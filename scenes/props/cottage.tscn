@@ -1,0 +1,117 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/cottage.gd" id="1_script"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_stone.tres" id="2_stone"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_dark.tres" id="3_wood"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_window.tres" id="4_window"]
+[ext_resource type="Script" path="res://scripts/world/camera_occluder.gd" id="5_occluder"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_foundation"]
+size = Vector3(6.4, 0.3, 5.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_walls"]
+size = Vector3(6, 2.8, 5)
+
+[sub_resource type="PrismMesh" id="PrismMesh_roof"]
+size = Vector3(7, 2.2, 5.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_post"]
+size = Vector3(0.25, 2.8, 0.25)
+
+[sub_resource type="BoxMesh" id="BoxMesh_beam"]
+size = Vector3(6.1, 0.2, 0.12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_door"]
+size = Vector3(1, 1.8, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_window_front"]
+size = Vector3(0.8, 0.7, 0.08)
+
+[sub_resource type="BoxMesh" id="BoxMesh_window_side"]
+size = Vector3(0.08, 0.7, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_chimney"]
+size = Vector3(0.6, 1.8, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(6.4, 3.2, 5.4)
+
+[node name="Cottage" type="StaticBody3D"]
+script = ExtResource("1_script")
+
+[node name="Foundation" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+mesh = SubResource("BoxMesh_foundation")
+surface_material_override/0 = ExtResource("2_stone")
+
+[node name="Walls" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+mesh = SubResource("BoxMesh_walls")
+
+[node name="Roof" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, 0)
+mesh = SubResource("PrismMesh_roof")
+
+[node name="PostFL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.7, 2.5)
+mesh = SubResource("BoxMesh_post")
+surface_material_override/0 = ExtResource("3_wood")
+
+[node name="PostFR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.7, 2.5)
+mesh = SubResource("BoxMesh_post")
+surface_material_override/0 = ExtResource("3_wood")
+
+[node name="PostBL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.7, -2.5)
+mesh = SubResource("BoxMesh_post")
+surface_material_override/0 = ExtResource("3_wood")
+
+[node name="PostBR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.7, -2.5)
+mesh = SubResource("BoxMesh_post")
+surface_material_override/0 = ExtResource("3_wood")
+
+[node name="BeamFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.55, 2.52)
+mesh = SubResource("BoxMesh_beam")
+surface_material_override/0 = ExtResource("3_wood")
+
+[node name="Door" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 2.53)
+mesh = SubResource("BoxMesh_door")
+surface_material_override/0 = ExtResource("3_wood")
+
+[node name="WindowFL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 1.8, 2.53)
+mesh = SubResource("BoxMesh_window_front")
+surface_material_override/0 = ExtResource("4_window")
+
+[node name="WindowFR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 1.8, 2.53)
+mesh = SubResource("BoxMesh_window_front")
+surface_material_override/0 = ExtResource("4_window")
+
+[node name="WindowSideA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.03, 1.8, -1)
+mesh = SubResource("BoxMesh_window_side")
+surface_material_override/0 = ExtResource("4_window")
+
+[node name="WindowSideB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.03, 1.8, 1)
+mesh = SubResource("BoxMesh_window_side")
+surface_material_override/0 = ExtResource("4_window")
+
+[node name="Chimney" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 4.6, -1)
+mesh = SubResource("BoxMesh_chimney")
+surface_material_override/0 = ExtResource("2_stone")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+shape = SubResource("BoxShape3D_body")
+
+[node name="CameraOccluder" type="Node3D" parent="."]
+script = ExtResource("5_occluder")
+radius = 3.6
+height = 5.4

@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/location_banner.gd" id="1_script"]
+[ext_resource type="Theme" path="res://assets/ui/courier_theme.tres" id="2_theme"]
+
+[node name="LocationBanner" type="CanvasLayer"]
+layer = 4
+script = ExtResource("1_script")
+
+[node name="Banner" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -400.0
+offset_top = 36.0
+offset_right = 400.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+theme_override_constants/separation = 2
+
+[node name="TitleLabel" type="Label" parent="Banner"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"GoldTitle"
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 40
+text = "Location"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="Banner"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"FrameLabel"
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.14, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "Subtitle"
+horizontal_alignment = 1

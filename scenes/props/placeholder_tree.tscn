@@ -3,6 +3,7 @@
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_trunk.tres" id="1_trunk"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_leaves.tres" id="2_leaves"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_leaves_light.tres" id="3_leaves_light"]
+[ext_resource type="Script" path="res://scripts/world/camera_occluder.gd" id="4_occluder"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_trunk"]
 top_radius = 0.2
@@ -49,3 +50,8 @@ surface_material_override/0 = ExtResource("3_leaves_light")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 shape = SubResource("CylinderShape3D_trunk")
+
+[node name="CameraOccluder" type="Node3D" parent="."]
+script = ExtResource("4_occluder")
+radius = 1.5
+height = 3.8

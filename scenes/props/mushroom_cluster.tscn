@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_paper.tres" id="1_stem"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_mushroom_cap.tres" id="2_cap"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_stem"]
+top_radius = 0.06
+bottom_radius = 0.08
+height = 0.3
+radial_segments = 6
+rings = 1
+
+[sub_resource type="SphereMesh" id="SphereMesh_cap"]
+radius = 0.18
+height = 0.18
+is_hemisphere = true
+radial_segments = 8
+rings = 3
+
+[node name="MushroomCluster" type="Node3D"]
+
+[node name="StemA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+mesh = SubResource("CylinderMesh_stem")
+surface_material_override/0 = ExtResource("1_stem")
+
+[node name="CapA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+mesh = SubResource("SphereMesh_cap")
+surface_material_override/0 = ExtResource("2_cap")
+
+[node name="StemB" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0.25, 0.105, 0.12)
+mesh = SubResource("CylinderMesh_stem")
+surface_material_override/0 = ExtResource("1_stem")
+
+[node name="CapB" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0.25, 0.21, 0.12)
+mesh = SubResource("SphereMesh_cap")
+surface_material_override/0 = ExtResource("2_cap")
+
+[node name="StemC" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, -0.18, 0.08, 0.2)
+mesh = SubResource("CylinderMesh_stem")
+surface_material_override/0 = ExtResource("1_stem")
+
+[node name="CapC" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, -0.18, 0.165, 0.2)
+mesh = SubResource("SphereMesh_cap")
+surface_material_override/0 = ExtResource("2_cap")

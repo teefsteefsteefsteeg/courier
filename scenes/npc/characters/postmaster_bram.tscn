@@ -1,0 +1,52 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_beard.tres" id="2_beard"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_brass.tres" id="3_brass"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_roof_blue.tres" id="4_roof_blue"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_dark.tres" id="5_wood_dark"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cap"]
+top_radius = 0.22
+bottom_radius = 0.3
+height = 0.16
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_visor"]
+size = Vector3(0.34, 0.03, 0.18)
+
+[sub_resource type="SphereMesh" id="SphereMesh_beard"]
+radius = 0.2
+height = 0.32
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxMesh" id="BoxMesh_badge"]
+size = Vector3(0.12, 0.12, 0.03)
+
+[node name="PostmasterBram" instance=ExtResource("1_npc")]
+npc_name = "Postmaster Bram"
+lines = PackedStringArray("Ah, there you are! Welcome to the Willowmere Post.", "Parcels leave from this counter. The board by the crates lists open deliveries.", "The Whisperwood gate is north-east of the square. Follow the lanterns.", "A courier's word is their bond. Their boots had better be sturdy, too.")
+body_color = Color(0.52, 0.3, 0.62, 1)
+metadata/npc_id = &"postmaster"
+
+[node name="Cap" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.72, 0)
+mesh = SubResource("CylinderMesh_cap")
+surface_material_override/0 = ExtResource("4_roof_blue")
+
+[node name="Visor" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.66, -0.3)
+mesh = SubResource("BoxMesh_visor")
+surface_material_override/0 = ExtResource("5_wood_dark")
+
+[node name="Beard" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.36, -0.17)
+mesh = SubResource("SphereMesh_beard")
+surface_material_override/0 = ExtResource("2_beard")
+
+[node name="Badge" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.17, 1.02, -0.37)
+mesh = SubResource("BoxMesh_badge")
+surface_material_override/0 = ExtResource("3_brass")
