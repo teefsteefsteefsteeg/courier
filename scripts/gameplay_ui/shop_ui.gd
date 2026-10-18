@@ -16,6 +16,8 @@ signal closed
 
 const THEME := preload("res://scenes/gameplay/ui/gameplay_ui_theme.tres")
 const ICON_SCALE := 2
+## Catalog sold by the Armory location's weaponsmith.
+const ARMORY_CATALOG := "res://data/shops/armory.tres"
 
 @export var wallet: CourierWallet
 @export var inventory: CourierInventory
@@ -57,6 +59,25 @@ func _connect() -> void:
 	get_tree().node_added.connect(func(node: Node) -> void:
 		if node is Merchant:
 			bind_merchant.call_deferred(node))
+	_attach_armory_merchants()
+
+
+## The building/visual Armory location (scripts/world/armory.gd) has a shopkeeper NPC
+## (`merchant`) but no shop logic. Give that NPC a Merchant selling ARMORY_CATALOG at
+## runtime, so talking to the weaponsmith opens this window. (Embedding merchant.gd in the
+## NPC scene instead made Godot report leaked scripts and resources at exit.)
+func _attach_armory_merchants() -> void:
+	var scene := get_tree().current_scene
+	if scene == null:
+		return
+	for armory in scene.find_children("*", "Armory", true, false):
+		var shopkeeper := armory.get(&"merchant") as NPC
+		if shopkeeper == null or shopkeeper.get_node_or_null(^"ShopMerchant") != null:
+			continue
+		var shop_merchant := Merchant.new()
+		shop_merchant.name = "ShopMerchant"
+		shop_merchant.catalog = load(ARMORY_CATALOG) as ShopCatalog
+		shopkeeper.add_child(shop_merchant)
 
 
 ## Listens to a merchant (merchants added later are bound automatically).

@@ -27,6 +27,11 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	# Deferred: a parent NPC readies after its children, and its `interactable` is @onready.
+	_bind.call_deferred()
+
+
+func _bind() -> void:
 	var owner_node := get_parent()
 	if owner_node is NPC:
 		interactable = (owner_node as NPC).interactable
