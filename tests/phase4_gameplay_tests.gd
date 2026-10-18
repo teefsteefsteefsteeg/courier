@@ -14,8 +14,10 @@ const WISP_SCENE := "res://scenes/gameplay/combat/frost_wisp.tscn"
 const SANDBOX := "res://scenes/gameplay/combat/combat_sandbox.tscn"
 const VILLAGE := "res://scenes/levels/village.tscn"
 const PARCEL := "res://data/packages/pkg_ordinary_parcel.tres"
+const Q2 := &"q002_dragon_egg"
 const STEP := 1.0 / 60.0
 const ES := Enemy.State
+const RS := Phase4DeliveryIntegration.RunState
 
 var _failures: int = 0
 var _passes: int = 0
@@ -41,6 +43,7 @@ func _run() -> void:
 	await _test_integration()
 	await _test_determinism()
 	await _test_sandbox()
+	await _test_village_delivery()
 	_test_regressions()
 
 	print("\n=== Phase 4 gameplay tests: %d passed, %d failed ===" % [_passes, _failures])

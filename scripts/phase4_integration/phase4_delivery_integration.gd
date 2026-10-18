@@ -15,10 +15,14 @@ extends Node3D
 ##   the courier (the first wave of an encounter ignores that distance).
 ## - Damage that reaches the courier while carrying the egg is turned into package impact
 ##   by CombatController; this node only reports it (package_impacted, package_hits).
-## - Objective text and a world route marker follow the current Q002 objective
-##   (pickup -> Forest Clearing -> Mage Elowen, or a dropped egg).
+## - Objective text and a world route marker (beacon + billboard label) follow the
+##   current Q002 objective: quest board (contract not yet accepted) -> egg pickup ->
+##   Forest Clearing -> Mage Elowen, or a dropped egg.
+## - Key moments (route change, encounter start/end, defeats, knockout, retry) are posted
+##   as short notices through notifier.push_message() when a notifier is set.
 ## - A knocked-out courier wakes at knockout_respawn with full health; the egg takes
 ##   knockout_package_impact.
+## - A failed run puts the contract back on the board after retry_delay seconds.
 ##
 ## Timers only advance in advance(delta), called each physics frame while simulate is on,
 ## so tests can drive the integration with exact deltas.
@@ -41,6 +45,8 @@ signal route_target_changed(target: Node3D)
 signal courier_knocked_out
 signal delivery_completed(quest_id: StringName, reward: QuestReward)
 signal delivery_failed(quest_id: StringName, reason: String)
+## A short player-facing notice (also forwarded to notifier).
+signal notice_posted(text: String)
 
 ## IDLE: no armed Dragon Egg run. ARMED: run in progress, courier outside the forest
 ## (village safe). IN_FOREST: encounter running. DELIVERED / FAILED: run finished.
@@ -75,12 +81,25 @@ const VISUAL_LAYER_NAME := &"Phase4EncounterPresentation"
 
 @export_group("Route")
 @export var show_route_marker: bool = true
+## Route target while the contract can still be accepted (the quest board).
+@export var board_target: Node3D
 ## Route target while the package still has to be picked up.
 @export var pickup_target: Node3D
 ## Route target for the REACH_DESTINATION objective.
 @export var destination_target: Node3D
 ## Route target for the DELIVER_PACKAGE objective.
 @export var recipient_target: Node3D
+## Height of the marker arrow above the target; the label sits above the arrow.
+@export_range(0.0, 10.0, 0.1, "suffix:m") var marker_height: float = 3.4
+
+@export_group("Feedback")
+## Any node with push_message(text: String), e.g. the HUD's QuestNotification.
+@export var notifier: Node
+@export var post_notices: bool = true
+
+@export_group("Retry")
+## Seconds after a failed run before the contract is offered again. 0 disables.
+@export_range(0.0, 60.0, 0.1, "suffix:s") var retry_delay: float = 4.0
 
 @export_group("Knockout")
 @export var respawn_on_knockout: bool = true
@@ -96,6 +115,8 @@ var bolt_hits: int = 0
 var package_hits: int = 0
 var package_impact_total: float = 0.0
 var knockouts: int = 0
+## Every notice posted, in order (read by tests and debugging).
+var notices: PackedStringArray = []
 
 var _run_state: RunState = RunState.IDLE
 var _player_in_forest: bool = false
@@ -108,10 +129,14 @@ var _objective_text: String = ""
 var _route_target: Node3D = null
 var _last_reward: QuestReward = null
 var _visual_layer: Node = null
+## Seconds until a failed run is offered again; negative when no retry is pending.
+var _retry_left: float = -1.0
+var _marker_time: float = 0.0
 
 @onready var _enemy_root: Node3D = $Enemies
 @onready var _spawn_root: Node3D = $SpawnPoints
 @onready var _route_marker: Node3D = $RouteMarker
+@onready var _route_arrow: Node3D = $RouteMarker/Arrow
 @onready var _route_label: Label3D = $RouteMarker/Label
 
 
@@ -149,6 +174,7 @@ static func find(tree: SceneTree) -> Phase4DeliveryIntegration:
 func advance(delta: float) -> void:
 	if delta <= 0.0:
 		return
+	_marker_time += delta
 	_update_forest_presence()
 	_sync_state()
 	if _run_state == RunState.IN_FOREST:
@@ -156,6 +182,7 @@ func advance(delta: float) -> void:
 		_step_spawns(delta)
 	elif get_live_enemy_count() > 0:
 		clear_encounter(&"village_safe")
+	_step_retry(delta)
 	_refresh_objective()
 	_update_route_marker()
 
@@ -189,6 +216,11 @@ func is_run_armed() -> bool:
 		return true
 	var objective := quest_manager.get_current_objective(quest_id)
 	return objective != null and objective.type != QuestObjective.Type.PICK_UP_PACKAGE
+
+
+## True while the contract can be accepted right now (no other delivery in progress).
+func is_contract_offered() -> bool:
+	return quest_manager != null and quest_manager.can_accept(quest_id) == QuestManager.AcceptResult.OK
 
 
 ## XZ rectangle of the forest (from forest_zone when set, else forest_bounds).
@@ -243,6 +275,8 @@ func get_objective_text() -> String:
 			return "Delivery failed: %s" % reason if not reason.is_empty() else "Delivery failed"
 	var objective := quest_manager.get_current_objective(quest_id)
 	if objective == null:
+		if is_contract_offered():
+			return "Accept \"%s\" at the %s" % [definition.title, _board_name()]
 		return ""
 	var text := objective.description
 	if is_package_dropped():
@@ -259,7 +293,7 @@ func get_route_target() -> Node3D:
 		return null
 	var objective := quest_manager.get_current_objective(quest_id)
 	if objective == null:
-		return null
+		return _valid_target(board_target) if is_contract_offered() else null
 	if objective.type == QuestObjective.Type.PICK_UP_PACKAGE:
 		return _valid_target(pickup_target)
 	if not is_carrying_quest_package():
@@ -296,6 +330,11 @@ func find_dropped_package_pickup() -> PackagePickup:
 		if pickup != null and not pickup.is_queued_for_deletion() and pickup.package_instance != null and pickup.package_instance.get_quest_id() == quest_id:
 			return pickup
 	return null
+
+
+## The world marker (beacon, arrow and Label child) placed on the route target.
+func get_route_marker() -> Node3D:
+	return _route_marker
 
 
 func get_visual_layer() -> Node:
@@ -356,6 +395,8 @@ func clear_encounter(reason: StringName) -> void:
 	_encounter_live = false
 	if was_live or removed > 0:
 		encounter_cleared.emit(reason)
+		if reason == &"left_forest":
+			_notify("Out of the Whisperwood. The hostiles lost your trail.")
 
 
 func _begin_encounter() -> void:
@@ -363,6 +404,7 @@ func _begin_encounter() -> void:
 		point.reset_runtime()
 	_encounter_live = true
 	encounter_started.emit()
+	_notify("Hostiles in the Whisperwood! Space: Magic Bolt, Shift: Dash, Q: Package Shield")
 
 
 func _step_spawns(delta: float) -> void:
@@ -393,6 +435,7 @@ func _on_enemy_defeated(enemy: Enemy, point: Phase4EncounterSpawnPoint) -> void:
 		point.enemy = null
 		point.respawn_left = point.respawn_delay
 	enemy_defeated.emit(enemy, point)
+	_notify("%s defeated" % ("Frost Wisp" if enemy is FrostWisp else "Forest Slime"))
 	_refresh_objective()
 
 
@@ -439,6 +482,21 @@ func _update_forest_presence() -> void:
 	_player_in_forest = is_in_forest(player.global_position, exit_margin if _player_in_forest else 0.0)
 
 
+## Counts down a pending retry and offers the failed contract again.
+func _step_retry(delta: float) -> void:
+	if _retry_left < 0.0:
+		return
+	if _run_state != RunState.FAILED:
+		_retry_left = -1.0
+		return
+	_retry_left -= delta
+	if _retry_left > 0.0:
+		return
+	_retry_left = -1.0
+	if quest_manager.reset_failed_quest(quest_id):
+		_notify("\"%s\" is back on the %s. Try again!" % [quest_manager.get_definition(quest_id).title, _board_name()])
+
+
 # --- objective & route -----------------------------------------------------------
 
 func _refresh_objective() -> void:
@@ -451,16 +509,27 @@ func _refresh_objective() -> void:
 
 func _update_route_marker() -> void:
 	var target := get_route_target()
-	if target != _route_target:
+	var changed := target != _route_target
+	if changed:
 		_route_target = target
 		route_target_changed.emit(target)
+		_sync_presentation()
 	if _route_marker == null:
 		return
 	var show := show_route_marker and target != null and target.is_inside_tree() and is_inside_tree()
 	_route_marker.visible = show
-	if show:
-		_route_marker.global_position = target.global_position
-		_route_label.text = _route_label_text(target)
+	if not show:
+		return
+	_route_marker.global_position = target.global_position
+	if changed:
+		# Jump to the new target instead of interpolating across the map.
+		_route_marker.reset_physics_interpolation()
+	_route_arrow.position.y = marker_height + sin(_marker_time * 3.0) * 0.15
+	_route_label.position.y = marker_height + 1.0
+	var text := "%s\n%s" % [_route_action_text(target), _route_label_text(target)]
+	if is_instance_valid(player) and player.is_inside_tree():
+		text += " - %d m" % roundi(_player_distance_to(target.global_position))
+	_route_label.text = text
 
 
 func _route_label_text(target: Node3D) -> String:
@@ -469,11 +538,39 @@ func _route_label_text(target: Node3D) -> String:
 		return ""
 	if target is PackagePickup:
 		return _package_name(definition)
+	if target == board_target:
+		return _board_name()
 	if target == destination_target:
 		return definition.destination_name
 	if target == recipient_target:
 		return definition.recipient_name
 	return ""
+
+
+## Verb line of the route marker label.
+func _route_action_text(target: Node3D) -> String:
+	if target is PackagePickup:
+		return "RECOVER" if (target as PackagePickup).is_dropped() else "PICK UP"
+	if target == board_target:
+		return "ACCEPT CONTRACT"
+	if target == destination_target:
+		return "TRAVEL TO"
+	if target == recipient_target:
+		return "DELIVER TO"
+	return ""
+
+
+func _board_name() -> String:
+	if is_instance_valid(board_target) and "board_name" in board_target:
+		return String(board_target.get(&"board_name"))
+	return "quest board"
+
+
+func _notify(text: String) -> void:
+	notices.append(text)
+	notice_posted.emit(text)
+	if post_notices and is_instance_valid(notifier) and notifier.has_method(&"push_message"):
+		notifier.call(&"push_message", text)
 
 
 static func _valid_target(node: Node3D) -> Node3D:
@@ -567,8 +664,18 @@ func _on_quest_state_changed(changed_id: StringName, _new_status: QuestState.Sta
 
 
 func _on_objective_completed(changed_id: StringName, _objective_index: int) -> void:
-	if changed_id == quest_id:
-		_on_quest_changed()
+	if changed_id != quest_id:
+		return
+	_on_quest_changed()
+	var next := quest_manager.get_current_objective(quest_id)
+	if next == null:
+		return
+	var definition := quest_manager.get_definition(quest_id)
+	match next.type:
+		QuestObjective.Type.REACH_DESTINATION:
+			_notify("Follow the beacon to the %s. Hostiles roam the Whisperwood!" % definition.destination_name)
+		QuestObjective.Type.DELIVER_PACKAGE:
+			_notify("Hand the %s to %s." % [_package_name(definition), definition.recipient_name])
 
 
 func _on_quest_changed() -> void:
@@ -589,6 +696,7 @@ func _on_quest_rewarded(rewarded_id: StringName, reward: QuestReward) -> void:
 func _on_quest_failed(failed_id: StringName, reason: String) -> void:
 	if failed_id != quest_id:
 		return
+	_retry_left = retry_delay if retry_delay > 0.0 else -1.0
 	_on_quest_changed()
 	delivery_failed.emit(failed_id, reason)
 
@@ -620,6 +728,7 @@ func _on_player_died() -> void:
 		return
 	knockouts += 1
 	courier_knocked_out.emit()
+	_notify("Knocked out! You come to back in the village.")
 	# Deferred: died is emitted from inside an enemy's strike.
 	_recover_courier.call_deferred()
 

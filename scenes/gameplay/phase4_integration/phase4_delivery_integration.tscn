@@ -1,9 +1,31 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/phase4_integration/phase4_delivery_integration.gd" id="1_integration"]
 [ext_resource type="Script" path="res://scripts/phase4_integration/encounter_spawn_point.gd" id="2_spawn"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/combat/forest_slime.tscn" id="3_slime"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/combat/frost_wisp.tscn" id="4_wisp"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_beacon"]
+transparency = 1
+shading_mode = 0
+cull_mode = 2
+albedo_color = Color(0.45, 0.9, 1, 0.28)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_beacon"]
+material = SubResource("StandardMaterial3D_beacon")
+top_radius = 0.25
+bottom_radius = 0.45
+height = 3.0
+radial_segments = 12
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_arrow"]
+shading_mode = 0
+albedo_color = Color(1, 0.82, 0.3, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_arrow"]
+material = SubResource("StandardMaterial3D_arrow")
+size = Vector3(0.7, 0.8, 0.7)
 
 [node name="Phase4DeliveryIntegration" type="Node3D"]
 script = ExtResource("1_integration")
@@ -26,8 +48,21 @@ respawn_delay = 18.0
 
 [node name="RouteMarker" type="Node3D" parent="."]
 
+[node name="Beacon" type="MeshInstance3D" parent="RouteMarker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_beacon")
+
+[node name="Arrow" type="MeshInstance3D" parent="RouteMarker"]
+transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 3.4, 0)
+cast_shadow = 0
+mesh = SubResource("PrismMesh_arrow")
+
 [node name="Label" type="Label3D" parent="RouteMarker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.4, 0)
 pixel_size = 0.008
+billboard = 1
+no_depth_test = true
 modulate = Color(0.75, 0.95, 1, 1)
 outline_modulate = Color(0.03, 0.08, 0.16, 1)
 font_size = 48
