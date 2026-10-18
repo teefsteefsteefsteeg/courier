@@ -17,6 +17,8 @@ const STATUS_ACTIVE := "active"
 const STATUS_COMPLETED := "completed"
 const STATUS_FAILED := "failed"
 const QUEST_MANAGER_GROUP := &"quest_manager"
+## Shown under a failed delivery (the quest board offers failed contracts again).
+const RETRY_HINT := "You can take this contract again from the quest board."
 
 
 static func find_quest_manager(tree: SceneTree) -> Node:
@@ -68,6 +70,8 @@ static func from_quest_manager(manager: Node, name_for_id: Callable) -> Array[Di
 		var fail_reason := str(state.get(&"fail_reason"))
 		if status == STATUS_FAILED and not fail_reason.is_empty():
 			description += "\n\nFailed: %s" % fail_reason
+		if status == STATUS_FAILED:
+			description += "\n\n" + RETRY_HINT
 		entries.append({
 			"id": quest_id,
 			"title": str(definition.get(&"title")),

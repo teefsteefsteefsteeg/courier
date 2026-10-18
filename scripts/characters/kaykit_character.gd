@@ -45,11 +45,18 @@ var model_root: Node3D
 var skeleton: Skeleton3D
 var current_loop: StringName = &"idle"
 var current_clip: StringName = &""
+## Action of the one-shot playing now (&"" when the base loop is playing).
+var one_shot_action: StringName = &""
 
 static var _libraries: Dictionary = {}
 var _one_shot := false
 var _hold := false
 var _idle_timer := 0.0
+## Seconds until a one-shot on a looping clip ends (negative: wait for animation_finished).
+## A looping clip never emits animation_finished, so without this the one-shot would
+## never end and every later play_loop() would be swallowed (e.g. the dash, which falls
+## back to the looping Running_B clip, kept the courier running in place).
+var _one_shot_left := -1.0
 
 
 func _ready() -> void:
@@ -68,19 +75,45 @@ func _ready() -> void:
 	for key in LIBRARIES:
 		animation_player.add_animation_library(key, _library(key))
 	animation_player.animation_finished.connect(_on_animation_finished)
-	if held_item != null:
-		var slot := BoneAttachment3D.new()
-		slot.name = "RightHandSlot"
-		skeleton.add_child(slot)
-		slot.bone_name = "handslot.r"
-		var item := held_item.instantiate() as Node3D
-		item.transform = held_item_transform
-		slot.add_child(item)
+	set_held_item(held_item)
 	_idle_timer = randf_range(4.0, 9.0)
 	play_loop(&"idle")
 
 
+## Puts scene (a prop such as a sword or staff) in the right hand, replacing the current
+## one; null empties the hand. Used for NPC props and the courier's equipped weapon.
+func set_held_item(scene: PackedScene) -> void:
+	held_item = scene
+	if skeleton == null:
+		return
+	var slot := skeleton.get_node_or_null(^"RightHandSlot") as BoneAttachment3D
+	if slot == null and scene == null:
+		return
+	if slot == null:
+		slot = BoneAttachment3D.new()
+		slot.name = "RightHandSlot"
+		skeleton.add_child(slot)
+		slot.bone_name = "handslot.r"
+	for child in slot.get_children():
+		slot.remove_child(child)
+		child.queue_free()
+	if scene != null:
+		var item := scene.instantiate() as Node3D
+		item.name = "HeldItem"
+		item.transform = held_item_transform
+		slot.add_child(item)
+
+
+func get_held_item_node() -> Node3D:
+	var slot := skeleton.get_node_or_null(^"RightHandSlot") if skeleton != null else null
+	return slot.get_child(0) as Node3D if slot != null and slot.get_child_count() > 0 else null
+
+
 func _process(delta: float) -> void:
+	if _one_shot and not _hold and _one_shot_left > 0.0:
+		_one_shot_left -= delta
+		if _one_shot_left <= 0.0:
+			_finish_one_shot()
 	if not idle_variation or _one_shot or current_loop != &"idle":
 		return
 	_idle_timer -= delta
@@ -117,13 +150,30 @@ func play_once(action: StringName, speed: float = 1.0, hold: bool = false) -> vo
 	if _play(action, speed, 0.1):
 		_one_shot = true
 		_hold = hold
+		one_shot_action = action
+		# A looping clip plays one cycle; a play-once clip ends on animation_finished.
+		var animation := animation_player.get_animation(current_clip)
+		_one_shot_left = animation.length / maxf(absf(speed), 0.01) \
+				if animation.loop_mode != Animation.LOOP_NONE and not hold else -1.0
+
+
+## Ends the one-shot now and returns to the current loop, when the one-shot is `action`
+## (any one-shot when empty). Held poses are left alone. Use it when the gameplay action
+## behind a one-shot ends before its clip does (a dash is shorter than its run clip).
+func end_once(action: StringName = &"") -> void:
+	if not _one_shot or _hold or (action != &"" and action != one_shot_action):
+		return
+	_finish_one_shot()
+
+
+func is_playing_one_shot() -> bool:
+	return _one_shot
 
 
 ## Leaves a held pose (e.g. after a knockout respawn).
 func release() -> void:
 	_hold = false
-	_one_shot = false
-	_play(current_loop, 1.0, 0.2)
+	_finish_one_shot()
 
 
 func _play(action: StringName, speed: float, blend: float) -> bool:
@@ -138,7 +188,13 @@ func _play(action: StringName, speed: float, blend: float) -> bool:
 func _on_animation_finished(_clip: StringName) -> void:
 	if _hold:
 		return
+	_finish_one_shot()
+
+
+func _finish_one_shot() -> void:
 	_one_shot = false
+	one_shot_action = &""
+	_one_shot_left = -1.0
 	_play(current_loop, 1.0, 0.2)
 
 

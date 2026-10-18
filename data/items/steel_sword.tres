@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/steel_sword.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/items/sword_1handed.gltf" id="3_model"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = &"steel_sword"
+display_name = "Steel Sword"
+description = "Balanced steel that keeps a keen focus."
+slot = 0
+price = 300
+icon = ExtResource("2_icon")
+held_model = ExtResource("3_model")
+bolt_damage_bonus = 13.0
+bolt_cooldown_multiplier = 0.9

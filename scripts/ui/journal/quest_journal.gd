@@ -75,7 +75,16 @@ func _ready() -> void:
 	tab_archive.pressed.connect(show_tab.bind(Tab.ARCHIVE))
 	hint_label.text = "[%s] Journal" % InputHints.key_for(toggle_action)
 	close_hint.text = "[%s] Close" % InputHints.key_for(toggle_action)
+	InputPromptLabel.attach(hint_label)
+	InputPromptLabel.attach(close_hint)
 	_find_manager.call_deferred()
+
+
+func _process(_delta: float) -> void:
+	# The bottom-centre hint sits under the dialogue box; it stands down while one is open.
+	var shown := not is_open() and get_tree().get_node_count_in_group(DialogueBox.OPEN_GROUP) == 0
+	if hint_label.visible != shown:
+		hint_label.visible = shown
 
 
 func _unhandled_input(event: InputEvent) -> void:

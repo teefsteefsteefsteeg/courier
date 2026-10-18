@@ -21,6 +21,9 @@ func _ready() -> void:
 	if combat != null:
 		combat.magic_bolt_fired.connect(func(_origin: Vector3, _direction: Vector3) -> void: character.play_once(&"attack", 1.6))
 		combat.dash_started.connect(func() -> void: character.play_once(&"dash", 1.8))
+		# The dash pose lasts as long as the dash (finished, blocked by a wall or cut short
+		# by a knockout), then the current movement loop takes over: idle, walk or run.
+		combat.dash_finished.connect(func() -> void: character.end_once(&"dash"))
 		if combat.health != null:
 			combat.health.damaged.connect(_on_damaged)
 			combat.health.died.connect(_on_died)

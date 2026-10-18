@@ -5,8 +5,15 @@ extends Area3D
 
 signal player_entered(destination_id: StringName)
 
+## Every destination joins this group (quest waypoints).
+const GROUP := &"destination_areas"
+
 @export var destination_id: StringName
 @export var display_name: String = ""
+
+
+func _enter_tree() -> void:
+	add_to_group(GROUP)
 
 
 func _ready() -> void:

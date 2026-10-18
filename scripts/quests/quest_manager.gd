@@ -211,6 +211,21 @@ func try_deliver(npc_id: StringName, package: PackageInstance) -> DeliveryResult
 	return result
 
 
+## What try_deliver would return, without delivering or emitting anything (for prompts
+## and NPC markers).
+func check_delivery(npc_id: StringName, package: PackageInstance) -> DeliveryResult:
+	return _validate_delivery(npc_id, package)
+
+
+## In-progress quest whose current objective is to talk to npc_id, or null.
+func get_quest_waiting_to_talk(npc_id: StringName) -> QuestDefinition:
+	for definition in get_in_progress_quests():
+		var objective := get_current_objective(definition.quest_id)
+		if objective != null and objective.type == QuestObjective.Type.TALK_TO_NPC and objective.target_id == npc_id:
+			return definition
+	return null
+
+
 func _validate_delivery(npc_id: StringName, package: PackageInstance) -> DeliveryResult:
 	if package == null:
 		return DeliveryResult.NO_PACKAGE
@@ -251,6 +266,48 @@ func reset_failed_quest(quest_id: StringName) -> bool:
 	state.objective_progress.fill(0)
 	_set_status(state, QuestState.Status.AVAILABLE)
 	return true
+
+
+## Whether retry_quest(quest_id) would succeed: the quest is FAILED and, for a delivery,
+## the delivery slot is free.
+func can_retry(quest_id: StringName) -> AcceptResult:
+	var state := get_state(quest_id)
+	if state == null:
+		return AcceptResult.UNKNOWN_QUEST
+	if state.status != QuestState.Status.FAILED:
+		return AcceptResult.NOT_AVAILABLE
+	if _definitions[quest_id].is_delivery and _active_delivery_id != &"":
+		return AcceptResult.DELIVERY_IN_PROGRESS
+	return AcceptResult.OK
+
+
+## Takes a FAILED contract again in one step (quest board "Retry"): resets and accepts it.
+func retry_quest(quest_id: StringName) -> AcceptResult:
+	var result := can_retry(quest_id)
+	if result != AcceptResult.OK:
+		return result
+	reset_failed_quest(quest_id)
+	return accept_quest(quest_id)
+
+
+## Marks quests from a save as REWARDED (quest_id -> QuestState.to_dict()) without paying
+## them again; only REWARDED entries for known, not yet started quests are applied.
+## Emits quest_state_changed so boards, pickups and the journal refresh.
+func restore_finished_quests(saved: Dictionary) -> void:
+	for key in saved:
+		var quest_id := StringName(key)
+		var state := get_state(quest_id)
+		var entry: Dictionary = saved[key]
+		if state == null or str(entry.get("status", "")) != "REWARDED":
+			continue
+		if state.status != QuestState.Status.AVAILABLE and state.status != QuestState.Status.REWARDED:
+			continue
+		state.objective_index = _definitions[quest_id].objectives.size()
+		for i in state.objective_progress.size():
+			state.objective_progress[i] = _definitions[quest_id].objectives[i].required_count
+		state.reward_granted = true
+		state.fail_reason = ""
+		_set_status(state, QuestState.Status.REWARDED)
 
 
 ## Grants the reward for a COMPLETED quest. Returns false if already granted or not completed.

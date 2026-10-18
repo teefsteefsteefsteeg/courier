@@ -10,6 +10,9 @@ extends Node3D
 
 signal picked_up(package: PackageInstance)
 
+## Every pickup (source and dropped) joins this group (quest waypoints).
+const GROUP := &"package_pickups"
+
 @export var package_definition: PackageDefinition
 ## Source mode only: hide unless an in-progress quest needs this package picked up.
 @export var only_when_quest_needs: bool = true
@@ -24,6 +27,10 @@ var package_instance: PackageInstance = null
 @onready var visual_root: Node3D = $VisualRoot
 
 var _quest_manager: QuestManager = null
+
+
+func _enter_tree() -> void:
+	add_to_group(GROUP)
 
 
 func _ready() -> void:

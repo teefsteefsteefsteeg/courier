@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/battle_axe.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = &"battle_axe"
+display_name = "Battle Axe"
+description = "Heavy and slow, but every bolt lands hard."
+slot = 0
+price = 400
+icon = ExtResource("2_icon")
+bolt_damage_bonus = 20.0
+bolt_cooldown_multiplier = 1.25

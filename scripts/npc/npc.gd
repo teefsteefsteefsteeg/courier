@@ -6,6 +6,9 @@ extends StaticBody3D
 
 signal spoke(npc_name: String, line: String)
 
+## Every NPC joins this group (minimap markers, quest waypoints).
+const GROUP := &"npcs"
+
 ## Unique, stable identifier used by quests and deliveries (e.g. &"village_merchant").
 @export var npc_id: StringName
 @export var npc_name: String = "Villager"
@@ -23,6 +26,21 @@ var interaction_count: int = 0
 var _line_index: int = 0
 var _bubble_time_left: float = 0.0
 var _face_yaw: float = 0.0
+
+
+func _enter_tree() -> void:
+	add_to_group(GROUP)
+
+
+## The NPC with npc_id in the tree, or null.
+static func find_by_id(tree: SceneTree, id: StringName) -> NPC:
+	if id == &"":
+		return null
+	for node in tree.get_nodes_in_group(GROUP):
+		var npc := node as NPC
+		if npc != null and npc.npc_id == id:
+			return npc
+	return null
 
 
 func _ready() -> void:
@@ -67,6 +85,17 @@ func say(line: String) -> void:
 	speech_label.visible = true
 	_bubble_time_left = bubble_duration
 	spoke.emit(npc_name, line)
+
+
+## Context prompt for the interaction prompt (see Interactable.get_prompt_text_for).
+## Child behaviours may return a verb phrase from get_prompt_verb(npc, interactor).
+func get_interaction_prompt(interactor: Node) -> String:
+	for child in get_children():
+		if child.has_method(&"get_prompt_verb"):
+			var verb: String = child.get_prompt_verb(self, interactor)
+			if not verb.is_empty():
+				return "%s %s" % [verb, npc_name]
+	return ""
 
 
 func _line_from_behaviours(interactor: Node) -> String:

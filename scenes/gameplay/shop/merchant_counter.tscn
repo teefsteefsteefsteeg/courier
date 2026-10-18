@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="1_interact"]
+[ext_resource type="Script" path="res://scripts/shop/merchant.gd" id="2_merchant"]
+[ext_resource type="Resource" path="res://data/shops/armory.tres" id="3_armory"]
+
+[sub_resource type="SphereShape3D" id="Shape_interact"]
+radius = 1.2
+
+[node name="MerchantCounter" type="Node3D"]
+
+[node name="Interactable" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_interact")
+prompt_verb = "Browse"
+display_name = "Willowmere Armory"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("Shape_interact")
+
+[node name="Merchant" type="Node" parent="."]
+script = ExtResource("2_merchant")
+catalog = ExtResource("3_armory")

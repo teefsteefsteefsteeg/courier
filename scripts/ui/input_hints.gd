@@ -1,6 +1,8 @@
 class_name InputHints
 extends RefCounted
 ## Turns Input Map actions into short key labels for on-screen hints ("E", "J", "Escape").
+## Keys are named as labelled on the player's layout (see InputPromptIcons.display_keycode);
+## InputPromptLabel turns "[E]" hint tokens into pixel-art keycaps.
 
 
 static func key_for(action: StringName) -> String:
@@ -8,7 +10,5 @@ static func key_for(action: StringName) -> String:
 		return "?"
 	for event in InputMap.action_get_events(action):
 		if event is InputEventKey:
-			var key_event := event as InputEventKey
-			var keycode := key_event.physical_keycode if key_event.physical_keycode != KEY_NONE else key_event.keycode
-			return OS.get_keycode_string(keycode)
+			return OS.get_keycode_string(InputPromptIcons.display_keycode(event as InputEventKey))
 	return "?"
