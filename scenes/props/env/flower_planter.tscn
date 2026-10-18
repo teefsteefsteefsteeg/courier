@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Pot1.fbx" id="1_pot1"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/ultimate_nature/Flowers.fbx" id="3_flowers"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+height = 0.8
+radius = 0.36
+
+[node name="FlowerPlanter" type="StaticBody3D"]
+
+[node name="Pot" parent="." instance=ExtResource("1_pot1")]
+transform = Transform3D(0.7279, 0, 0, 0, 0.7279, 0, 0, 0, 0.7279, 0, 0.0044, 0)
+
+[node name="Tint" type="Node" parent="Pot"]
+script = ExtResource("2_model_tint")
+colors = {"Pot_Main": Color(0.72, 0.42, 0.28, 1)}
+
+[node name="Flowers" parent="." instance=ExtResource("3_flowers")]
+transform = Transform3D(0.9048, 0, 0, 0, 0.9048, 0, 0, 0, 0.9048, 0.1041, 0.5585, 0.1743)
+
+[node name="Tint" type="Node" parent="Flowers"]
+script = ExtResource("2_model_tint")
+colors = {"Cyan": Color(1, 0.45, 0.55, 1)}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("CylinderShape3D_1")

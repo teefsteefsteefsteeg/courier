@@ -20,6 +20,10 @@
 [ext_resource type="PackedScene" path="res://scenes/props/nature/pine_tree_3.tscn" id="76_ptree3"]
 [ext_resource type="PackedScene" path="res://scenes/props/nature/bush_1.tscn" id="90_bush1"]
 [ext_resource type="PackedScene" path="res://scenes/props/nature/bush_2.tscn" id="91_bush2"]
+[ext_resource type="Material" path="res://assets/materials/environment/forest_floor.tres" id="40_floor"]
+[ext_resource type="Material" path="res://assets/materials/environment/forest_path.tres" id="41_path"]
+[ext_resource type="Material" path="res://assets/materials/environment/clearing_moss.tres" id="42_moss"]
+[ext_resource type="PackedScene" path="res://scenes/environment/forest_dressing.tscn" id="43_dressing"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
 size = Vector2(32, 26)
@@ -92,21 +96,22 @@ size = Vector3(11, 4, 11)
 [node name="ForestFloor" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.006, -11)
 mesh = SubResource("PlaneMesh_floor")
-surface_material_override/0 = ExtResource("6_floor")
+surface_material_override/0 = ExtResource("40_floor")
 
 [node name="Path" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.02, -4.4)
 mesh = SubResource("PlaneMesh_path")
-surface_material_override/0 = ExtResource("7_dirt")
+surface_material_override/0 = ExtResource("41_path")
 
 [node name="ClearingGround" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.012, -14)
 mesh = SubResource("CylinderMesh_clearing")
-surface_material_override/0 = ExtResource("8_grass")
+surface_material_override/0 = ExtResource("42_moss")
 
 [node name="Gate" type="StaticBody3D" parent="."]
 
 [node name="PostWest" type="MeshInstance3D" parent="Gate"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -1.9, 1.7, 0)
 mesh = SubResource("CylinderMesh_gate_post")
 surface_material_override/0 = ExtResource("9_trunk")
@@ -116,16 +121,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -1.9, 1.7, 0)
 shape = SubResource("CylinderShape3D_gate_post")
 
 [node name="LanternWest" type="MeshInstance3D" parent="Gate"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -1.33, 2.8, 0.25)
 mesh = SubResource("BoxMesh_lantern")
 surface_material_override/0 = ExtResource("11_glow")
 
 [node name="VineWest" type="MeshInstance3D" parent="Gate"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -1.938, 2.6, 0.28)
 mesh = SubResource("BoxMesh_vine")
 surface_material_override/0 = ExtResource("14_vines")
 
 [node name="PostEast" type="MeshInstance3D" parent="Gate"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 1.9, 1.7, 0)
 mesh = SubResource("CylinderMesh_gate_post")
 surface_material_override/0 = ExtResource("9_trunk")
@@ -135,16 +143,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 1.9, 1.7, 0)
 shape = SubResource("CylinderShape3D_gate_post")
 
 [node name="LanternEast" type="MeshInstance3D" parent="Gate"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 1.33, 2.8, 0.25)
 mesh = SubResource("BoxMesh_lantern")
 surface_material_override/0 = ExtResource("11_glow")
 
 [node name="VineEast" type="MeshInstance3D" parent="Gate"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 1.938, 2.6, 0.28)
 mesh = SubResource("BoxMesh_vine")
 surface_material_override/0 = ExtResource("14_vines")
 
 [node name="Beam" type="MeshInstance3D" parent="Gate"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 3.35, 0)
 mesh = SubResource("BoxMesh_gate_beam")
 surface_material_override/0 = ExtResource("10_wood")
@@ -286,6 +297,7 @@ transform = Transform3D(-0.461727, 0, 1.26859, 0, 1.35, 0, -1.26859, 0, -0.46172
 transform = Transform3D(0, -0.965926, 0.258819, 1, 0, 0, 0, 0.258819, 0.965926, -4.6, 0.36, -5.6)
 
 [node name="Mesh" type="MeshInstance3D" parent="FallenLog"]
+visible = false
 mesh = SubResource("CylinderMesh_log")
 surface_material_override/0 = ExtResource("9_trunk")
 
@@ -328,6 +340,7 @@ text = "Whisperwood"
 transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 4.2, 0, -14)
 
 [node name="Mesh" type="MeshInstance3D" parent="StoneCircle/Stone1"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("BoxMesh_standing_stone")
 surface_material_override/0 = ExtResource("12_stone")
@@ -340,6 +353,7 @@ shape = SubResource("BoxShape3D_standing_stone")
 transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 2.1, 0, -10.3627)
 
 [node name="Mesh" type="MeshInstance3D" parent="StoneCircle/Stone2"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("BoxMesh_standing_stone")
 surface_material_override/0 = ExtResource("12_stone")
@@ -352,6 +366,7 @@ shape = SubResource("BoxShape3D_standing_stone")
 transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -2.1, 0, -10.3627)
 
 [node name="Mesh" type="MeshInstance3D" parent="StoneCircle/Stone3"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("BoxMesh_standing_stone")
 surface_material_override/0 = ExtResource("12_stone")
@@ -364,6 +379,7 @@ shape = SubResource("BoxShape3D_standing_stone")
 transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -4.2, 0, -14)
 
 [node name="Mesh" type="MeshInstance3D" parent="StoneCircle/Stone4"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("BoxMesh_standing_stone")
 surface_material_override/0 = ExtResource("12_stone")
@@ -376,6 +392,7 @@ shape = SubResource("BoxShape3D_standing_stone")
 transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, -2.1, 0, -17.6373)
 
 [node name="Mesh" type="MeshInstance3D" parent="StoneCircle/Stone5"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("BoxMesh_standing_stone")
 surface_material_override/0 = ExtResource("12_stone")
@@ -388,6 +405,7 @@ shape = SubResource("BoxShape3D_standing_stone")
 transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, 2.1, 0, -17.6373)
 
 [node name="Mesh" type="MeshInstance3D" parent="StoneCircle/Stone6"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("BoxMesh_standing_stone")
 surface_material_override/0 = ExtResource("12_stone")
@@ -400,16 +418,19 @@ shape = SubResource("BoxShape3D_standing_stone")
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0, -14)
 
 [node name="CrystalMain" type="MeshInstance3D" parent="Crystals"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.75, 0)
 mesh = SubResource("PrismMesh_crystal")
 surface_material_override/0 = ExtResource("13_crystal")
 
 [node name="CrystalLeft" type="MeshInstance3D" parent="Crystals"]
+visible = false
 transform = Transform3D(0.65, -0.3, 0, 0.3, 0.65, 0, 0, 0, 0.7, -0.35, 0.45, 0.15)
 mesh = SubResource("PrismMesh_crystal")
 surface_material_override/0 = ExtResource("13_crystal")
 
 [node name="CrystalRight" type="MeshInstance3D" parent="Crystals"]
+visible = false
 transform = Transform3D(0.55, 0.28, 0, -0.28, 0.55, 0, 0, 0, 0.6, 0.35, 0.4, -0.1)
 mesh = SubResource("PrismMesh_crystal")
 surface_material_override/0 = ExtResource("13_crystal")
@@ -423,6 +444,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 1.6, 0)
 light_color = Color(0.45, 0.85, 1, 1)
 light_energy = 1.4
 omni_range = 7.0
+
+[node name="Dressing" parent="." instance=ExtResource("43_dressing")]
 
 [node name="Markers" type="Node3D" parent="."]
 

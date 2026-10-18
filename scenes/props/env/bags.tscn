@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Bags.fbx" id="1_bags"]
+
+[node name="Bags" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_bags")]
+transform = Transform3D(3.7073, 0, 0, 0, 3.7073, 0, 0, 0, 3.7073, 0.0187, 0.0019, 0.0061)

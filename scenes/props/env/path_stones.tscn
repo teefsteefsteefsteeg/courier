@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Path_Straight.fbx" id="1_path_straight"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+
+[node name="PathStones" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_path_straight")]
+transform = Transform3D(2.6205, 0, 0, 0, 2.6205, 0, 0, 0, 2.6205, 0, 0.0027, -0.004)
+
+[node name="Tint" type="Node" parent="Model"]
+script = ExtResource("2_model_tint")
+colors = {"Stone_Light": Color(0.72, 0.68, 0.62, 1), "Stone_Dark": Color(0.58, 0.55, 0.5, 1)}

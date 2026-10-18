@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Floor_Squares.fbx" id="1_floor_squares"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+
+[node name="StoneTile" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, -0.0014, 0.0822, -0.0011)
+
+[node name="Tint" type="Node" parent="Model"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.7, 0.66, 0.6, 1), "Highlights": Color(0.82, 0.78, 0.7, 1)}

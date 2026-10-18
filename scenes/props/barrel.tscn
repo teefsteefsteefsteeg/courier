@@ -1,43 +1,16 @@
 [gd_scene format=3]
 
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_crate.tres" id="1_wood"]
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_brass.tres" id="2_band"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Barrel.fbx" id="1_barrel"]
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_barrel"]
-top_radius = 0.38
-bottom_radius = 0.38
-height = 1.0
-radial_segments = 10
-rings = 1
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_band"]
-top_radius = 0.42
-bottom_radius = 0.42
-height = 0.07
-radial_segments = 10
-rings = 1
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_barrel"]
-height = 1.0
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+height = 1
 radius = 0.4
 
 [node name="Barrel" type="StaticBody3D"]
 
-[node name="Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-mesh = SubResource("CylinderMesh_barrel")
-surface_material_override/0 = ExtResource("1_wood")
-
-[node name="BandLow" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22, 0)
-mesh = SubResource("CylinderMesh_band")
-surface_material_override/0 = ExtResource("2_band")
-
-[node name="BandHigh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, 0)
-mesh = SubResource("CylinderMesh_band")
-surface_material_override/0 = ExtResource("2_band")
+[node name="Model" parent="." instance=ExtResource("1_barrel")]
+transform = Transform3D(5.1387, 0, 0, 0, 5.1387, 0, 0, 0, 5.1387, 0, -0.0045, 0.0014)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-shape = SubResource("CylinderShape3D_barrel")
+shape = SubResource("CylinderShape3D_1")

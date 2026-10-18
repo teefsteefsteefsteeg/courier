@@ -125,11 +125,22 @@ func _test_world_structure() -> void:
 		_check(level.has_node(path), "has %s" % path)
 	var trees := level.get_node("ForestEntrance/Trees").get_child_count()
 	_check(trees >= 30, "forest entrance is densely wooded (%d trees)" % trees)
-	var shop := level.get_node("Buildings/AlchemyShop") as Cottage
-	var roof := shop.get_node("Roof") as MeshInstance3D
-	_check((roof.material_override as StandardMaterial3D).albedo_color.is_equal_approx(shop.roof_color), "cottage applies per-instance roof colour")
+	var shop := level.get_node("Buildings/AlchemyShop") as MedievalBuilding
+	_check(shop != null and _roof_color(shop).is_equal_approx(shop.roof_color), "alchemy shop applies per-instance roof colour")
 	var zones := get_nodes_in_group(LocationZone.GROUP)
 	_check(zones.size() == 6, "six location zones registered (got %d)" % zones.size())
+
+
+## Albedo of the first roof-tile surface override under a MedievalBuilding.
+static func _roof_color(building: MedievalBuilding) -> Color:
+	for node in building.find_children("*", "MeshInstance3D", true, false):
+		var mesh := node as MeshInstance3D
+		for surface in mesh.mesh.get_surface_count():
+			var source := mesh.mesh.surface_get_material(surface)
+			if source != null and source.resource_name in MedievalBuilding.ROOF_MATERIALS:
+				var override := mesh.get_surface_override_material(surface) as BaseMaterial3D
+				return override.albedo_color if override != null else Color.BLACK
+	return Color.BLACK
 
 
 func _test_npc_scenes() -> void:

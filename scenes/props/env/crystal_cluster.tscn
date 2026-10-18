@@ -1,0 +1,38 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Crystal5.fbx" id="1_crystal5"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Crystal2.fbx" id="3_crystal2"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Crystal3.fbx" id="4_crystal3"]
+
+[node name="CrystalCluster" type="Node3D"]
+
+[node name="CrystalA" parent="." instance=ExtResource("1_crystal5")]
+transform = Transform3D(2.089, 0, 0, 0, 2.089, 0, 0, 0, 2.089, 0, 0.4532, 0)
+
+[node name="Tint" type="Node" parent="CrystalA"]
+script = ExtResource("2_model_tint")
+glow = {"Cyan": Color(0.3, 0.95, 1, 1)}
+glow_energy = 1.3
+
+[node name="CrystalB" parent="." instance=ExtResource("3_crystal2")]
+transform = Transform3D(0.6768, 0, 0.3908, 0, 0.7815, 0, -0.3908, 0, 0.6768, 0.45, 0.35, 0.15)
+
+[node name="Tint" type="Node" parent="CrystalB"]
+script = ExtResource("2_model_tint")
+glow = {"Pink": Color(1, 0.4, 0.9, 1)}
+glow_energy = 1.3
+
+[node name="CrystalC" parent="." instance=ExtResource("4_crystal3")]
+transform = Transform3D(0.6003, 0, -0.5037, 0, 0.7837, 0, 0.5037, 0, 0.6003, -0.4, 0.3, 0.2)
+
+[node name="Tint" type="Node" parent="CrystalC"]
+script = ExtResource("2_model_tint")
+glow = {"Green": Color(0.4, 1, 0.5, 1)}
+glow_energy = 1.3
+
+[node name="Glow" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+light_color = Color(0.5, 0.85, 1, 1)
+light_energy = 0.6
+omni_range = 3.5

@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/MarketStand_2.fbx" id="1_marketstand_2"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Pot2.fbx" id="2_pot2"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Jar_Large.fbx" id="3_jar_large"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Bottle1.fbx" id="4_bottle1"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Bags.fbx" id="5_bags"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Pot3.fbx" id="6_pot3"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Fish.fbx" id="7_fish"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Bread.fbx" id="8_bread"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(2.9, 1.6, 1.1)
+
+[node name="MarketStall" type="StaticBody3D"]
+
+[node name="Stand" parent="." instance=ExtResource("1_marketstand_2")]
+transform = Transform3D(0, 0, 2.5991, 0, 2.5991, 0, -2.5991, 0, 0, 0, 0.0075, -0.1112)
+
+[node name="Goods1" parent="." instance=ExtResource("2_pot2")]
+transform = Transform3D(0.7627, 0, -0.1841, 0, 0.7846, 0, 0.1841, 0, 0.7627, -1.15, 0.9754, 0.1067)
+
+[node name="Goods2" parent="." instance=ExtResource("3_jar_large")]
+transform = Transform3D(-0.1536, 0, -0.5263, 0, 0.5482, 0, 0.5263, 0, -0.1536, -0.8214, 0.9775, 0.0816)
+
+[node name="Goods3" parent="." instance=ExtResource("4_bottle1")]
+transform = Transform3D(0.0041, 0, 0.2558, 0, 0.2558, 0, -0.2558, 0, 0.0041, -0.4929, 0.9754, 0.0713)
+
+[node name="Goods4" parent="." instance=ExtResource("5_bags")]
+transform = Transform3D(0.4678, 0, 1.7937, 0, 1.8537, 0, -1.7937, 0, 0.4678, -0.159, 0.9761, 0.2915)
+
+[node name="Goods5" parent="." instance=ExtResource("6_pot3")]
+transform = Transform3D(-0.5789, 0, 0.152, 0, 0.5986, 0, -0.152, 0, -0.5789, 0.1643, 0.9753, 0.2105)
+
+[node name="Goods6" parent="." instance=ExtResource("7_fish")]
+transform = Transform3D(-0.1561, 0, 0.0049, 0, 0.1561, 0, -0.0049, 0, -0.1561, 0.4516, 0.9861, 0.1536)
+
+[node name="Goods7" parent="." instance=ExtResource("8_bread")]
+transform = Transform3D(0.1213, 0, -0.2189, 0, 0.2502, 0, 0.2189, 0, 0.1213, 0.8214, 0.9733, 0.0981)
+
+[node name="Goods8" parent="." instance=ExtResource("4_bottle1")]
+transform = Transform3D(0.0254, 0, 0.2545, 0, 0.2558, 0, -0.2545, 0, 0.0254, 1.15, 0.9754, 0.0724)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("BoxShape3D_1")

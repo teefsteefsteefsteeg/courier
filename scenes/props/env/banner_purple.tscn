@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_dungeon/Banner.fbx" id="1_banner"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+height = 3
+radius = 0.1585
+
+[node name="BannerPurple" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_banner")]
+transform = Transform3D(0.8951, 0, 0, 0, 0.8951, 0, 0, 0, 0.8951, 0, -0.0033, 0)
+
+[node name="Tint" type="Node" parent="Model"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.45, 0.22, 0.62, 1)}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_1")

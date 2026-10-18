@@ -1,85 +1,47 @@
 [gd_scene format=3]
 
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_dark.tres" id="1_wood"]
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_crate.tres" id="2_crate"]
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_awning_teal.tres" id="3_awning"]
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_canvas.tres" id="4_canvas"]
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_mushroom_cap.tres" id="5_apple"]
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_leaves_light.tres" id="6_greens"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/MarketStand_1.fbx" id="1_marketstand_1"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Apple.fbx" id="2_apple"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Orange.fbx" id="3_orange"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Tomato.fbx" id="4_tomato"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Apple_Green.fbx" id="5_apple_green"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Pumpkin.fbx" id="6_pumpkin"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Bread.fbx" id="7_bread"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Carrot.fbx" id="8_carrot"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Lettuce_Whole.fbx" id="9_lettuce_whole"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_counter"]
-size = Vector3(2.8, 0.95, 1)
-
-[sub_resource type="BoxMesh" id="BoxMesh_pole"]
-size = Vector3(0.12, 2.4, 0.12)
-
-[sub_resource type="PrismMesh" id="PrismMesh_awning"]
-size = Vector3(3.3, 0.7, 1.9)
-
-[sub_resource type="BoxMesh" id="BoxMesh_basket"]
-size = Vector3(0.6, 0.22, 0.45)
-
-[sub_resource type="SphereMesh" id="SphereMesh_produce"]
-radius = 0.22
-height = 0.3
-radial_segments = 8
-rings = 4
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_counter"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
 size = Vector3(2.9, 1.6, 1.1)
 
 [node name="MarketStall" type="StaticBody3D"]
 
-[node name="Counter" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.475, 0)
-mesh = SubResource("BoxMesh_counter")
-surface_material_override/0 = ExtResource("2_crate")
+[node name="Stand" parent="." instance=ExtResource("1_marketstand_1")]
+transform = Transform3D(0, 0, 2.5214, 0, 2.5214, 0, -2.5214, 0, 0, 0.0041, 0.012, 0)
 
-[node name="PoleFL" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 1.2, 0.45)
-mesh = SubResource("BoxMesh_pole")
-surface_material_override/0 = ExtResource("1_wood")
+[node name="Goods1" parent="." instance=ExtResource("2_apple")]
+transform = Transform3D(0.2059, 0, 0.1559, 0, 0.2583, 0, -0.1559, 0, 0.2059, -1.15, 1.0541, 0.109)
 
-[node name="PoleFR" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35, 1.2, 0.45)
-mesh = SubResource("BoxMesh_pole")
-surface_material_override/0 = ExtResource("1_wood")
+[node name="Goods2" parent="." instance=ExtResource("3_orange")]
+transform = Transform3D(0.151, 0, 0.222, 0, 0.2685, 0, -0.222, 0, 0.151, -0.8214, 1.0437, 0.149)
 
-[node name="PoleBL" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 1.2, -0.45)
-mesh = SubResource("BoxMesh_pole")
-surface_material_override/0 = ExtResource("1_wood")
+[node name="Goods3" parent="." instance=ExtResource("4_tomato")]
+transform = Transform3D(-0.1949, 0, 0.1387, 0, 0.2392, 0, -0.1387, 0, -0.1949, -0.4929, 1.006, 0.0666)
 
-[node name="PoleBR" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35, 1.2, -0.45)
-mesh = SubResource("BoxMesh_pole")
-surface_material_override/0 = ExtResource("1_wood")
+[node name="Goods4" parent="." instance=ExtResource("5_apple_green")]
+transform = Transform3D(0.0805, 0, -0.2454, 0, 0.2583, 0, 0.2454, 0, 0.0805, -0.1643, 1.0541, 0.2795)
 
-[node name="Awning" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
-mesh = SubResource("PrismMesh_awning")
-surface_material_override/0 = ExtResource("3_awning")
+[node name="Goods5" parent="." instance=ExtResource("6_pumpkin")]
+transform = Transform3D(0.0418, 0, 0.2344, 0, 0.238, 0, -0.2344, 0, 0.0418, 0.163, 0.9533, 0.2487)
 
-[node name="BasketA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 1.06, 0.1)
-mesh = SubResource("BoxMesh_basket")
-surface_material_override/0 = ExtResource("4_canvas")
+[node name="Goods6" parent="." instance=ExtResource("7_bread")]
+transform = Transform3D(-0.0417, 0, 0.2467, 0, 0.2502, 0, -0.2467, 0, -0.0417, 0.4929, 0.9505, 0.1842)
 
-[node name="ApplesA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 1.2, 0.1)
-mesh = SubResource("SphereMesh_produce")
-surface_material_override/0 = ExtResource("5_apple")
+[node name="Goods7" parent="." instance=ExtResource("8_carrot")]
+transform = Transform3D(0.0961, 0, 0.0757, 0, 0.1224, 0, -0.0757, 0, 0.0961, 0.8203, 1.073, 0.0926)
 
-[node name="BasketB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 1.06, 0.1)
-mesh = SubResource("BoxMesh_basket")
-surface_material_override/0 = ExtResource("4_canvas")
-
-[node name="GreensB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 1.2, 0.1)
-mesh = SubResource("SphereMesh_produce")
-surface_material_override/0 = ExtResource("6_greens")
+[node name="Goods8" parent="." instance=ExtResource("9_lettuce_whole")]
+transform = Transform3D(0.1622, 0, -0.0795, 0, 0.1806, 0, 0.0795, 0, 0.1622, 1.15, 1.0849, 0.1036)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-shape = SubResource("BoxShape3D_counter")
+shape = SubResource("BoxShape3D_1")

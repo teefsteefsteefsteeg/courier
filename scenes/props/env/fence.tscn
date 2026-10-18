@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Fence.fbx" id="1_fence"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(2.4, 0.9892, 0.0785)
+
+[node name="Fence" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_fence")]
+transform = Transform3D(3.0341, 0, 0, 0, 3.0341, 0, 0, 0, 3.0341, 0.0165, 0.0086, -0.0004)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4946, 0)
+shape = SubResource("BoxShape3D_1")

@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/ultimate_nature/BushBerries_2.fbx" id="1_bushberries_2"]
+
+[node name="BushBerries2" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_bushberries_2")]
+transform = Transform3D(0.9711, 0, 0, 0, 0.9711, 0, 0, 0, 0.9711, 0, 0.0564, 0)

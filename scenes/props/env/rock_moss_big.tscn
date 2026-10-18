@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/ultimate_nature/Rock_Moss_4.fbx" id="1_rock_moss_4"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+height = 1.1906
+radius = 0.8075
+
+[node name="RockMossBig" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_rock_moss_4")]
+transform = Transform3D(1.5194, 0, 0, 0, 1.5194, 0, 0, 0, 1.5194, 0.1029, 0.415, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5953, 0)
+shape = SubResource("CylinderShape3D_1")

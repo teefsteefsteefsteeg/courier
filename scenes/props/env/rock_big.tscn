@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/ultimate_nature/Rock_6.fbx" id="1_rock_6"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1"]
+height = 1.1777
+radius = 0.8075
+
+[node name="RockBig" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_rock_6")]
+transform = Transform3D(1.6638, 0, 0, 0, 1.6638, 0, 0, 0, 1.6638, 0.1205, -0.0098, 0.1586)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5888, 0)
+shape = SubResource("CylinderShape3D_1")

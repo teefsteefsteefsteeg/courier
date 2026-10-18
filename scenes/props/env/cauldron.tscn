@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Cauldron.fbx" id="1_cauldron"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+
+[node name="Cauldron" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_cauldron")]
+transform = Transform3D(3.6045, 0, 0, 0, 3.6045, 0, 0, 0, 3.6045, 0, 0.0102, 0)
+
+[node name="Tint" type="Node" parent="Model"]
+script = ExtResource("2_model_tint")
+glow = {"Soup": Color(0.35, 1, 0.45, 1)}
+glow_energy = 2.5
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+light_color = Color(0.4, 1, 0.5, 1)
+light_energy = 1
+omni_range = 4

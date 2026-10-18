@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/ultimate_nature/Plant_4.fbx" id="1_plant_4"]
+
+[node name="BigFern" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_plant_4")]
+transform = Transform3D(0.8973, 0, 0, 0, 0.8973, 0, 0, 0, 0.8973, 0.0859, 0.0055, 0.072)

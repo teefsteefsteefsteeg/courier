@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/medieval_building.gd" id="1_medieval_building"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/House_2.fbx" id="2_house_2"]
+[ext_resource type="Script" path="res://scripts/world/camera_occluder.gd" id="3_camera_occluder"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(3.0965, 3.2, 4.77)
+
+[node name="AlchemyShop" type="StaticBody3D"]
+script = ExtResource("1_medieval_building")
+roof_color = Color(0.48, 0.26, 0.68, 1)
+wall_color = Color(0.86, 0.80, 0.94, 1)
+window_glow = Color(0.75, 0.45, 1, 1)
+window_glow_energy = 1.4
+
+[node name="Model" parent="." instance=ExtResource("2_house_2")]
+transform = Transform3D(1.5497, 0, 0, 0, 1.5497, 0, 0, 0, 1.5497, 0.0136, 0.0026, 0.5596)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+shape = SubResource("BoxShape3D_1")
+
+[node name="CameraOccluder" type="Node3D" parent="."]
+script = ExtResource("3_camera_occluder")
+radius = 2.915
+height = 4.2815

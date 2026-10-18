@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Crate.fbx" id="1_crate"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Apple.fbx" id="2_apple"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Orange.fbx" id="3_orange"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Pumpkin.fbx" id="4_pumpkin"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/food/Carrot.fbx" id="5_carrot"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(1.7, 0.8, 0.85)
+
+[node name="ProduceCrates" type="StaticBody3D"]
+
+[node name="CrateA" parent="." instance=ExtResource("1_crate")]
+transform = Transform3D(4.9928, 0, 0, 0, 4.9928, 0, 0, 0, 4.9928, 0, 0.0099, 0.0001)
+
+[node name="CrateB" parent="." instance=ExtResource("1_crate")]
+transform = Transform3D(4.9442, 0, 0.6949, 0, 4.9928, 0, -0.6949, 0, 4.9442, 0.85, 0.0099, 0.0501)
+
+[node name="Fruit0" parent="." instance=ExtResource("2_apple")]
+transform = Transform3D(0.2583, 0, 0, 0, 0.2583, 0, 0, 0, 0.2583, -0.2, 0.9018, 0.1)
+
+[node name="Fruit1" parent="." instance=ExtResource("2_apple")]
+transform = Transform3D(0.0883, 0, 0.2427, 0, 0.2583, 0, -0.2427, 0, 0.0883, 0.05, 0.9018, -0.1)
+
+[node name="Fruit2" parent="." instance=ExtResource("3_orange")]
+transform = Transform3D(-0.2057, 0, 0.1726, 0, 0.2685, 0, -0.1726, 0, -0.2057, 0.3, 0.8914, 0.1)
+
+[node name="Fruit3" parent="." instance=ExtResource("4_pumpkin")]
+transform = Transform3D(-0.2291, 0, -0.1322, 0, 0.2645, 0, 0.1322, 0, -0.2291, 0.5573, 0.8011, -0.1042)
+
+[node name="Fruit4" parent="." instance=ExtResource("5_carrot")]
+transform = Transform3D(0.02, 0, -0.1134, 0, 0.1152, 0, 0.1134, 0, 0.02, 0.801, 0.9136, 0.0993)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.42, 0.4, 0.02)
+shape = SubResource("BoxShape3D_1")

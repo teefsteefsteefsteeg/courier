@@ -1,42 +1,15 @@
 [gd_scene format=3]
 
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_fence.tres" id="1_wood"]
-[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_dark.tres" id="2_legs"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Bench_1.fbx" id="1_bench_1"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_seat"]
-size = Vector3(1.8, 0.1, 0.5)
-
-[sub_resource type="BoxMesh" id="BoxMesh_back"]
-size = Vector3(1.8, 0.4, 0.08)
-
-[sub_resource type="BoxMesh" id="BoxMesh_leg"]
-size = Vector3(0.1, 0.45, 0.45)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_bench"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
 size = Vector3(1.8, 1, 0.6)
 
 [node name="Bench" type="StaticBody3D"]
 
-[node name="Seat" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.47, 0)
-mesh = SubResource("BoxMesh_seat")
-surface_material_override/0 = ExtResource("1_wood")
-
-[node name="Back" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.22)
-mesh = SubResource("BoxMesh_back")
-surface_material_override/0 = ExtResource("1_wood")
-
-[node name="LegLeft" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0.22, 0)
-mesh = SubResource("BoxMesh_leg")
-surface_material_override/0 = ExtResource("2_legs")
-
-[node name="LegRight" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0.22, 0)
-mesh = SubResource("BoxMesh_leg")
-surface_material_override/0 = ExtResource("2_legs")
+[node name="Model" parent="." instance=ExtResource("1_bench_1")]
+transform = Transform3D(2.8573, 0, 0, 0, 2.8573, 0, 0, 0, 2.8573, 0, 0.0038, -0.1141)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-shape = SubResource("BoxShape3D_bench")
+shape = SubResource("BoxShape3D_1")

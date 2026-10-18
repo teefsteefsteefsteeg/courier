@@ -1,0 +1,734 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Floor_Squares.fbx" id="1_floor_squares"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Wall.fbx" id="3_wall"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Column_Square.fbx" id="4_column_square"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Arch_Round.fbx" id="5_arch_round"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_dungeon/Table_Big.fbx" id="6_table_big"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Book2_Open.fbx" id="7_book2_open"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Scroll.fbx" id="8_scroll"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Package_1.fbx" id="9_package_1"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Package_2.fbx" id="10_package_2"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Pouch.fbx" id="11_pouch"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Bell.fbx" id="12_bell"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Candles_1.fbx" id="13_candles_1"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Bookcase_Full.fbx" id="14_bookcase_full"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_dungeon/Table_Small.fbx" id="15_table_small"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Bags.fbx" id="16_bags"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Candles_2.fbx" id="17_candles_2"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_dungeon/Bag_Standing.fbx" id="18_bag_standing"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_dungeon/Banner_wall.fbx" id="19_banner_wall"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_dungeon/Torch.fbx" id="20_torch"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Chest_Closed.fbx" id="21_chest_closed"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Pot1.fbx" id="22_pot1"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/ultimate_nature/Plant_2.fbx" id="23_plant_2"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Pot3.fbx" id="24_pot3"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Crystal5.fbx" id="25_crystal5"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Crystal2.fbx" id="26_crystal2"]
+[ext_resource type="PackedScene" path="res://scenes/props/env/cart.tscn" id="27_cart"]
+[ext_resource type="PackedScene" path="res://scenes/props/env/parcels.tscn" id="28_parcels"]
+[ext_resource type="PackedScene" path="res://scenes/props/env/hay.tscn" id="29_hay"]
+[ext_resource type="PackedScene" path="res://scenes/props/env/flower_planter.tscn" id="30_flower_planter"]
+
+[node name="PostOfficeDressing" type="Node3D"]
+
+[node name="Floor" type="Node3D" parent="."]
+
+[node name="Tile01" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, -5.0014, 0.0222, -4.0011)
+
+[node name="Tint" type="Node" parent="Floor/Tile01"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile02" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, -5.0011, 0.0222, -1.9986)
+
+[node name="Tint" type="Node" parent="Floor/Tile02"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile03" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, -5.0014, 0.0222, -0.0011)
+
+[node name="Tint" type="Node" parent="Floor/Tile03"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile04" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, -5.0011, 0.0222, 2.0014)
+
+[node name="Tint" type="Node" parent="Floor/Tile04"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile05" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, -5.0014, 0.0222, 3.9989)
+
+[node name="Tint" type="Node" parent="Floor/Tile05"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile06" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, -3.0011, 0.0222, -3.9986)
+
+[node name="Tint" type="Node" parent="Floor/Tile06"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile07" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, -3.0014, 0.0222, -2.0011)
+
+[node name="Tint" type="Node" parent="Floor/Tile07"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile08" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, -3.0011, 0.0222, 0.0014)
+
+[node name="Tint" type="Node" parent="Floor/Tile08"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile09" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, -3.0014, 0.0222, 1.9989)
+
+[node name="Tint" type="Node" parent="Floor/Tile09"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile10" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, -3.0011, 0.0222, 4.0014)
+
+[node name="Tint" type="Node" parent="Floor/Tile10"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile11" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, -1.0014, 0.0222, -4.0011)
+
+[node name="Tint" type="Node" parent="Floor/Tile11"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile12" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, -1.0011, 0.0222, -1.9986)
+
+[node name="Tint" type="Node" parent="Floor/Tile12"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile13" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, -1.0014, 0.0222, -0.0011)
+
+[node name="Tint" type="Node" parent="Floor/Tile13"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile14" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, -1.0011, 0.0222, 2.0014)
+
+[node name="Tint" type="Node" parent="Floor/Tile14"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile15" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, -1.0014, 0.0222, 3.9989)
+
+[node name="Tint" type="Node" parent="Floor/Tile15"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile16" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, 0.9989, 0.0222, -3.9986)
+
+[node name="Tint" type="Node" parent="Floor/Tile16"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile17" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, 0.9986, 0.0222, -2.0011)
+
+[node name="Tint" type="Node" parent="Floor/Tile17"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile18" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, 0.9989, 0.0222, 0.0014)
+
+[node name="Tint" type="Node" parent="Floor/Tile18"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile19" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, 0.9986, 0.0222, 1.9989)
+
+[node name="Tint" type="Node" parent="Floor/Tile19"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile20" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, 0.9989, 0.0222, 4.0014)
+
+[node name="Tint" type="Node" parent="Floor/Tile20"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile21" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, 2.9986, 0.0222, -4.0011)
+
+[node name="Tint" type="Node" parent="Floor/Tile21"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile22" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, 2.9989, 0.0222, -1.9986)
+
+[node name="Tint" type="Node" parent="Floor/Tile22"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile23" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, 2.9986, 0.0222, -0.0011)
+
+[node name="Tint" type="Node" parent="Floor/Tile23"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile24" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, 2.9989, 0.0222, 2.0014)
+
+[node name="Tint" type="Node" parent="Floor/Tile24"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile25" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, 2.9986, 0.0222, 3.9989)
+
+[node name="Tint" type="Node" parent="Floor/Tile25"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile26" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, 4.9989, 0.0222, -3.9986)
+
+[node name="Tint" type="Node" parent="Floor/Tile26"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile27" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, 4.9986, 0.0222, -2.0011)
+
+[node name="Tint" type="Node" parent="Floor/Tile27"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile28" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, 4.9989, 0.0222, 0.0014)
+
+[node name="Tint" type="Node" parent="Floor/Tile28"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Tile29" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(1.0039, 0, 0, 0, 1.0039, 0, 0, 0, 1.0039, 4.9986, 0.0222, 1.9989)
+
+[node name="Tint" type="Node" parent="Floor/Tile29"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.66, 0.53, 0.4, 1), "Highlights": Color(0.78, 0.64, 0.48, 1)}
+
+[node name="Tile30" parent="Floor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(0, 0, 1.0039, 0, 1.0039, 0, -1.0039, 0, 0, 4.9989, 0.0222, 4.0014)
+
+[node name="Tint" type="Node" parent="Floor/Tile30"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.74, 0.6, 0.44, 1), "Highlights": Color(0.84, 0.7, 0.52, 1)}
+
+[node name="Walls" type="Node3D" parent="."]
+
+[node name="North0_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, -5.0001, 0.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North0_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North0_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, -5.0001, 2.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North0_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North1_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, -3.0001, 0.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North1_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North1_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, -3.0001, 2.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North1_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North2_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, -1.0001, 0.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North2_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North2_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, -1.0001, 2.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North2_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North3_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, 0.9999, 0.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North3_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North3_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, 0.9999, 2.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North3_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North4_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, 2.9999, 0.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North4_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North4_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, 2.9999, 2.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North4_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North5_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, 4.9999, 0.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North5_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="North5_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, 4.9999, 2.0011, -4.8899)
+
+[node name="Tint" type="Node" parent="Walls/North5_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West0_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 0.0011, -3.9999)
+
+[node name="Tint" type="Node" parent="Walls/West0_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West0_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 2.0011, -3.9999)
+
+[node name="Tint" type="Node" parent="Walls/West0_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West1_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 0.0011, -1.9999)
+
+[node name="Tint" type="Node" parent="Walls/West1_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West1_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 2.0011, -1.9999)
+
+[node name="Tint" type="Node" parent="Walls/West1_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West2_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 0.0011, 0.0001)
+
+[node name="Tint" type="Node" parent="Walls/West2_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West2_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 2.0011, 0.0001)
+
+[node name="Tint" type="Node" parent="Walls/West2_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West3_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 0.0011, 2.0001)
+
+[node name="Tint" type="Node" parent="Walls/West3_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West3_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 2.0011, 2.0001)
+
+[node name="Tint" type="Node" parent="Walls/West3_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West4_0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 0.0011, 4.0001)
+
+[node name="Tint" type="Node" parent="Walls/West4_0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="West4_1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1.0008, 0, 1.0008, 0, -1.0008, 0, 0, -5.8899, 2.0011, 4.0001)
+
+[node name="Tint" type="Node" parent="Walls/West4_1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="SouthA0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0.8757, 0, 0, 0, 0.4816, 0, 0, 0, 0.8757, -5.1251, 0.0005, 5.0963)
+
+[node name="Tint" type="Node" parent="Walls/SouthA0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="SouthA1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0.8757, 0, 0, 0, 0.4816, 0, 0, 0, 0.8757, -3.3751, 0.0005, 5.0963)
+
+[node name="Tint" type="Node" parent="Walls/SouthA1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="SouthA2" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0.8757, 0, 0, 0, 0.4816, 0, 0, 0, 0.8757, -1.6251, 0.0005, 5.0963)
+
+[node name="Tint" type="Node" parent="Walls/SouthA2"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="SouthA3" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0.8757, 0, 0, 0, 0.4816, 0, 0, 0, 0.8757, 0.1249, 0.0005, 5.0963)
+
+[node name="Tint" type="Node" parent="Walls/SouthA3"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="SouthB0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0.7506, 0, 0, 0, 0.4128, 0, 0, 0, 0.7506, 3.7499, 0.0004, 5.0825)
+
+[node name="Tint" type="Node" parent="Walls/SouthB0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="SouthB1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0.7506, 0, 0, 0, 0.4128, 0, 0, 0, 0.7506, 5.2499, 0.0004, 5.0825)
+
+[node name="Tint" type="Node" parent="Walls/SouthB1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="EastA0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 0.8757, 0, 0.4816, 0, -0.8757, 0, 0, 6.0963, 0.0005, -4.1249)
+
+[node name="Tint" type="Node" parent="Walls/EastA0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="EastA1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 0.8757, 0, 0.4816, 0, -0.8757, 0, 0, 6.0963, 0.0005, -2.3749)
+
+[node name="Tint" type="Node" parent="Walls/EastA1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="EastB0" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 0.8757, 0, 0.4816, 0, -0.8757, 0, 0, 6.0963, 0.0005, 2.3751)
+
+[node name="Tint" type="Node" parent="Walls/EastB0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="EastB1" parent="Walls" instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 0.8757, 0, 0.4816, 0, -0.8757, 0, 0, 6.0963, 0.0005, 4.1251)
+
+[node name="Tint" type="Node" parent="Walls/EastB1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="PillarNW" parent="Walls" instance=ExtResource("4_column_square")]
+transform = Transform3D(1.0777, 0, 0, 0, 1.0777, 0, 0, 0, 1.0777, -6, 0, -5)
+
+[node name="Tint" type="Node" parent="Walls/PillarNW"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.55, 0.4, 0.28, 1)}
+
+[node name="PillarNE" parent="Walls" instance=ExtResource("4_column_square")]
+transform = Transform3D(1.0777, 0, 0, 0, 1.0777, 0, 0, 0, 1.0777, 6, 0, -5)
+
+[node name="Tint" type="Node" parent="Walls/PillarNE"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.55, 0.4, 0.28, 1)}
+
+[node name="PillarSW" parent="Walls" instance=ExtResource("4_column_square")]
+transform = Transform3D(1.0777, 0, 0, 0, 1.0777, 0, 0, 0, 1.0777, -6, 0, 5)
+
+[node name="Tint" type="Node" parent="Walls/PillarSW"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.55, 0.4, 0.28, 1)}
+
+[node name="PillarSE" parent="Walls" instance=ExtResource("4_column_square")]
+transform = Transform3D(1.0777, 0, 0, 0, 1.0777, 0, 0, 0, 1.0777, 6, 0, 5)
+
+[node name="Tint" type="Node" parent="Walls/PillarSE"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.55, 0.4, 0.28, 1)}
+
+[node name="EastArch" parent="." instance=ExtResource("5_arch_round")]
+transform = Transform3D(0, 0, 1.1967, 0, 1.1967, 0, -1.1967, 0, 0, 6.1364, 0.0001, 0)
+
+[node name="Tint" type="Node" parent="EastArch"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="SouthArch" parent="." instance=ExtResource("5_arch_round")]
+transform = Transform3D(0.7762, 0, 0, 0, 0.7762, 0, 0, 0, 0.7762, 2, 0, 5.0885)
+
+[node name="Tint" type="Node" parent="SouthArch"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.86, 0.8, 0.68, 1), "Highlights": Color(0.94, 0.9, 0.8, 1)}
+
+[node name="CounterDressing" type="Node3D" parent="."]
+
+[node name="Desk" parent="CounterDressing" instance=ExtResource("6_table_big")]
+transform = Transform3D(0, 0, 1.5136, 0, 1.2412, 0, -0.5449, 0, 0, -0.9276, 0.0064, -1.5012)
+
+[node name="Ledger" parent="CounterDressing" instance=ExtResource("7_book2_open")]
+transform = Transform3D(0.5829, 0, 0.1028, 0, 0.5919, 0, -0.1028, 0, 0.5829, -3, 1.109, -1.45)
+
+[node name="Scroll" parent="CounterDressing" instance=ExtResource("8_scroll")]
+transform = Transform3D(0.0646, 0, 0.3666, 0, 0.3722, 0, -0.3666, 0, 0.0646, -2.3, 1.1044, -1.45)
+
+[node name="ParcelA" parent="CounterDressing" instance=ExtResource("9_package_1")]
+transform = Transform3D(1.9046, 0, 0.5103, 0, 1.9717, 0, -0.5103, 0, 1.9046, -1.688, 1.0703, -1.4264)
+
+[node name="ParcelB" parent="CounterDressing" instance=ExtResource("10_package_2")]
+transform = Transform3D(1.9815, 0, -0.7212, 0, 2.1087, 0, 0.7212, 0, 1.9815, -1.15, 1.0712, -1.45)
+
+[node name="Pouch" parent="CounterDressing" instance=ExtResource("11_pouch")]
+transform = Transform3D(0.5478, 0, 0, 0, 0.5478, 0, 0, 0, 0.5478, -0.2003, 1.0652, -1.45)
+
+[node name="Bell" parent="CounterDressing" instance=ExtResource("12_bell")]
+transform = Transform3D(0.3822, 0, 0, 0, 0.3822, 0, 0, 0, 0.3822, 0.7, 1.0603, -1.45)
+
+[node name="Tint" type="Node" parent="CounterDressing/Bell"]
+script = ExtResource("2_model_tint")
+colors = {"Bell": Color(0.95, 0.75, 0.3, 1)}
+
+[node name="Candles" parent="CounterDressing" instance=ExtResource("13_candles_1")]
+transform = Transform3D(0.3973, 0, 0, 0, 0.3973, 0, 0, 0, 0.3973, 1.2279, 1.0611, -1.4288)
+
+[node name="Tint" type="Node" parent="CounterDressing/Candles"]
+script = ExtResource("2_model_tint")
+glow = {"Light": Color(1, 0.75, 0.35, 1)}
+glow_energy = 2
+
+[node name="ShelfLeft" parent="CounterDressing" instance=ExtResource("14_bookcase_full")]
+transform = Transform3D(1.0584, 0, 0, 0, 1.0584, 0, 0, 0, 1.0584, -2.1, 0.0261, -4.4831)
+
+[node name="ShelfRight" parent="CounterDressing" instance=ExtResource("14_bookcase_full")]
+transform = Transform3D(1.0584, 0, 0, 0, 1.0584, 0, 0, 0, 1.0584, 0.1, 0.0261, -4.4831)
+
+[node name="ShelfParcel0" parent="CounterDressing" instance=ExtResource("9_package_1")]
+transform = Transform3D(1.7925, 0, 0, 0, 1.7925, 0, 0, 0, 1.7925, -2.7828, 2.6694, -4.5)
+
+[node name="ShelfParcel1" parent="CounterDressing" instance=ExtResource("10_package_2")]
+transform = Transform3D(2.2827, 0, 1.3179, 0, 2.6359, 0, -1.3179, 0, 2.2827, -1.6, 2.674, -4.5)
+
+[node name="ShelfParcel2" parent="CounterDressing" instance=ExtResource("9_package_1")]
+transform = Transform3D(0.8962, 0, 1.5523, 0, 1.7925, 0, -1.5523, 0, 0.8962, 0.5586, 2.6694, -4.4283)
+
+[node name="SortingDesk" parent="CounterDressing" instance=ExtResource("15_table_small")]
+transform = Transform3D(0, 0, 1.061, 0, 1.061, 0, -0.7958, 0, 0, -3.8816, 0.0055, 1.9885)
+
+[node name="TableItem0" parent="CounterDressing" instance=ExtResource("9_package_1")]
+transform = Transform3D(2.151, 0, 0, 0, 2.151, 0, 0, 0, 2.151, -4.6993, 0.8713, 2)
+
+[node name="TableItem1" parent="CounterDressing" instance=ExtResource("10_package_2")]
+transform = Transform3D(1.8173, 0, 1.5249, 0, 2.3723, 0, -1.5249, 0, 1.8173, -3.9, 0.8726, 2.1)
+
+[node name="TableItem2" parent="CounterDressing" instance=ExtResource("16_bags")]
+transform = Transform3D(0.3863, 0, 2.1906, 0, 2.2244, 0, -2.1906, 0, 0.3863, -3.3444, 0.8612, 1.9396)
+
+[node name="TableItem3" parent="CounterDressing" instance=ExtResource("17_candles_2")]
+transform = Transform3D(-0.151, 0, 0.2616, 0, 0.3021, 0, -0.2616, 0, -0.151, -4.1157, 0.8608, 1.7617)
+
+[node name="Tint" type="Node" parent="CounterDressing/TableItem3"]
+script = ExtResource("2_model_tint")
+glow = {"Light": Color(1, 0.75, 0.35, 1)}
+glow_energy = 2
+
+[node name="SacksA" parent="." instance=ExtResource("16_bags")]
+transform = Transform3D(3.8321, 0, 1.3948, 0, 4.0781, 0, -1.3948, 0, 3.8321, -5.0783, 0.0021, -3.2007)
+
+[node name="SackB" parent="." instance=ExtResource("18_bag_standing")]
+transform = Transform3D(3.3636, 0, 0, 0, 3.3636, 0, 0, 0, 3.3636, -4.3, 0.0304, -3.8)
+
+[node name="SackC" parent="." instance=ExtResource("18_bag_standing")]
+transform = Transform3D(1.7806, 0, 2.122, 0, 2.7701, 0, -2.122, 0, 1.7806, -5.2, 0.0251, -2.3)
+
+[node name="Decor" type="Node3D" parent="."]
+
+[node name="Banner0" parent="Decor" instance=ExtResource("19_banner_wall")]
+transform = Transform3D(0.843, 0, 0, 0, 0.843, 0, 0, 0, 0.843, -4.6228, 3.7548, -4.5452)
+
+[node name="Tint" type="Node" parent="Decor/Banner0"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.78, 0.16, 0.14, 1)}
+
+[node name="Banner1" parent="Decor" instance=ExtResource("19_banner_wall")]
+transform = Transform3D(0.843, 0, 0, 0, 0.843, 0, 0, 0, 0.843, 3.5772, 3.7548, -4.5452)
+
+[node name="Tint" type="Node" parent="Decor/Banner1"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.78, 0.16, 0.14, 1)}
+
+[node name="Torch0" parent="Decor" instance=ExtResource("20_torch")]
+transform = Transform3D(0.6953, 0, 0, 0, 0.6953, 0, 0, 0, 0.6953, -3.4, 2.3883, -4.6481)
+
+[node name="Tint" type="Node" parent="Decor/Torch0"]
+script = ExtResource("2_model_tint")
+glow = {"Fire": Color(1, 0.62, 0.22, 1)}
+glow_energy = 3
+
+[node name="TorchLight0" type="OmniLight3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 2.8, -4.2)
+light_color = Color(1, 0.7, 0.4, 1)
+light_energy = 0.7
+omni_range = 4.5
+
+[node name="Torch1" parent="Decor" instance=ExtResource("20_torch")]
+transform = Transform3D(0.6953, 0, 0, 0, 0.6953, 0, 0, 0, 0.6953, 1.9, 2.3883, -4.6481)
+
+[node name="Tint" type="Node" parent="Decor/Torch1"]
+script = ExtResource("2_model_tint")
+glow = {"Fire": Color(1, 0.62, 0.22, 1)}
+glow_energy = 3
+
+[node name="TorchLight1" type="OmniLight3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 2.8, -4.2)
+light_color = Color(1, 0.7, 0.4, 1)
+light_energy = 0.7
+omni_range = 4.5
+
+[node name="Torch2" parent="Decor" instance=ExtResource("20_torch")]
+transform = Transform3D(0, 0, 0.6953, 0, 0.6953, 0, -0.6953, 0, 0, -5.6981, 2.3883, -3.4)
+
+[node name="Tint" type="Node" parent="Decor/Torch2"]
+script = ExtResource("2_model_tint")
+glow = {"Fire": Color(1, 0.62, 0.22, 1)}
+glow_energy = 3
+
+[node name="TorchLight2" type="OmniLight3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.25, 2.8, -3.4)
+light_color = Color(1, 0.7, 0.4, 1)
+light_energy = 0.7
+omni_range = 4.5
+
+[node name="Torch3" parent="Decor" instance=ExtResource("20_torch")]
+transform = Transform3D(0, 0, 0.6953, 0, 0.6953, 0, -0.6953, 0, 0, -5.6981, 2.3883, 4)
+
+[node name="Tint" type="Node" parent="Decor/Torch3"]
+script = ExtResource("2_model_tint")
+glow = {"Fire": Color(1, 0.62, 0.22, 1)}
+glow_energy = 3
+
+[node name="TorchLight3" type="OmniLight3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.25, 2.8, 4)
+light_color = Color(1, 0.7, 0.4, 1)
+light_energy = 0.7
+omni_range = 4.5
+
+[node name="Chest" parent="Decor" instance=ExtResource("21_chest_closed")]
+transform = Transform3D(0, 0, -1.0531, 0, 1.0531, 0, 1.0531, 0, 0, 5.1, 0.0034, -2.4)
+
+[node name="PotSW" parent="Decor" instance=ExtResource("22_pot1")]
+transform = Transform3D(0.8319, 0, 0, 0, 0.8319, 0, 0, 0, 0.8319, -5.3, 0.0051, 4.4)
+
+[node name="Tint" type="Node" parent="Decor/PotSW"]
+script = ExtResource("2_model_tint")
+colors = {"Pot_Main": Color(0.72, 0.42, 0.28, 1)}
+
+[node name="PotSWPlant" parent="Decor" instance=ExtResource("23_plant_2")]
+transform = Transform3D(0.6763, 0, 0, 0, 0.6763, 0, 0, 0, 0.6763, -5.2775, 0.6001, 4.4015)
+
+[node name="PotSouth" parent="Decor" instance=ExtResource("24_pot3")]
+transform = Transform3D(1.0774, 0, 0, 0, 1.0774, 0, 0, 0, 1.0774, 0.4, 0.0004, 4.4)
+
+[node name="Tint" type="Node" parent="Decor/PotSouth"]
+script = ExtResource("2_model_tint")
+colors = {"Pot_Main": Color(0.45, 0.5, 0.7, 1)}
+
+[node name="ShowcaseCrystals" parent="Decor" instance=ExtResource("25_crystal5")]
+transform = Transform3D(1.3927, 0, 0, 0, 1.3927, 0, 0, 0, 1.3927, 3, 0.3021, 3.8)
+
+[node name="Tint" type="Node" parent="Decor/ShowcaseCrystals"]
+script = ExtResource("2_model_tint")
+glow = {"Cyan": Color(0.3, 0.95, 1, 1)}
+glow_energy = 3
+
+[node name="ShowcaseCrystalB" parent="Decor" instance=ExtResource("26_crystal2")]
+transform = Transform3D(0.3849, 0, 0.3229, 0, 0.5024, 0, -0.3229, 0, 0.3849, 3.4, 0.225, 3.4)
+
+[node name="Tint" type="Node" parent="Decor/ShowcaseCrystalB"]
+script = ExtResource("2_model_tint")
+glow = {"Pink": Color(1, 0.4, 0.9, 1)}
+glow_energy = 3
+
+[node name="CrystalLight" type="OmniLight3D" parent="Decor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.9, 3.6)
+light_color = Color(0.5, 0.85, 1, 1)
+light_energy = 0.8
+omni_range = 3.5
+
+[node name="Rug" parent="Decor" instance=ExtResource("1_floor_squares")]
+transform = Transform3D(2.0882, 0, 0, 0, 0.261, 0, 0, 0, 1.3051, -1.003, 0.0514, 0.5986)
+
+[node name="Tint" type="Node" parent="Decor/Rug"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.62, 0.16, 0.14, 1), "Highlights": Color(0.85, 0.65, 0.25, 1)}
+
+[node name="Yard" type="Node3D" parent="."]
+
+[node name="PostCart" parent="Yard" instance=ExtResource("27_cart")]
+transform = Transform3D(0.9659, 0, 0.2588, 0, 1, 0, -0.2588, 0, 0.9659, 8.6, 0, -4.6)
+
+[node name="ParcelPile" parent="Yard" instance=ExtResource("28_parcels")]
+transform = Transform3D(0.9397, 0, 0.342, 0, 1, 0, -0.342, 0, 0.9397, 7.2, 0, -3.6)
+
+[node name="HayBale" parent="Yard" instance=ExtResource("29_hay")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -5.9)
+
+[node name="Planter0" parent="Yard" instance=ExtResource("30_flower_planter")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, 5.75)
+
+[node name="Planter1" parent="Yard" instance=ExtResource("30_flower_planter")]
+transform = Transform3D(0.6428, 0, 0.766, 0, 1, 0, -0.766, 0, 0.6428, -2.6, 0, 5.75)
+
+[node name="Planter2" parent="Yard" instance=ExtResource("30_flower_planter")]
+transform = Transform3D(-0.1736, 0, 0.9848, 0, 1, 0, -0.9848, 0, -0.1736, -0.4, 0, 5.75)

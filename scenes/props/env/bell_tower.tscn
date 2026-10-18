@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Bell_Tower.fbx" id="1_bell_tower"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+[ext_resource type="Script" path="res://scripts/world/camera_occluder.gd" id="3_camera_occluder"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(3.1125, 3, 3.5811)
+
+[node name="BellTower" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_bell_tower")]
+transform = Transform3D(1.8905, 0, 0, 0, 1.8905, 0, 0, 0, 1.8905, 0, 0.0002, 0.0207)
+
+[node name="Tint" type="Node" parent="Model"]
+script = ExtResource("2_model_tint")
+colors = {"RoofTiles": Color(0.75, 0.32, 0.22, 1)}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_1")
+
+[node name="CameraOccluder" type="Node3D" parent="."]
+script = ExtResource("3_camera_occluder")
+radius = 2.3172
+height = 8.1

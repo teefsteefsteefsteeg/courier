@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Statue_Fox.fbx" id="1_statue_fox"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+[ext_resource type="Script" path="res://scripts/world/camera_occluder.gd" id="3_camera_occluder"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(0.9178, 3, 1.1407)
+
+[node name="StatueFox" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_statue_fox")]
+transform = Transform3D(0.7995, 0, 0, 0, 0.7995, 0, 0, 0, 0.7995, -0.063, 0, 0.0503)
+
+[node name="Tint" type="Node" parent="Model"]
+script = ExtResource("2_model_tint")
+colors = {"Stone": Color(0.8, 0.74, 0.62, 1)}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_1")
+
+[node name="CameraOccluder" type="Node3D" parent="."]
+script = ExtResource("3_camera_occluder")
+radius = 0.7381
+height = 2.7

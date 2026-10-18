@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Candles_2.fbx" id="1_candles_2"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+
+[node name="Candles" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_candles_2")]
+transform = Transform3D(0.5538, 0, 0, 0, 0.5538, 0, 0, 0, 0.5538, -0.0042, 0.0015, -0.0356)
+
+[node name="Tint" type="Node" parent="Model"]
+script = ExtResource("2_model_tint")
+glow = {"Light": Color(1, 0.75, 0.35, 1)}
+glow_energy = 2

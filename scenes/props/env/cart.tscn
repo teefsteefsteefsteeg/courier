@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Cart.fbx" id="1_cart"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(0.9373, 1.9, 1.8814)
+
+[node name="Cart" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_cart")]
+transform = Transform3D(2.3868, 0, 0, 0, 2.3868, 0, 0, 0, 2.3868, 0, 0.0012, -0.3372)
+
+[node name="Tint" type="Node" parent="Model"]
+script = ExtResource("2_model_tint")
+colors = {"Red": Color(0.75, 0.22, 0.18, 1)}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("BoxShape3D_1")

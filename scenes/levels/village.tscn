@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/location_banner.tscn" id="7_banner"]
 [ext_resource type="PackedScene" path="res://scenes/locations/post_office.tscn" id="8_post"]
 [ext_resource type="PackedScene" path="res://scenes/locations/forest_entrance.tscn" id="9_forest"]
-[ext_resource type="PackedScene" path="res://scenes/props/cottage.tscn" id="10_cottage"]
+[ext_resource type="PackedScene" path="res://scenes/props/medieval/alchemy_shop.tscn" id="10_alchemy"]
 [ext_resource type="PackedScene" path="res://scenes/props/well.tscn" id="11_well"]
 [ext_resource type="PackedScene" path="res://scenes/props/lamp_post.tscn" id="12_lamp"]
 [ext_resource type="PackedScene" path="res://scenes/props/market_stall.tscn" id="13_stall"]
@@ -52,17 +52,32 @@
 [ext_resource type="PackedScene" path="res://scenes/props/nature/bush_1.tscn" id="90_bush1"]
 [ext_resource type="PackedScene" path="res://scenes/props/nature/bush_2.tscn" id="91_bush2"]
 [ext_resource type="PackedScene" path="res://scenes/props/nature/bush_berries_1.tscn" id="92_bushberry"]
+[ext_resource type="Material" path="res://assets/materials/environment/meadow_grass.tres" id="50_meadow"]
+[ext_resource type="Material" path="res://assets/materials/environment/dirt_path.tres" id="51_dirt"]
+[ext_resource type="Material" path="res://assets/materials/environment/cobble_base.tres" id="52_cobble"]
+[ext_resource type="PackedScene" path="res://scenes/environment/village_dressing.tscn" id="53_dressing"]
+[ext_resource type="PackedScene" path="res://scenes/props/market_stall_goods.tscn" id="54_stall_goods"]
+[ext_resource type="PackedScene" path="res://scenes/props/env/cauldron.tscn" id="55_cauldron"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
-background_color = Color(0.56, 0.76, 0.92, 1)
+background_color = Color(0.52, 0.76, 0.96, 1)
 ambient_light_source = 2
 ambient_light_color = Color(0.78, 0.82, 0.98, 1)
 ambient_light_energy = 0.55
 tonemap_mode = 2
+ssao_enabled = true
+ssao_radius = 1.2
+ssao_intensity = 1.4
 glow_enabled = true
-glow_intensity = 0.6
-glow_bloom = 0.04
+glow_intensity = 0.7
+glow_bloom = 0.06
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0
+volumetric_fog_length = 48.0
+adjustment_enabled = true
+adjustment_contrast = 1.05
+adjustment_saturation = 1.06
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_grass"]
 size = Vector2(120, 120)
@@ -146,7 +161,7 @@ directional_shadow_max_distance = 80.0
 
 [node name="Mesh" type="MeshInstance3D" parent="Ground"]
 mesh = SubResource("PlaneMesh_grass")
-surface_material_override/0 = ExtResource("27_grass")
+surface_material_override/0 = ExtResource("50_meadow")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, -0.5, 0)
@@ -157,37 +172,37 @@ shape = SubResource("BoxShape3D_ground")
 [node name="Square" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.012, 0)
 mesh = SubResource("CylinderMesh_square")
-surface_material_override/0 = ExtResource("29_cobble")
+surface_material_override/0 = ExtResource("52_cobble")
 
 [node name="ToPostOffice" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -5.6, 0.008, -6)
 mesh = SubResource("PlaneMesh_path_post")
-surface_material_override/0 = ExtResource("28_dirt")
+surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToForest" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(0.857493, 0, -0.514496, 0, 1, 0, 0.514496, 0, 0.857493, 9.5, 0.008, -12.5)
 mesh = SubResource("PlaneMesh_path_forest")
-surface_material_override/0 = ExtResource("28_dirt")
+surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToMarket" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 12, 0.008, 1)
 mesh = SubResource("PlaneMesh_path_market")
-surface_material_override/0 = ExtResource("28_dirt")
+surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToSouth" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 9.5, 0.008, 8.5)
 mesh = SubResource("PlaneMesh_path_south")
-surface_material_override/0 = ExtResource("28_dirt")
+surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToAlchemyDoor" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 6, 0.008, 16.6)
 mesh = SubResource("PlaneMesh_path_alchemy")
-surface_material_override/0 = ExtResource("28_dirt")
+surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToWest" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -13, 0.008, 4)
 mesh = SubResource("PlaneMesh_path_west")
-surface_material_override/0 = ExtResource("28_dirt")
+surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="Boundary" type="StaticBody3D" parent="."]
 
@@ -215,47 +230,59 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 14, 0, -20)
 
 [node name="Buildings" type="Node3D" parent="."]
 
-[node name="AlchemyShop" parent="Buildings" instance=ExtResource("10_cottage")]
+[node name="AlchemyShop" parent="Buildings" instance=ExtResource("10_alchemy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 4, 0, 12)
-wall_color = Color(0.78, 0.72, 0.86, 1)
-roof_color = Color(0.36, 0.2, 0.46, 1)
 
 [node name="CottageRose" parent="Buildings" instance=ExtResource("60_house_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -8, 0, 13)
+roof_color = Color(0.78, 0.3, 0.28, 1)
+wall_color = Color(0.96, 0.9, 0.8, 1)
 
 [node name="CottageOak" parent="Buildings" instance=ExtResource("61_house_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -17, 0, 10)
+roof_color = Color(0.86, 0.52, 0.22, 1)
+wall_color = Color(0.95, 0.86, 0.7, 1)
 
 [node name="CottageFern" parent="Buildings" instance=ExtResource("60_house_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 18, 0, 13)
+roof_color = Color(0.32, 0.58, 0.34, 1)
+wall_color = Color(0.94, 0.94, 0.82, 1)
 
 [node name="CottageBlue" parent="Buildings" instance=ExtResource("61_house_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -4, 0, -17)
+roof_color = Color(0.28, 0.44, 0.78, 1)
+wall_color = Color(0.86, 0.9, 0.96, 1)
 
 [node name="CottageMill" parent="Buildings" instance=ExtResource("64_mill")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 25, 0, -6)
 
 [node name="CottageHill" parent="Buildings" instance=ExtResource("63_blacksmith")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -26, 0, -4)
+roof_color = Color(0.62, 0.24, 0.2, 1)
 
 [node name="CottageWillow" parent="Buildings" instance=ExtResource("62_inn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -22, 0, 22)
+roof_color = Color(0.7, 0.3, 0.22, 1)
 
 [node name="CottageBrook" parent="Buildings" instance=ExtResource("61_house_2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 14, 0, 26)
+roof_color = Color(0.8, 0.64, 0.24, 1)
 
 [node name="CottageMoss" parent="Buildings" instance=ExtResource("60_house_1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -6, 0, 27)
+roof_color = Color(0.34, 0.56, 0.48, 1)
 
 [node name="Cauldron" type="StaticBody3D" parent="Buildings"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 1.9, 0, 16.9)
 
 [node name="Pot" type="MeshInstance3D" parent="Buildings/Cauldron"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.35, 0)
 mesh = SubResource("CylinderMesh_cauldron")
 surface_material_override/0 = ExtResource("30_iron")
 
 [node name="Brew" type="MeshInstance3D" parent="Buildings/Cauldron"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.7, 0)
 mesh = SubResource("CylinderMesh_brew")
 surface_material_override/0 = ExtResource("31_potion")
@@ -263,6 +290,8 @@ surface_material_override/0 = ExtResource("31_potion")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Buildings/Cauldron"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.4, 0)
 shape = SubResource("CylinderShape3D_cauldron")
+
+[node name="Model" parent="Buildings/Cauldron" instance=ExtResource("55_cauldron")]
 
 [node name="Props" type="Node3D" parent="."]
 
@@ -272,7 +301,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0, 0)
 [node name="StallFruit" parent="Props" instance=ExtResource("13_stall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 11, 0, -2.6)
 
-[node name="StallGoods" parent="Props" instance=ExtResource("13_stall")]
+[node name="StallGoods" parent="Props" instance=ExtResource("54_stall_goods")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 16, 0, -2.6)
 
 [node name="Lamp1" parent="Props" instance=ExtResource("12_lamp")]
@@ -434,6 +463,8 @@ transform = Transform3D(-0.892645, 0, -0.450761, 0, 1, 0, 0.450761, 0, -0.892645
 
 [node name="Mushrooms4" parent="Props" instance=ExtResource("32_mush")]
 transform = Transform3D(-0.987494, 0, -0.157654, 0, 1, 0, 0.157654, 0, -0.987494, 5, 0, -26)
+
+[node name="VillageDressing" parent="." instance=ExtResource("53_dressing")]
 
 [node name="Trees" type="Node3D" parent="."]
 

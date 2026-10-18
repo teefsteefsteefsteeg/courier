@@ -8,7 +8,8 @@ extends SceneTree
 
 const VILLAGE := "res://scenes/levels/village.tscn"
 const MODEL_DIRS := ["res://assets/models/quaternius/medieval_village", "res://assets/models/quaternius/ultimate_nature"]
-const MAX_TRIS_BUILDING := 10000
+## Raised from 10k in Phase 5B for the single Bell_Tower landmark (11.8k).
+const MAX_TRIS_BUILDING := 12000
 const MAX_TRIS_NATURE := 3500
 ## Placeholder footprints the new props must not exceed (half-extents in metres).
 const COTTAGE_HALF := Vector2(3.2, 2.7)
@@ -151,7 +152,7 @@ func _test_houses() -> void:
 				"%s model sits on the ground inside the old footprint (%s)" % [house_name, aabb.size])
 		_check(house.get_node_or_null(^"CameraOccluder") is CameraOccluder, "%s still fades for the camera" % house_name)
 	var shop := level.get_node("Buildings/AlchemyShop")
-	_check(shop is Cottage, "AlchemyShop keeps its tinted quest-destination cottage")
+	_check(shop is MedievalBuilding and _uses_real_model(shop, "medieval"), "AlchemyShop is a recoloured Medieval Village model")
 
 
 func _world_aabb(node: Node3D) -> AABB:

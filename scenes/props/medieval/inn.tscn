@@ -2,11 +2,14 @@
 
 [ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Inn.fbx" id="1_model"]
 [ext_resource type="Script" path="res://scripts/world/camera_occluder.gd" id="2_occluder"]
+[ext_resource type="Script" path="res://scripts/world/medieval_building.gd" id="3_building"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]
 size = Vector3(4.896, 3.2, 4.884)
 
 [node name="MedievalInn" type="StaticBody3D"]
+script = ExtResource("3_building")
+window_glow = Color(1, 0.8, 0.45, 1)
 
 [node name="Model" parent="." instance=ExtResource("1_model")]
 transform = Transform3D(1.35, 0, 0, 0, 1.35, 0, 0, 0, 1.35, 0.007, 0, -0)

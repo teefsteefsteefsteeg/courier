@@ -13,8 +13,8 @@ primitive meshes and flat-colour materials authored in this repo.
 | Tree | `scenes/props/placeholder_tree.tscn` | Cylinder trunk + 2 cones | Authored in-repo | PLACEHOLDER (test yard / sandbox only; village and forest use Quaternius trees) |
 | Ground, path, fence | `scenes/levels/test_yard.tscn` | PlaneMesh / BoxMesh | Authored in-repo | PLACEHOLDER |
 | Flat materials (32) | `assets/materials/placeholder/ph_*.tres` | StandardMaterial3D (some emissive) | Authored in-repo | PLACEHOLDER |
-| Village buildings and props | `scenes/props/{cottage,well,lamp_post,market_stall,signpost,barrel,bench,bush,mushroom_cluster}.tscn` | Box/Prism/Cylinder/Sphere primitives | Authored in-repo | PLACEHOLDER (`cottage` now only used by the tinted AlchemyShop; `bush` no longer placed in village/forest) |
-| Post office, forest entrance | `scenes/locations/*.tscn` | Primitives and Label3D signs | Authored in-repo | PLACEHOLDER |
+| Village buildings and props | `scenes/props/{cottage,signpost,bush}.tscn` | Box/Prism/Cylinder/Sphere primitives | Authored in-repo | PLACEHOLDER (signposts still primitive; `cottage`/`bush` unused in the village since 5B). Well, lamp, stall, barrel, bench, crate and mushroom props use Quaternius models since 5B |
+| Post office, forest entrance | `scenes/locations/*.tscn` | Primitive colliders and Label3D signs; visuals from `scenes/environment/*_dressing.tscn` | Authored in-repo | Primitive meshes hidden since 5B; mailbox, sign boards and forest sign remain primitive |
 | NPC costumes (5) | `scenes/npc/characters/*.tscn` | Primitive accessories on npc.tscn | Authored in-repo | PLACEHOLDER |
 | UI theme | `assets/ui/courier_theme.tres` | Theme and StyleBoxFlat | Authored in-repo | Temporary |
 | UI font | engine default | Godot default font | Godot (MIT) | Temporary |
@@ -46,6 +46,27 @@ and adds collision and a CameraOccluder.
 | `.../ultimate_nature/PineTree_1..3.fbx` | same | `scenes/props/nature/pine_tree_1..3.tscn` | 1.15-1.45 | 1692-2392 |
 | `.../ultimate_nature/Rock_2.fbx`, `Rock_3.fbx`, `Rock_Moss_2.fbx` | same | `scenes/props/nature/rock_2.tscn`, `rock_3.tscn`, `rock_moss_2.tscn` | 2.2 | 72-80 |
 | `.../ultimate_nature/Bush_1.fbx`, `Bush_2.fbx`, `BushBerries_1.fbx` | same | `scenes/props/nature/bush_1.tscn`, `bush_2.tscn`, `bush_berries_1.tscn` | 0.7-0.75 | 268-892 |
+
+### Phase 5B additions (2026-10-18)
+
+Same author and licence (Quaternius, CC0 1.0); each pack's License.txt is copied into its folder.
+FBX, Godot 4.7 importer defaults, embedded flat-colour materials. Recolours are done at runtime by
+`scripts/world/model_tint.gd` / `medieval_building.gd` (surface overrides by material name); the
+files themselves are unmodified. 120 models are imported in total; every one is referenced by a scene.
+
+| Folder (`assets/models/quaternius/`) | Source pack in `D:\MysticCourierAssets` | Models |
+|---|---|---|
+| `medieval_village/` | Buildings/Medieval Village Pack - Dec 2020 (Buildings + Props) | Bags, Barrel, Bell, Bell_Tower, Bench_1, Bonfire_Lit, Cart, Cauldron, Crate, Fence, Hay, MarketStand_1, MarketStand_2, Package_1, Package_2, Path_Straight, Well (+ 5A houses) |
+| `modular_ruins/` | Buildings/Ultimate Modular Ruins Pack - Aug 2021 | Arch_Round, Bookcase_Full, Candles_1, Candles_2, Column_Round, Column_Round_Short, Column_Square, Floor_Squares, Pot1-3, Statue_Fox, Statue_Stag, Wall, Wall_Half |
+| `modular_dungeon/` | Buildings/Updated Modular Dungeon - May 2019 | Bag_Standing, Banner, Banner_wall, Table_Big, Table_Small, Torch |
+| `rpg_items/` | Items/Ultimate RPG Items Pack - Aug 2019 | Book2_Open, Chest_Closed, Crystal1/2/3/5, Potion1-6_Filled, Pouch, Scroll |
+| `food/` | Items/Ultimate Food Pack - Oct 2019 | Apple, Apple_Green, Bottle1, Bread, Carrot, Fish, Jar_Large, Lettuce_Whole, Orange, Pumpkin, Tomato |
+| `nature_crops/` | Tree/Nature Crops Pack - Jan 2020 | Carrot_3, Corn_4, Flower_3, Flowers_Crop, Lettuce_3, Mushroom_1-3, Pumpkin_Crop, Wheat_4 |
+| `ultimate_nature/` | Tree/Ultimate Nature Pack - Jun 2019 | BirchTree_1-3, BirchTree_Autumn_1, BirchTree_Dead_1, BushBerries_2, CommonTree_5, CommonTree_Autumn_1/2, Flowers, Grass, Grass_2, Grass_Short, PineTree_4/5, Plant_1-5, Rock_5, Rock_6, Rock_Moss_4, Willow_1-3, Willow_Dead_1, WoodLog, WoodLog_Moss (+ 5A trees/rocks/bushes) |
+
+Not used: packs without a License.txt (Modular Dungeon Pack - Jan 2018, RPG Asset Pack - May 2017,
+Simple Nature Pack - Dec 2016), and the Ruins "Overgrown"/foliage pieces, which need texture files.
+Authored (no licence needed): ground materials in `assets/materials/environment/` (NoiseTexture2D).
 
 When adding an external asset, record: name, path, author, source URL, license (with a link), date
 imported, and any modifications.

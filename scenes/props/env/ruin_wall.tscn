@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Wall.fbx" id="1_wall"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="2_model_tint"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(2, 2.0024, 0.2862)
+
+[node name="RuinWall" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_wall")]
+transform = Transform3D(1.0008, 0, 0, 0, 1.0008, 0, 0, 0, 1.0008, -0.0001, 0.0011, 0.1101)
+
+[node name="Tint" type="Node" parent="Model"]
+script = ExtResource("2_model_tint")
+colors = {"Main": Color(0.5, 0.58, 0.48, 1), "Highlights": Color(0.62, 0.7, 0.56, 1)}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0012, 0)
+shape = SubResource("BoxShape3D_1")

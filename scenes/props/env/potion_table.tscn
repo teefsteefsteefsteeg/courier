@@ -1,0 +1,82 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_dungeon/Table_Small.fbx" id="1_table_small"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Potion1_Filled.fbx" id="2_potion1_filled"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="3_model_tint"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Potion2_Filled.fbx" id="4_potion2_filled"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Potion3_Filled.fbx" id="5_potion3_filled"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Potion5_Filled.fbx" id="6_potion5_filled"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Potion6_Filled.fbx" id="7_potion6_filled"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/rpg_items/Potion4_Filled.fbx" id="8_potion4_filled"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(2, 0.9, 1.1)
+
+[node name="PotionTable" type="StaticBody3D"]
+
+[node name="Table" parent="." instance=ExtResource("1_table_small")]
+transform = Transform3D(0, 0, 1.0105, 0, 1.0105, 0, -1.0105, 0, 0, 0.1127, 0.0052, -0.0146)
+
+[node name="Potion1" parent="." instance=ExtResource("2_potion1_filled")]
+transform = Transform3D(0.3946, 0, 0, 0, 0.3946, 0, 0, 0, 0.3946, -0.8, 0.8667, 0.12)
+
+[node name="Tint" type="Node" parent="Potion1"]
+script = ExtResource("3_model_tint")
+colors = {"Glass": Color(0.55, 0.75, 0.85, 1)}
+glow = {"Liquid_Red": Color(1, 0.2, 0.25, 1)}
+glow_energy = 2.2
+
+[node name="Potion2" parent="." instance=ExtResource("4_potion2_filled")]
+transform = Transform3D(0.2314, 0, 0.2758, 0, 0.3601, 0, -0.2758, 0, 0.2314, -0.48, 0.8626, -0.12)
+
+[node name="Tint" type="Node" parent="Potion2"]
+script = ExtResource("3_model_tint")
+colors = {"Glass": Color(0.55, 0.75, 0.85, 1)}
+glow = {"Liquid_Yellow": Color(1, 0.85, 0.2, 1)}
+glow_energy = 2.2
+
+[node name="Potion3" parent="." instance=ExtResource("5_potion3_filled")]
+transform = Transform3D(-0.0709, 0, 0.4022, 0, 0.4084, 0, -0.4022, 0, -0.0709, -0.16, 0.8605, 0.12)
+
+[node name="Tint" type="Node" parent="Potion3"]
+script = ExtResource("3_model_tint")
+colors = {"Glass": Color(0.55, 0.75, 0.85, 1)}
+glow = {"Liquid_Green": Color(0.3, 1, 0.4, 1)}
+glow_energy = 2.2
+
+[node name="Potion4" parent="." instance=ExtResource("6_potion5_filled")]
+transform = Transform3D(-0.2667, 0, 0.154, 0, 0.308, 0, -0.154, 0, -0.2667, 0.16, 0.8666, -0.12)
+
+[node name="Tint" type="Node" parent="Potion4"]
+script = ExtResource("3_model_tint")
+colors = {"Glass": Color(0.55, 0.75, 0.85, 1)}
+glow = {"Liquid_Cyan": Color(0.2, 0.9, 1, 1)}
+glow_energy = 2.2
+
+[node name="Potion5" parent="." instance=ExtResource("7_potion6_filled")]
+transform = Transform3D(-0.2747, 0, -0.1, 0, 0.2924, 0, 0.1, 0, -0.2747, 0.48, 0.8603, 0.12)
+
+[node name="Tint" type="Node" parent="Potion5"]
+script = ExtResource("3_model_tint")
+colors = {"Glass": Color(0.55, 0.75, 0.85, 1)}
+glow = {"Liquid_Red": Color(1, 0.2, 0.25, 1)}
+glow_energy = 2.2
+
+[node name="Potion6" parent="." instance=ExtResource("8_potion4_filled")]
+transform = Transform3D(-0.1383, 0, -0.3799, 0, 0.4043, 0, 0.3799, 0, -0.1383, 0.8, 0.8655, -0.12)
+
+[node name="Tint" type="Node" parent="Potion6"]
+script = ExtResource("3_model_tint")
+colors = {"Glass": Color(0.55, 0.75, 0.85, 1)}
+glow = {"Liquid_Magenta": Color(0.95, 0.3, 1, 1)}
+glow_energy = 2.2
+
+[node name="Glow" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.463, 0)
+light_color = Color(0.75, 0.5, 1, 1)
+light_energy = 0.7
+omni_range = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("BoxShape3D_1")
