@@ -1,0 +1,128 @@
+# Mystic Courier
+
+Isometric 3D fantasy courier game: deliver parcels, a dragon egg and volatile potions around the
+village of Willowmere and the Whisperwood, fight forest creatures with a Magic Bolt, earn gold and
+reputation, and spend gold on weapons at the Armory.
+
+- **Engine:** Godot **4.7.2** (Forward Plus). Executables: `D:\godot\Godot_v4.7.2-stable_win64.exe`
+  (windowed) and `D:\godot\Godot_v4.7.2-stable_win64_console.exe` (console; use it for headless
+  runs and tests).
+- **Main scene:** `res://scenes/levels/village.tscn` (village, post office, forest entrance and
+  Armory in one scene).
+- **Language:** GDScript, statically typed. The project treats "type inferred from Variant" as
+  an error, so type ternaries over different classes explicitly.
+- **Detailed state and history:** `docs/DEVELOPMENT_HANDOFF.md` (read it first in a new session),
+  plus the per-phase docs in `docs/PHASE*.md`.
+
+## Repository and worktrees
+- `D:\courier` is the main checkout (`main`, at `d87a7da`, far behind). **Do not modify it** unless
+  explicitly asked.
+- Each phase/role works in its own git worktree. Current ones for Phase 5F:
+  | Worktree | Branch | Head | Role |
+  |---|---|---|---|
+  | `D:\courier-phase5f-integrated` | `phase5f-integrated` | this branch | **Current, playable integration** |
+  | `D:\courier-phase5f-gameplay-ui` | `phase5f-gameplay-ui` | `f156aca` | Gameplay/UI role |
+  | `D:\courier-phase5f-building-visual` | `phase5f-building-visual` | `c12261d` | Building/visual role |
+- All three branch from `38be579` (Phase 5E). Nothing is pushed or merged to `main` yet.
+- Never use bare `git stash`: the stash is shared across worktrees and sessions.
+- Running Godot rewrites many vendor `assets/**/*.import` files with different line endings only
+  (no content change). Don't commit that noise. Restore with
+  `git checkout -- assets/characters assets/models assets/textures`.
+
+## Commands (PowerShell)
+```powershell
+# Play the integrated game (debug build with a window = development mode: 500 starting gold)
+& "D:\godot\Godot_v4.7.2-stable_win64.exe" --path "D:\courier-phase5f-integrated"
+# Start over (deletes user://savegame.json first)
+& "D:\godot\Godot_v4.7.2-stable_win64.exe" --path "D:\courier-phase5f-integrated" -- --new-game
+
+$godot = "D:\godot\Godot_v4.7.2-stable_win64_console.exe"
+# Import (after adding assets or a new class_name script, so the global class cache updates)
+& $godot --headless --path . --import
+# One suite (exit code = number of failed checks)
+& $godot --headless --path . --script res://tests/player_animation_tests.gd
+# Every suite
+Get-ChildItem tests\*_tests.gd | ForEach-Object { & $godot --headless --path . --script "res://tests/$($_.Name)" *> "$env:TEMP\$($_.BaseName).log"; "$($_.BaseName): exit $LASTEXITCODE" }
+# Boot the main scene headless for 180 frames (expect no ERROR/WARNING lines)
+& $godot --headless --path . --quit-after 180
+# Rendered screenshots (GPU window, not headless), e.g. the integrated walkthrough
+& $godot --path . --resolution 1600x900 --script res://tests/capture_phase5f_integrated_screenshots.gd -- "$env:TEMP\shots"
+```
+Tests are `SceneTree` scripts in `tests/`. Headless runs default to a square 1600x1600 viewport,
+so tests that check screen layout set `root.size = Vector2i(1600, 900)` first. `await
+process_frame` resumes *before* that frame's `_process` callbacks, so UI updated in `_process`
+needs one more frame.
+
+## Architecture
+`village.tscn` top level: `GameplayServices` (first child), `PostOffice`, `ForestEntrance`,
+`Armory`, `VillageDressing`, `MegaKitPilotDressing`, `Player`, `IsoCameraRig`, `DebugHUD`,
+`LocationBanner`, `InteractionPrompt`, `DialogueBox`, `GameplayHUD`, `QuestJournal`, `QuestBoardUI`,
+`Phase4DeliveryIntegration`. NPCs live under `NPCs/` (Bram, Mira, Corvin, Elowen, Pip; Brenna is
+inside `Armory`).
+
+Services are per-level nodes in `scenes/gameplay/gameplay_services.tscn`, found by group with
+`X.find(get_tree())`. There are **no autoloads**.
+| Service | Script | Role |
+|---|---|---|
+| `QuestManager` | `scripts/quests/quest_manager.gd` | All quest state; one active delivery at a time; idempotent `grant_reward`; `retry_quest`; `restore_finished_quests` |
+| `CourierWallet` | `scripts/quests/courier_wallet.gd` | Gold, reputation, courier rank (Novice to Renowned); `spend_gold`, `restore` |
+| `CourierInventory` | `scripts/inventory/courier_inventory.gd` | Owned items (unique), MAIN_HAND / OFF_HAND equipment |
+| `EquipmentStats` | `scripts/inventory/equipment_stats.gd` | Applies equipped items to the player's `CombatController` and held model |
+| `SaveGame` | `scripts/core/save_game.gd` | `user://savegame.json`; autosave; **off in headless runs** |
+
+Key gameplay scripts:
+- **Player:** `scripts/player/player_controller.gd` (input -> camera-relative movement, `input_enabled`),
+  `scripts/components/movement_component.gd` (IDLE/WALK/RUN/AIRBORNE), `interaction_detector.gd`,
+  `scripts/characters/player_animator.gd` + `kaykit_character.gd` (animation; one-shots).
+- **Combat:** `scripts/combat/combat_controller.gd` (Magic Bolt, Dash, Package Shield; Space / Shift / Q),
+  `combat_health.gd`. Enemies `scripts/enemies/` (ForestSlime, FrostWisp) are spawned only during the
+  Dragon Egg run in the forest by `scripts/phase4_integration/phase4_delivery_integration.gd`.
+- **Packages:** `scripts/packages/` (carrier, pickups, instances with temperature/instability).
+- **NPCs:** `scripts/npc/npc.gd` (group `npcs`, `NPC.find_by_id`); child behaviours supply lines and
+  prompt verbs: `scripts/quests/quest_npc_behaviour.gd` (quest markers `! ? ✓`, delivery, giver
+  lines) and `scripts/shop/merchant.gd`.
+- **Quests:** data in `data/quests/*.tres` (Q1 First Delivery 50 g, Q2 Dragon Egg 120 g, Q3 Unstable
+  Potion 90 g), packages in `data/packages/`. `scripts/quests/quest_waypoint.gd` maps the current
+  objective to a world node (minimap objective).
+- **UI:** `scripts/gameplay_ui/` (GameplayHUD layout, tracker, wallet, toasts, board, ShopUI,
+  MovementGuide), `scripts/ui/` (interaction prompt, dialogue box, journal, location banner,
+  UISettings, `input_prompts/`), minimap `scripts/phase4_integration_visual/minimap_controller.gd`.
+  Modal windows (journal, quest board, shop, expanded map) join group `ui_modal`, pause the
+  player, and refuse to open over each other.
+- **Input prompts:** `InputPromptIcons` (InputMap binding -> 32 px keycap in
+  `assets/ui/input_prompts/icons/`), `InputPrompt` component (`scenes/ui/input_prompt.tscn`),
+  `InputPromptLabel` (draws a Label's `"[E] ..."` text with keycaps while keeping `label.text`).
+  Hint text always comes from `InputHints.key_for(action)`; never hard-code keys.
+- **Shop:** `ItemDefinition` / `ShopCatalog` (`scripts/shop/`, data `data/items/`, `data/shops/armory.tres`),
+  `ShopService` purchase rules, `ShopUI` (`scenes/gameplay/ui/shop_ui.tscn`, instanced in
+  `gameplay_hud.tscn`). The visual `Armory` (`scripts/world/armory.gd`) gets its Merchant attached
+  at runtime by `ShopUI._attach_armory_merchants()`.
+- **Dev mode:** `scripts/core/dev_mode.gd`: debug build with a window. Override with `-- --dev` / `-- --no-dev`.
+
+Bindings (from `project.godot`): WASD move, Shift run **and** dash, E interact, G drop package,
+Space magic bolt, Q package shield, J journal, M map, mouse wheel or `=` `-` zoom, F3 debug HUD,
+Esc close (`ui_cancel`).
+
+## Assets
+`assets/models/quaternius/` (CC0 village/nature), `assets/models/megakit/` (MegaKit buildings and
+nature), `assets/models/kaykit_weapons/` (Armory displays), `assets/characters/kaykit_adventurers/`
+(rigged characters, animations, sword/staff props), `assets/ui/input_prompts/` (prompt sheet and
+cropped icons), `assets/ui/item_icons/` (placeholder shop icons), `assets/materials/`. Every
+asset and its licence is in `ASSET_MANIFEST.md`; keep it updated. Generators:
+`tools/crop_input_prompts.py`, `tools/make_item_icons.py`, `tools/prep_megakit_buildings.py`
+(Python), and `tools/generate_buildings.gd`, `tools/generate_armory.gd` (Godot, headless). Some
+scenes (`scenes/buildings/*`, `scenes/locations/armory.tscn`, `scenes/props/armory/*`) are
+**generated**: change the generator, not the scene.
+
+## Status
+Phase 5F is integrated and every automated check passes (23 suites, 2196 checks, clean boot). It
+has **not been played by a person**. See `docs/DEVELOPMENT_HANDOFF.md` for what is complete,
+known issues and next priorities.
+
+## Working rules
+- Run the relevant suites (and ideally all) before committing. Every bug fix gets a regression test.
+- Verify UI visually with a rendered capture (GPU window, 1600x900); headless can't show layout.
+- Preserve other roles' work: on a role branch, don't edit the other role's files. Do
+  cross-cutting wiring on the integration branch.
+- Commit only when asked or when the task says so. Never push or merge to `main` without explicit
+  instruction.
