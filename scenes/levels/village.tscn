@@ -36,6 +36,7 @@
 [ext_resource type="PackedScene" path="res://scenes/gameplay/gameplay_services.tscn" id="34_services"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/ui/gameplay_hud.tscn" id="35_gameplay_hud"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/ui/quest_board_ui.tscn" id="36_board_ui"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/phase4_integration/phase4_delivery_integration.tscn" id="37_phase4_delivery"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -761,3 +762,12 @@ player = NodePath("../Player")
 use_sample_data_when_unconnected = false
 
 [node name="QuestBoardUI" parent="." instance=ExtResource("36_board_ui")]
+
+[node name="Phase4DeliveryIntegration" parent="." node_paths=PackedStringArray("quest_manager", "player", "forest_zone", "pickup_target", "destination_target", "recipient_target", "knockout_respawn") instance=ExtResource("37_phase4_delivery")]
+quest_manager = NodePath("../GameplayServices/QuestManager")
+player = NodePath("../Player")
+forest_zone = NodePath("../ForestEntrance/ForestZone")
+pickup_target = NodePath("../PostOffice/QuestBoard")
+destination_target = NodePath("../ForestEntrance/Markers/ForestClearingSpot")
+recipient_target = NodePath("../NPCs/MageElowen")
+knockout_respawn = NodePath("../Markers/PlayerSpawn")

@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/phase4_integration/phase4_delivery_integration.gd" id="1_integration"]
+[ext_resource type="Script" path="res://scripts/phase4_integration/encounter_spawn_point.gd" id="2_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/combat/forest_slime.tscn" id="3_slime"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/combat/frost_wisp.tscn" id="4_wisp"]
+
+[node name="Phase4DeliveryIntegration" type="Node3D"]
+script = ExtResource("1_integration")
+
+[node name="Enemies" type="Node3D" parent="."]
+
+[node name="SpawnPoints" type="Node3D" parent="."]
+
+[node name="ForestSlimePoint" type="Marker3D" parent="SpawnPoints"]
+position = Vector3(10.8, 0.0, -27.0)
+script = ExtResource("2_spawn")
+enemy_scene = ExtResource("3_slime")
+respawn_delay = 14.0
+
+[node name="FrostWispPoint" type="Marker3D" parent="SpawnPoints"]
+position = Vector3(17.5, 0.0, -35.5)
+script = ExtResource("2_spawn")
+enemy_scene = ExtResource("4_wisp")
+respawn_delay = 18.0
+
+[node name="RouteMarker" type="Node3D" parent="."]
+
+[node name="Label" type="Label3D" parent="RouteMarker"]
+pixel_size = 0.008
+modulate = Color(0.75, 0.95, 1, 1)
+outline_modulate = Color(0.03, 0.08, 0.16, 1)
+font_size = 48
+outline_size = 8
