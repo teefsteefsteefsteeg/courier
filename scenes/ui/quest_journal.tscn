@@ -10,13 +10,16 @@ script = ExtResource("1_script")
 [node name="HintLabel" type="Label" parent="."]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.85)
-anchors_preset = 2
+anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 18.0
+offset_left = -260.0
 offset_top = -44.0
-offset_right = 260.0
+offset_right = -18.0
 offset_bottom = -14.0
+grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2
 theme = ExtResource("2_theme")
@@ -25,6 +28,7 @@ theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.14, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 17
 text = "[J] Journal"
+horizontal_alignment = 2
 
 [node name="Root" type="Control" parent="."]
 unique_name_in_owner = true

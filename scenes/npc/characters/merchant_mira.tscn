@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/quests/quest_npc_behaviour.gd" id="20_qnpc"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_canvas.tres" id="2_canvas"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_mushroom_cap.tres" id="3_mushroom_cap"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_dark.tres" id="4_wood_dark"]
@@ -25,7 +26,7 @@ size = Vector3(0.5, 0.62, 0.05)
 npc_name = "Merchant Mira"
 lines = PackedStringArray("Fresh apples! Moonroot greens! Something for every satchel.", "If a parcel comes for me, I'll be right here at the stall.", "Noon is the busy hour. Mind your elbows, and your coin purse.")
 body_color = Color(0.2, 0.55, 0.55, 1)
-metadata/npc_id = &"village_merchant"
+npc_id = &"village_merchant"
 
 [node name="Headscarf" type="MeshInstance3D" parent="Visual"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0.02)
@@ -41,3 +42,6 @@ surface_material_override/0 = ExtResource("4_wood_dark")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, -0.38)
 mesh = SubResource("BoxMesh_apron")
 surface_material_override/0 = ExtResource("2_canvas")
+
+[node name="QuestBehaviour" type="Node" parent="."]
+script = ExtResource("20_qnpc")

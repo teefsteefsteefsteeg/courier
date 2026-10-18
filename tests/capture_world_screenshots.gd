@@ -24,6 +24,8 @@ func _run() -> void:
 	rig = level.get_node("IsoCameraRig")
 	var dialogue := level.get_node("DialogueBox") as DialogueBox
 	var journal := level.get_node("QuestJournal") as QuestJournal
+	var board_ui := level.get_node("QuestBoardUI") as QuestBoardUI
+	var manager := QuestManager.find(self)
 	await _wait(50)
 	_save(out_dir, "01_post_office_spawn.png")
 
@@ -33,14 +35,31 @@ func _run() -> void:
 	_save(out_dir, "02_dialogue_postmaster.png")
 	dialogue.close()
 
+	await _goto(Vector3(-11.6, 0, -9.1))
+	_interact()
+	await _wait(20)
+	_save(out_dir, "11_quest_board.png")
+	board_ui.accept_buttons[&"q001_first_delivery"].pressed.emit()
+	board_ui.close()
+
+	await _goto(Vector3(-15, 0, -6.8))
+	_interact()  # Bram hands over the first delivery
+	await _wait(10)
+	dialogue.close()
+	await _goto(Vector3(-18, 0, -1.6))
+	_save(out_dir, "12_parcel_pickup.png")
+	_interact()
+	await _wait(10)
+
 	await _goto(Vector3(2, 0, 0), 20.0)
 	_save(out_dir, "03_village_square.png")
 
 	await _goto(Vector3(11.4, 0, 0.1))
-	_interact()
+	_interact()  # delivers the parcel
 	await _wait(80)
 	_save(out_dir, "04_market_mira.png")
 	dialogue.close()
+	manager.accept_quest(&"q002_dragon_egg")
 
 	await _goto(Vector3(6, 0, 18.4))
 	_save(out_dir, "05_alchemy_shop.png")
@@ -59,7 +78,7 @@ func _run() -> void:
 	await _wait(20)
 	_save(out_dir, "08_journal_in_progress.png")
 	journal.show_tab(QuestJournal.Tab.ARCHIVE)
-	journal.select_entry(&"sample_potion")
+	journal.select_entry(&"q001_first_delivery")
 	await _wait(10)
 	_save(out_dir, "09_journal_archive.png")
 	journal.close()

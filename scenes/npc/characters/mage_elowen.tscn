@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/quests/quest_npc_behaviour.gd" id="20_qnpc"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_beard.tres" id="2_beard"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_cloth_dark.tres" id="3_cloth_dark"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_crystal.tres" id="4_crystal"]
@@ -40,7 +41,7 @@ rings = 4
 npc_name = "Mage Elowen"
 lines = PackedStringArray("The trees told me a courier was coming.", "These moonstones hum when the forest is calm. Listen.", "Few walk this far from the village. You have steady feet.")
 body_color = Color(0.26, 0.3, 0.68, 1)
-metadata/npc_id = &"forest_mage"
+npc_id = &"forest_mage"
 
 [node name="HatBrim" type="MeshInstance3D" parent="Visual"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
@@ -66,3 +67,6 @@ surface_material_override/0 = ExtResource("5_tree_trunk")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 2.05, -0.12)
 mesh = SubResource("SphereMesh_orb")
 surface_material_override/0 = ExtResource("4_crystal")
+
+[node name="QuestBehaviour" type="Node" parent="."]
+script = ExtResource("20_qnpc")

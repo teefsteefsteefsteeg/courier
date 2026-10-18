@@ -278,3 +278,52 @@ ringed by trees. Spawn: inside the post office, one step from the counter.
 2. `godot --headless --path . --script res://tests/world_ui_tests.gd`: **126/126 passed**.
 3. `godot --headless --path . --script res://tests/phase1_tests.gd`: **52/52 passed**.
 4. `git diff --check`: passed.
+
+## 2026-10-18 — World & UI: quest system wired into the village
+
+Scope: `docs/UI_INTEGRATION.md` §4 now that `main` (Phase 2 gameplay) is merged into `world-ui`.
+
+### Changes
+- **Services.** Per-level, not an Autoload. `GameplayServices` is the first child of `village.tscn` so
+  `QuestManager._ready` runs before pickups query it.
+- **Placement.** The quest board (named "Courier Guild Board") stands on `PostOffice/Markers/QuestBoardSpot`.
+  I moved the spot from x = 3 to x = 2.4 so the board clears the crate stack. Three pickups (parcel,
+  dragon egg, potion crate) sit 1.2 m apart on `ParcelPickupSpot`. The `forest_clearing`
+  destination is on `ForestEntrance/Markers/ForestClearingSpot`, with Mage Elowen inside its ring.
+  Gameplay objects are children of the markers, so moving a marker moves its object.
+- **NPCs.** The five character scenes set the exported `npc_id`; the `metadata/npc_id` is removed. Bram,
+  Mira, Corvin and Elowen carry a `QuestBehaviour` child. Pip stays a non-quest villager.
+- **UI.** `GameplayHUD` (layer 7, under the journal) and `QuestBoardUI` are in the village. The journal
+  no longer falls back to preview entries there.
+- **Modal rules.** `QuestBoardUI` joins `ui_modal` while open and emits `opened`. `InteractionPrompt`
+  hides while any `ui_modal` member exists. It polls the group count in `_process` because groups have
+  no change signal. `QuestJournal.open()` does nothing while another modal is open.
+- **Layout.** Toasts moved from y = 24 to y = 132, under the location banner. The journal hint moved
+  bottom-right because it overlapped the package indicator.
+
+### Tests
+- New `tests/village_quest_tests.gd` (95 checks) on the real village:
+  - Exactly one manager, and services first.
+  - Placement, and every quest's giver, NPC targets, destination and package resolve in the level.
+  - HUD layering and overlap.
+  - Board window modality: prompt hidden, journal blocked, dialogue ignores input, and keyboard
+    `ui_accept` on the focused Accept button.
+  - Q1, Q2 and Q3 played end to end with E presses through the InteractionDetector, ending at 260 gold
+    and three archived journal entries.
+- `tests/world_ui_tests.gd` removes `GameplayServices` before entering the tree. It still covers the
+  preview and fake-manager paths, and reads `npc.npc_id`. The prompt panel now hides under the journal.
+- `tests/capture_world_screenshots.gd` plays Q1 and accepts Q2 for its journal shots. It adds
+  `11_quest_board.png` and `12_parcel_pickup.png`.
+
+### Validation performed
+1. `godot --headless --path . --import`: exit 0.
+2. `tests/village_quest_tests.gd`: **95/95**, three runs.
+3. `tests/world_ui_tests.gd`: **127/127**. `tests/phase2_tests.gd`: **105/105**. `tests/phase1_tests.gd`: **52/52**.
+4. `godot --headless --path . --quit-after 180` (village boot): exit 0, no script errors.
+5. GPU screenshots (`docs/screenshots/world_ui/`): I inspected the board window, the parcel pickup,
+   the Mira delivery (toast under the banner), Elowen in the clearing ring, and the journal archive.
+
+### Not verified
+- A real keyboard and mouse playtest of the full loop in the village.
+- Walking (not teleporting) from the board to each pickup and recipient. The tests teleport next to
+  each target; only the post office exit and gate paths are walked.

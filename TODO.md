@@ -11,10 +11,10 @@
 
 ## Phase 2 follow-ups (open)
 - [ ] Manual playtest of the sandbox with a real keyboard and mouse: E on board/NPCs/pickups, G drop, mouse clicks on Accept, Esc to close.
-- [ ] **World/UI integration** (owned by World/UI, see `docs/UI_INTEGRATION.md` §4):
-  - [ ] Hide InteractionPrompt while a modal UI is open (it currently shows under the board window).
-  - [ ] Decide Autoload vs per-level `gameplay_services.tscn`.
-  - [ ] Place board, pickups, the 4 quest NPCs and `forest_clearing` in the real hub/village/forest levels.
+- [x] **World/UI integration** (owned by World/UI, see `docs/UI_INTEGRATION.md` §4):
+  - [x] Hide InteractionPrompt while a modal UI is open. The board window joins `ui_modal`; the prompt hides while that group is non-empty.
+  - [x] Decide Autoload vs per-level `gameplay_services.tscn`: **per-level**, first child of `village.tscn`. Hub, village and forest are one scene, so nothing needs to survive a level change yet. Revisit with save/load or the first level transition.
+  - [x] Place board, pickups, the 4 quest NPCs and `forest_clearing` in the real hub/village/forest levels.
 - [x] Phase 2 brought onto `main` (fast-forward to `cb67192`, 2026-10-18). `world-ui` not merged.
 - [ ] Quest state is not saved yet. `QuestState.to_dict()` exists for the save phase; it needs `from_dict` and wallet serialization.
 - [ ] Toasts queue sequentially (about 1 s each while backlogged). Consider stacking if many events fire at once.
@@ -32,11 +32,13 @@
 - [ ] Replace all PLACEHOLDER art with licensed low-poly assets (see ASSET_MANIFEST.md).
 
 ## World & UI follow-ups (branch `world-ui`)
-- [ ] After merging `gameplay`: set the exported `npc_id` on the five character scenes (currently metadata), then
+- [x] After merging `gameplay`: set the exported `npc_id` on the five character scenes (currently metadata), then
       instance `gameplay_services.tscn`, the quest board, package pickups and destination areas at the Marker3D spots.
-- [ ] Turn off `QuestJournal.use_sample_data_when_unconnected` once the quest system is always present.
+- [x] Turn off `QuestJournal.use_sample_data_when_unconnected` once the quest system is always present (off in the village; the default stays on for bare scenes).
 - [ ] Manual playtest: dialogue flow feel, typewriter speed (55 chars/s), journal with mouse and keyboard focus.
 - [x] Hide the interaction prompt and location banner while the journal is open (they are only dimmed).
 - [ ] Standing stones and small props can still briefly hide the courier; consider occluders for them.
 - [ ] Profile the village (12 omni lights, about 120 occluders) on lower-end hardware.
 - [ ] Portrait art for the dialogue box (currently a coloured initial).
+- [ ] Q001's pickup objective says "from the counter", but the parcel spot is beside the sorting table. Reword the data (Gameplay) or move `ParcelPickupSpot`.
+- [ ] The gameplay HUD (wallet, tracker) stays visible, dimmed, under the open journal. Hide it only if toasts can be queued while hidden.

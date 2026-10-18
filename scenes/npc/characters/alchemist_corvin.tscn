@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/quests/quest_npc_behaviour.gd" id="20_qnpc"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_beard.tres" id="2_beard"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_brass.tres" id="3_brass"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_cloth_dark.tres" id="4_cloth_dark"]
@@ -33,7 +34,7 @@ size = Vector3(0.3, 0.25, 0.12)
 npc_name = "Alchemist Corvin"
 lines = PackedStringArray("Careful! That cauldron has opinions.", "Potions do not like being shaken. Neither do I.", "Bring anything fizzy straight to me. Do not stop to sniff it.")
 body_color = Color(0.24, 0.4, 0.26, 1)
-metadata/npc_id = &"village_alchemist"
+npc_id = &"village_alchemist"
 
 [node name="Hair" type="MeshInstance3D" parent="Visual"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.74, 0.04)
@@ -64,3 +65,6 @@ surface_material_override/0 = ExtResource("5_potion_green")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0.62, -0.27)
 mesh = SubResource("BoxMesh_cauldron_bag")
 surface_material_override/0 = ExtResource("4_cloth_dark")
+
+[node name="QuestBehaviour" type="Node" parent="."]
+script = ExtResource("20_qnpc")

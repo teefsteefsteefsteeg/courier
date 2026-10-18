@@ -25,7 +25,7 @@ size = Vector3(0.36, 0.3, 0.14)
 npc_name = "Villager Pip"
 lines = PackedStringArray("Oh! A new courier?", "I heard dragon eggs get grumpy when they're cold.", "The well water tastes like pennies. Don't ask how I know.")
 body_color = Color(0.85, 0.42, 0.32, 1)
-metadata/npc_id = &"villager_pip"
+npc_id = &"villager_pip"
 
 [node name="Visual" parent="."]
 transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 0, 0, 0)

@@ -14,6 +14,11 @@
 [ext_resource type="PackedScene" path="res://scenes/props/barrel.tscn" id="12_barrel"]
 [ext_resource type="PackedScene" path="res://scenes/props/lamp_post.tscn" id="13_lamp"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_stone.tres" id="14_stone"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/world/quest_board.tscn" id="15_board"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/packages/package_pickup.tscn" id="16_pickup"]
+[ext_resource type="Resource" path="res://data/packages/pkg_ordinary_parcel.tres" id="17_pkg_parcel"]
+[ext_resource type="Resource" path="res://data/packages/pkg_dragon_egg.tres" id="18_pkg_egg"]
+[ext_resource type="Resource" path="res://data/packages/pkg_potion_crate.tres" id="19_pkg_potion"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
 size = Vector2(11.6, 9.6)
@@ -512,10 +517,25 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -0.3)
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1, 0, -2.3)
 
 [node name="QuestBoardSpot" type="Marker3D" parent="Markers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -4.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0, -4.3)
+
+[node name="QuestBoard" parent="Markers/QuestBoardSpot" instance=ExtResource("15_board")]
+board_name = "Courier Guild Board"
 
 [node name="ParcelPickupSpot" type="Marker3D" parent="Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 3.4)
+
+[node name="ParcelPickup" parent="Markers/ParcelPickupSpot" instance=ExtResource("16_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+package_definition = ExtResource("17_pkg_parcel")
+
+[node name="DragonEggPickup" parent="Markers/ParcelPickupSpot" instance=ExtResource("16_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0, 0)
+package_definition = ExtResource("18_pkg_egg")
+
+[node name="PotionCratePickup" parent="Markers/ParcelPickupSpot" instance=ExtResource("16_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 0)
+package_definition = ExtResource("19_pkg_potion")
 
 [node name="Zone" type="Area3D" parent="."]
 collision_layer = 0

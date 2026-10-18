@@ -33,6 +33,9 @@
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_cloth_dark.tres" id="30_iron"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_potion_green.tres" id="31_potion"]
 [ext_resource type="PackedScene" path="res://scenes/props/mushroom_cluster.tscn" id="32_mush"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/gameplay_services.tscn" id="34_services"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/ui/gameplay_hud.tscn" id="35_gameplay_hud"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/ui/quest_board_ui.tscn" id="36_board_ui"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -110,6 +113,8 @@ size = Vector3(12, 4, 7)
 size = Vector3(10, 4, 6)
 
 [node name="Village" type="Node3D"]
+
+[node name="GameplayServices" parent="." instance=ExtResource("34_services")]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_village")
@@ -747,5 +752,12 @@ detector = NodePath("../Player/InteractionDetector")
 detector = NodePath("../Player/InteractionDetector")
 prompt = NodePath("../InteractionPrompt")
 
+[node name="GameplayHUD" parent="." node_paths=PackedStringArray("player") instance=ExtResource("35_gameplay_hud")]
+layer = 7
+player = NodePath("../Player")
+
 [node name="QuestJournal" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_journal")]
 player = NodePath("../Player")
+use_sample_data_when_unconnected = false
+
+[node name="QuestBoardUI" parent="." instance=ExtResource("36_board_ui")]

@@ -86,6 +86,22 @@ Those are gameplay-side commands.
 5. Screen layout used: wallet top-right, tracker under it, package indicator bottom-left, toasts top
    centre. The DebugHUD (top-left) and InteractionPrompt (bottom centre) are unchanged.
 
+### Status (World/UI, 2026-10-18)
+1. Done. `QuestBoardUI` joins the `ui_modal` group while open and emits `opened`. `InteractionPrompt`
+   hides while that group is non-empty. `DialogueBox` already ignores input then, and `QuestJournal.open()`
+   refuses to open over another modal.
+2. **Per-level.** `village.tscn` instances `gameplay_services.tscn` as its first child, so the manager is
+   ready before pickups query it. There is no Autoload: hub, village and forest are one scene. Revisit
+   for save/load or the first level transition.
+3. Done. The board and three pickups are children of `PostOffice/Markers/QuestBoardSpot` and
+   `ParcelPickupSpot` in `post_office.tscn`. `forest_clearing` is under
+   `ForestEntrance/Markers/ForestClearingSpot`. The four quest character scenes set `npc_id` and carry a
+   `QuestBehaviour` child. `GameplayHUD` (layer 7, under the journal) and `QuestBoardUI` are in the village.
+4. Not restyled. Toasts moved to `offset_top = 132` so they sit under the location banner.
+5. The journal's `[J] Journal` hint moved bottom-right, clear of the package indicator.
+
+Covered by `tests/village_quest_tests.gd`.
+
 ## 5. Input
 Phase 2 added one action to `project.godot`: `drop_package` = **G**. It is handled by `PackageCarrier`
 and ignored while `PlayerController.input_enabled` is false. The board window closes on `ui_cancel` (Esc) or `interact` (E).

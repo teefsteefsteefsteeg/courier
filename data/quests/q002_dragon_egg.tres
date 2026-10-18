@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="QuestDefinition" format=3]
+[gd_resource type="Resource" script_class="QuestDefinition" format=3 uid="uid://0swdcibgkvlv"]
 
-[ext_resource type="Script" path="res://scripts/quests/quest_definition.gd" id="1_def"]
-[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_obj"]
-[ext_resource type="Script" path="res://scripts/quests/quest_reward.gd" id="3_rew"]
+[ext_resource type="Script" uid="uid://bfcsytpnsnxuy" path="res://scripts/quests/quest_definition.gd" id="1_def"]
+[ext_resource type="Script" uid="uid://bc80q17xdqueq" path="res://scripts/quests/quest_objective.gd" id="2_obj"]
+[ext_resource type="Script" uid="uid://blm7rvj8tkx6w" path="res://scripts/quests/quest_reward.gd" id="3_rew"]
 [ext_resource type="Resource" path="res://data/packages/pkg_dragon_egg.tres" id="4_pkg"]
 
 [sub_resource type="Resource" id="Objective_pickup"]
@@ -35,7 +35,6 @@ quest_id = &"q002_dragon_egg"
 title = "The Dragon Egg"
 description = "A rare dragon egg must reach the forest mage before it hatches."
 giver_id = &"postmaster"
-is_delivery = true
 package = ExtResource("4_pkg")
 recipient_name = "Mage Elowen"
 destination_name = "Forest Clearing"

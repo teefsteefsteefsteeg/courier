@@ -33,6 +33,12 @@ func _run() -> void:
 	_check(InputMap.has_action(&"toggle_journal") and InputHints.key_for(&"toggle_journal") == "J", "toggle_journal bound to J")
 
 	level = (load(VILLAGE) as PackedScene).instantiate()
+	# This suite covers World/UI on its own: drop the quest services so the journal's
+	# preview data and fake-manager adapter can be exercised. The wired-up village is
+	# covered by tests/village_quest_tests.gd.
+	var services := level.get_node("GameplayServices")
+	level.remove_child(services)
+	services.free()
 	root.add_child(level)
 	player = level.get_node("Player")
 	rig = level.get_node("IsoCameraRig")
@@ -135,7 +141,7 @@ func _test_npc_scenes() -> void:
 			continue
 		var expected_name: String = CAST[node_name][0]
 		_check(npc.npc_name == expected_name and npc.interactable.display_name == expected_name, "%s is named '%s'" % [node_name, npc.npc_name])
-		_check(npc.get_meta(&"npc_id", &"") == CAST[node_name][1], "%s has npc_id '%s'" % [node_name, CAST[node_name][1]])
+		_check(npc.npc_id == CAST[node_name][1], "%s has npc_id '%s'" % [node_name, CAST[node_name][1]])
 		_check(npc.visual.get_child_count() > 3, "%s wears costume pieces (%d visual parts)" % [node_name, npc.visual.get_child_count()])
 		var body := npc.body_mesh.material_override as StandardMaterial3D
 		_check(body != null and body.albedo_color.is_equal_approx(npc.body_color), "%s body colour applied" % node_name)
@@ -290,6 +296,8 @@ func _test_scripted_dialogue() -> void:
 
 func _test_journal_preview() -> void:
 	print("[Quest journal: preview data]")
+	_check(not journal.use_sample_data_when_unconnected, "village journal does not fall back to preview entries")
+	journal.use_sample_data_when_unconnected = true
 	_reset_player(Vector3(0, 0, 8))
 	await _frames(3)
 	_press(&"toggle_journal")
@@ -364,7 +372,7 @@ func _test_journal_hides_hud() -> void:
 	_press(&"toggle_journal")
 	await _frames(2)
 	_check(journal.is_open() and not prompt.visible and not banner.visible, "open journal hides the prompt and banner layers")
-	_check(prompt.panel.visible, "prompt keeps its own state while hidden")
+	_check(not prompt.panel.visible, "prompt panel also stands down while a modal is open")
 	_press(&"toggle_journal")
 	await _frames(2)
 	_check(not journal.is_open() and prompt.visible and banner.visible, "closing the journal restores the prompt and banner")

@@ -99,7 +99,8 @@ func toggle() -> void:
 
 
 func open() -> void:
-	if is_open():
+	# The journal is only in MODAL_GROUP while open, so any member is another window (e.g. the quest board).
+	if is_open() or get_tree().get_node_count_in_group(MODAL_GROUP) > 0:
 		return
 	refresh()
 	root_control.visible = true

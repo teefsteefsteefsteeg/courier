@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="QuestDefinition" format=3]
+[gd_resource type="Resource" script_class="QuestDefinition" format=3 uid="uid://bd5sqn5p7yo1t"]
 
-[ext_resource type="Script" path="res://scripts/quests/quest_definition.gd" id="1_def"]
-[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_obj"]
-[ext_resource type="Script" path="res://scripts/quests/quest_reward.gd" id="3_rew"]
+[ext_resource type="Script" uid="uid://bfcsytpnsnxuy" path="res://scripts/quests/quest_definition.gd" id="1_def"]
+[ext_resource type="Script" uid="uid://bc80q17xdqueq" path="res://scripts/quests/quest_objective.gd" id="2_obj"]
+[ext_resource type="Script" uid="uid://blm7rvj8tkx6w" path="res://scripts/quests/quest_reward.gd" id="3_rew"]
 [ext_resource type="Resource" path="res://data/packages/pkg_potion_crate.tres" id="4_pkg"]
 
 [sub_resource type="Resource" id="Objective_pickup"]
@@ -29,7 +29,6 @@ quest_id = &"q003_unstable_potion"
 title = "Unstable Potion"
 description = "A crate of volatile potions for the village alchemist. Don't shake it."
 giver_id = &"postmaster"
-is_delivery = true
 package = ExtResource("4_pkg")
 recipient_name = "Alchemist Corvin"
 destination_name = "Village Alchemy Shop"

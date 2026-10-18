@@ -2,8 +2,10 @@ class_name QuestBoardUI
 extends CanvasLayer
 ## Delivery-contract window. Opens when any QuestBoard (group "quest_board") emits
 ## `opened`. Lists the board's quests with destination, reward and an Accept button.
-## Freezes the interacting player's input while open.
+## Freezes the interacting player's input while open and joins the "ui_modal" group,
+## so World/UI (prompt, dialogue, journal) stand down until it closes.
 
+signal opened
 signal contract_accepted(quest_id: StringName)
 signal closed
 
@@ -53,13 +55,16 @@ func open(board: QuestBoard, interactor: Node) -> void:
 	feedback_label.text = ""
 	_rebuild()
 	root_panel.visible = true
+	add_to_group(QuestJournal.MODAL_GROUP)
 	_focus_first_button()
+	opened.emit()
 
 
 func close() -> void:
 	if not is_open():
 		return
 	root_panel.visible = false
+	remove_from_group(QuestJournal.MODAL_GROUP)
 	_board = null
 	if _player != null:
 		# Deferred so the key press that closed the window cannot re-open it this frame.
