@@ -211,6 +211,21 @@ func try_deliver(npc_id: StringName, package: PackageInstance) -> DeliveryResult
 	return result
 
 
+## What try_deliver would return, without delivering or emitting anything (for prompts
+## and NPC markers).
+func check_delivery(npc_id: StringName, package: PackageInstance) -> DeliveryResult:
+	return _validate_delivery(npc_id, package)
+
+
+## In-progress quest whose current objective is to talk to npc_id, or null.
+func get_quest_waiting_to_talk(npc_id: StringName) -> QuestDefinition:
+	for definition in get_in_progress_quests():
+		var objective := get_current_objective(definition.quest_id)
+		if objective != null and objective.type == QuestObjective.Type.TALK_TO_NPC and objective.target_id == npc_id:
+			return definition
+	return null
+
+
 func _validate_delivery(npc_id: StringName, package: PackageInstance) -> DeliveryResult:
 	if package == null:
 		return DeliveryResult.NO_PACKAGE

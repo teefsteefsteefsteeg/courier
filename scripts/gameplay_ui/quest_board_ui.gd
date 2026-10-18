@@ -161,6 +161,9 @@ func _on_accept_pressed(quest_id: StringName) -> void:
 	if result == QuestManager.AcceptResult.OK:
 		var definition := quest_manager.get_definition(quest_id)
 		feedback_label.text = "Contract accepted: %s" % definition.title
+		var first := quest_manager.get_current_objective(quest_id)
+		if first != null:
+			feedback_label.text += "\nFirst: %s" % first.description
 		contract_accepted.emit(quest_id)
 	else:
 		feedback_label.text = QuestManager.accept_result_text(result)

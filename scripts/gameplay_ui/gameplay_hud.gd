@@ -18,7 +18,7 @@ var onboarding: Label
 
 func _ready() -> void:
 	onboarding = Label.new()
-	onboarding.text = "Visit the post office quest board [E]\nAccept a delivery, then collect its package.\n[J] Journal    [M] Map"
+	onboarding.text = "Visit the post office quest board [E]\nAccept a delivery, then collect its package.\n! and ? above villagers mark who needs you.\n[J] Journal    [M] Map"
 	onboarding.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	onboarding.add_theme_font_size_override("font_size", 18)
 	onboarding.add_theme_color_override("font_outline_color", Color(0.03, 0.04, 0.06))
@@ -31,6 +31,7 @@ func _ready() -> void:
 	if carrier != null:
 		package_indicator.bind_carrier(carrier)
 		quest_notification.bind_carrier(carrier)
+		quest_tracker.bind_carrier(carrier)
 		if not carrier.carried_package_changed.is_connected(_on_carried_package_changed):
 			carrier.carried_package_changed.connect(_on_carried_package_changed)
 		_on_carried_package_changed(carrier.get_package())
@@ -41,7 +42,7 @@ func _process(_delta: float) -> void:
 	# including wrapped objectives and conditional package warning rows.
 	var width := clampf(get_viewport().get_visible_rect().size.x * 0.25, 300.0, 380.0)
 	_place(quest_tracker, Vector2.ZERO, Vector2(MARGIN, MARGIN), Vector2(width, maxf(100, quest_tracker.get_combined_minimum_size().y)))
-	_place(onboarding, Vector2.ZERO, Vector2(MARGIN, MARGIN), Vector2(width, 100))
+	_place(onboarding, Vector2.ZERO, Vector2(MARGIN, MARGIN), Vector2(width, maxf(100, onboarding.get_combined_minimum_size().y)))
 	onboarding.visible = not quest_tracker.visible
 	_place(wallet_display, Vector2(1, 0), Vector2(-width - MARGIN, MARGIN), Vector2(width, maxf(46, wallet_display.get_combined_minimum_size().y)))
 	var status_height := maxf(110, package_status_hud.get_node("Panel").get_combined_minimum_size().y)

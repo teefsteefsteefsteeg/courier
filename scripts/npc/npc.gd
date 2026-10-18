@@ -69,6 +69,17 @@ func say(line: String) -> void:
 	spoke.emit(npc_name, line)
 
 
+## Context prompt for the interaction prompt (see Interactable.get_prompt_text_for).
+## Child behaviours may return a verb phrase from get_prompt_verb(npc, interactor).
+func get_interaction_prompt(interactor: Node) -> String:
+	for child in get_children():
+		if child.has_method(&"get_prompt_verb"):
+			var verb: String = child.get_prompt_verb(self, interactor)
+			if not verb.is_empty():
+				return "%s %s" % [verb, npc_name]
+	return ""
+
+
 func _line_from_behaviours(interactor: Node) -> String:
 	for child in get_children():
 		if child.has_method(&"get_interaction_line"):
