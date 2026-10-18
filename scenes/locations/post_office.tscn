@@ -1,0 +1,530 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/location_zone.gd" id="1_zone"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_floor.tres" id="2_floor"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_plaster.tres" id="3_plaster"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_dark.tres" id="4_wood"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_roof_blue.tres" id="5_roof"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_post_red.tres" id="6_red"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_paper.tres" id="7_paper"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_canvas.tres" id="8_canvas"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_brass.tres" id="9_brass"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_crate.tres" id="10_crate"]
+[ext_resource type="PackedScene" path="res://scenes/props/placeholder_crate.tscn" id="11_crate"]
+[ext_resource type="PackedScene" path="res://scenes/props/barrel.tscn" id="12_barrel"]
+[ext_resource type="PackedScene" path="res://scenes/props/lamp_post.tscn" id="13_lamp"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_stone.tres" id="14_stone"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
+size = Vector2(11.6, 9.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_north"]
+size = Vector3(12.4, 4, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_west"]
+size = Vector3(0.4, 4, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_south_a"]
+size = Vector3(7, 1, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_south_b"]
+size = Vector3(3, 1, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_east"]
+size = Vector3(0.4, 1, 3.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pillar"]
+size = Vector3(0.6, 4.2, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gate_pillar"]
+size = Vector3(0.4, 2.6, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gate_beam"]
+size = Vector3(0.4, 0.3, 3.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_eave_north"]
+size = Vector3(13, 0.3, 0.7)
+
+[sub_resource type="BoxMesh" id="BoxMesh_eave_west"]
+size = Vector3(0.7, 0.3, 11)
+
+[sub_resource type="BoxMesh" id="BoxMesh_skirting_north"]
+size = Vector3(12.4, 0.5, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_skirting_west"]
+size = Vector3(0.45, 0.5, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sign_board"]
+size = Vector3(0.1, 0.95, 5.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hanging_sign"]
+size = Vector3(0.08, 0.55, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_north"]
+size = Vector3(12.4, 4, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_west"]
+size = Vector3(0.4, 4, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_south_a"]
+size = Vector3(7, 2, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_south_b"]
+size = Vector3(3, 2, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_east"]
+size = Vector3(0.4, 2, 3.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pillar"]
+size = Vector3(0.6, 4.2, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gate_pillar"]
+size = Vector3(0.4, 2.6, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_counter"]
+size = Vector3(5, 1.05, 0.7)
+
+[sub_resource type="BoxMesh" id="BoxMesh_counter_top"]
+size = Vector3(5.2, 0.08, 0.85)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bell"]
+top_radius = 0.03
+bottom_radius = 0.1
+height = 0.12
+radial_segments = 8
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_letter_stack"]
+size = Vector3(0.35, 0.12, 0.25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_counter"]
+size = Vector3(5, 1.2, 0.7)
+
+[sub_resource type="BoxMesh" id="BoxMesh_shelf_back"]
+size = Vector3(4.4, 2.6, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_shelf_board"]
+size = Vector3(4.4, 0.06, 0.14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_letter"]
+size = Vector3(0.32, 0.2, 0.05)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_shelf"]
+size = Vector3(4.4, 2.6, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_table_top"]
+size = Vector3(2.4, 0.1, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_table_leg"]
+size = Vector3(0.1, 0.8, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_parcel_big"]
+size = Vector3(0.55, 0.35, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_parcel_small"]
+size = Vector3(0.38, 0.28, 0.3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_table"]
+size = Vector3(2.4, 0.9, 1.2)
+
+[sub_resource type="SphereMesh" id="SphereMesh_sack"]
+radius = 0.45
+height = 0.75
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxMesh" id="BoxMesh_mailbox_post"]
+size = Vector3(0.12, 1, 0.12)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mailbox"]
+size = Vector3(0.5, 0.55, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mailbox_slot"]
+size = Vector3(0.3, 0.05, 0.02)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mailbox_flag"]
+size = Vector3(0.03, 0.2, 0.12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mailbox"]
+size = Vector3(0.5, 1.5, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_zone"]
+size = Vector3(12, 4, 10)
+
+[node name="PostOffice" type="Node3D"]
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
+mesh = SubResource("PlaneMesh_floor")
+surface_material_override/0 = ExtResource("2_floor")
+
+[node name="Building" type="StaticBody3D" parent="."]
+
+[node name="WallNorth" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -5)
+mesh = SubResource("BoxMesh_wall_north")
+surface_material_override/0 = ExtResource("3_plaster")
+
+[node name="WallNorthShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -5)
+shape = SubResource("BoxShape3D_wall_north")
+
+[node name="SkirtingNorth" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, -5)
+mesh = SubResource("BoxMesh_skirting_north")
+surface_material_override/0 = ExtResource("14_stone")
+
+[node name="WallWest" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2, 0)
+mesh = SubResource("BoxMesh_wall_west")
+surface_material_override/0 = ExtResource("3_plaster")
+
+[node name="WallWestShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2, 0)
+shape = SubResource("BoxShape3D_wall_west")
+
+[node name="SkirtingWest" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.25, 0)
+mesh = SubResource("BoxMesh_skirting_west")
+surface_material_override/0 = ExtResource("14_stone")
+
+[node name="WallSouthA" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.5, 5)
+mesh = SubResource("BoxMesh_wall_south_a")
+surface_material_override/0 = ExtResource("14_stone")
+
+[node name="WallSouthAShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 1, 5)
+shape = SubResource("BoxShape3D_wall_south_a")
+
+[node name="WallSouthB" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.5, 5)
+mesh = SubResource("BoxMesh_wall_south_b")
+surface_material_override/0 = ExtResource("14_stone")
+
+[node name="WallSouthBShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 1, 5)
+shape = SubResource("BoxShape3D_wall_south_b")
+
+[node name="WallEastA" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.5, -3.25)
+mesh = SubResource("BoxMesh_wall_east")
+surface_material_override/0 = ExtResource("14_stone")
+
+[node name="WallEastAShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, -3.25)
+shape = SubResource("BoxShape3D_wall_east")
+
+[node name="WallEastB" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.5, 3.25)
+mesh = SubResource("BoxMesh_wall_east")
+surface_material_override/0 = ExtResource("14_stone")
+
+[node name="WallEastBShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 3.25)
+shape = SubResource("BoxShape3D_wall_east")
+
+[node name="PillarNE" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.1, -5)
+mesh = SubResource("BoxMesh_pillar")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="PillarNEShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.1, -5)
+shape = SubResource("BoxShape3D_pillar")
+
+[node name="PillarSE" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.1, 5)
+mesh = SubResource("BoxMesh_pillar")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="PillarSEShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.1, 5)
+shape = SubResource("BoxShape3D_pillar")
+
+[node name="PillarSW" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.1, 5)
+mesh = SubResource("BoxMesh_pillar")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="PillarSWShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.1, 5)
+shape = SubResource("BoxShape3D_pillar")
+
+[node name="PillarNW" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.1, -5)
+mesh = SubResource("BoxMesh_pillar")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="GatePillarNorth" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.3, -1.5)
+mesh = SubResource("BoxMesh_gate_pillar")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="GatePillarNorthShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.3, -1.5)
+shape = SubResource("BoxShape3D_gate_pillar")
+
+[node name="GatePillarSouth" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.3, 1.5)
+mesh = SubResource("BoxMesh_gate_pillar")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="GatePillarSouthShape" type="CollisionShape3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.3, 1.5)
+shape = SubResource("BoxShape3D_gate_pillar")
+
+[node name="GateBeam" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.65, 0)
+mesh = SubResource("BoxMesh_gate_beam")
+surface_material_override/0 = ExtResource("6_red")
+
+[node name="HangingSign" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1, 2.2, 0)
+mesh = SubResource("BoxMesh_hanging_sign")
+surface_material_override/0 = ExtResource("6_red")
+
+[node name="HangingSignText" type="Label3D" parent="Building"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6.15, 2.2, 0)
+pixel_size = 0.006
+modulate = Color(1, 0.9, 0.6, 1)
+outline_modulate = Color(0.25, 0.05, 0.05, 1)
+text = "Post"
+font_size = 56
+outline_size = 6
+
+[node name="EaveNorth" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.15, -4.85)
+mesh = SubResource("BoxMesh_eave_north")
+surface_material_override/0 = ExtResource("5_roof")
+
+[node name="EaveWest" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.85, 4.15, 0)
+mesh = SubResource("BoxMesh_eave_west")
+surface_material_override/0 = ExtResource("5_roof")
+
+[node name="SignBoard" type="MeshInstance3D" parent="Building"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.74, 2.95, 0.4)
+mesh = SubResource("BoxMesh_sign_board")
+surface_material_override/0 = ExtResource("6_red")
+
+[node name="SignText" type="Label3D" parent="Building"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -5.68, 2.95, 0.4)
+pixel_size = 0.008
+modulate = Color(1, 0.88, 0.5, 1)
+outline_modulate = Color(0.25, 0.05, 0.05, 1)
+text = "WILLOWMERE POST"
+font_size = 72
+outline_size = 8
+
+[node name="Counter" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -1.5)
+
+[node name="Body" type="MeshInstance3D" parent="Counter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.525, 0)
+mesh = SubResource("BoxMesh_counter")
+surface_material_override/0 = ExtResource("10_crate")
+
+[node name="Top" type="MeshInstance3D" parent="Counter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.09, 0)
+mesh = SubResource("BoxMesh_counter_top")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="Bell" type="MeshInstance3D" parent="Counter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.19, 0.1)
+mesh = SubResource("CylinderMesh_bell")
+surface_material_override/0 = ExtResource("9_brass")
+
+[node name="LetterStack" type="MeshInstance3D" parent="Counter"]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -1.4, 1.19, 0)
+mesh = SubResource("BoxMesh_letter_stack")
+surface_material_override/0 = ExtResource("7_paper")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Counter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("BoxShape3D_counter")
+
+[node name="MailShelves" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -4.45)
+
+[node name="Back" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+mesh = SubResource("BoxMesh_shelf_back")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="ShelfLow" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0.28)
+mesh = SubResource("BoxMesh_shelf_board")
+surface_material_override/0 = ExtResource("10_crate")
+
+[node name="ShelfMid" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0.28)
+mesh = SubResource("BoxMesh_shelf_board")
+surface_material_override/0 = ExtResource("10_crate")
+
+[node name="ShelfHigh" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0.28)
+mesh = SubResource("BoxMesh_shelf_board")
+surface_material_override/0 = ExtResource("10_crate")
+
+[node name="LetterA" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.83, 0.28)
+mesh = SubResource("BoxMesh_letter")
+surface_material_override/0 = ExtResource("7_paper")
+
+[node name="LetterB" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.83, 0.28)
+mesh = SubResource("BoxMesh_letter")
+surface_material_override/0 = ExtResource("7_paper")
+
+[node name="LetterC" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 1.43, 0.28)
+mesh = SubResource("BoxMesh_letter")
+surface_material_override/0 = ExtResource("7_paper")
+
+[node name="LetterD" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 1.43, 0.28)
+mesh = SubResource("BoxMesh_letter")
+surface_material_override/0 = ExtResource("7_paper")
+
+[node name="LetterE" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 2.03, 0.28)
+mesh = SubResource("BoxMesh_letter")
+surface_material_override/0 = ExtResource("7_paper")
+
+[node name="LetterF" type="MeshInstance3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.03, 0.28)
+mesh = SubResource("BoxMesh_letter")
+surface_material_override/0 = ExtResource("7_paper")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MailShelves"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+shape = SubResource("BoxShape3D_shelf")
+
+[node name="SortingTable" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 2)
+
+[node name="Top" type="MeshInstance3D" parent="SortingTable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+mesh = SubResource("BoxMesh_table_top")
+surface_material_override/0 = ExtResource("10_crate")
+
+[node name="LegA" type="MeshInstance3D" parent="SortingTable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0.4, -0.5)
+mesh = SubResource("BoxMesh_table_leg")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="LegB" type="MeshInstance3D" parent="SortingTable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.4, -0.5)
+mesh = SubResource("BoxMesh_table_leg")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="LegC" type="MeshInstance3D" parent="SortingTable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0.4, 0.5)
+mesh = SubResource("BoxMesh_table_leg")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="LegD" type="MeshInstance3D" parent="SortingTable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0.4, 0.5)
+mesh = SubResource("BoxMesh_table_leg")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="ParcelBig" type="MeshInstance3D" parent="SortingTable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 1.075, -0.1)
+mesh = SubResource("BoxMesh_parcel_big")
+surface_material_override/0 = ExtResource("8_canvas")
+
+[node name="ParcelSmall" type="MeshInstance3D" parent="SortingTable"]
+transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, 0.5, 1.04, 0.2)
+mesh = SubResource("BoxMesh_parcel_small")
+surface_material_override/0 = ExtResource("10_crate")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SortingTable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("BoxShape3D_table")
+
+[node name="MailSacks" type="Node3D" parent="."]
+
+[node name="SackA" type="MeshInstance3D" parent="MailSacks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.37, -3.2)
+mesh = SubResource("SphereMesh_sack")
+surface_material_override/0 = ExtResource("8_canvas")
+
+[node name="SackB" type="MeshInstance3D" parent="MailSacks"]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -4.3, 0.3, -3.8)
+mesh = SubResource("SphereMesh_sack")
+surface_material_override/0 = ExtResource("8_canvas")
+
+[node name="CrateA" parent="." instance=ExtResource("11_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -3.8)
+
+[node name="CrateB" parent="." instance=ExtResource("11_crate")]
+transform = Transform3D(0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, 0.984808, 5.05, 0, -3.7)
+
+[node name="CrateC" parent="." instance=ExtResource("11_crate")]
+transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, 4.5, 1, -3.75)
+
+[node name="Barrel" parent="." instance=ExtResource("12_barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0, 4.1)
+
+[node name="Mailbox" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, 0, 3)
+
+[node name="Post" type="MeshInstance3D" parent="Mailbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_mailbox_post")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="Box" type="MeshInstance3D" parent="Mailbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+mesh = SubResource("BoxMesh_mailbox")
+surface_material_override/0 = ExtResource("6_red")
+
+[node name="Slot" type="MeshInstance3D" parent="Mailbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.38, 0.23)
+mesh = SubResource("BoxMesh_mailbox_slot")
+surface_material_override/0 = ExtResource("4_wood")
+
+[node name="Flag" type="MeshInstance3D" parent="Mailbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.27, 1.45, 0)
+mesh = SubResource("BoxMesh_mailbox_flag")
+surface_material_override/0 = ExtResource("9_brass")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Mailbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("BoxShape3D_mailbox")
+
+[node name="LampPost" parent="." instance=ExtResource("13_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.6, 0, -2.4)
+
+[node name="InteriorLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, -0.5)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 0.7
+omni_range = 10.0
+
+[node name="Markers" type="Node3D" parent="."]
+
+[node name="PlayerSpawn" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -0.3)
+
+[node name="PostmasterSpot" type="Marker3D" parent="Markers"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1, 0, -2.3)
+
+[node name="QuestBoardSpot" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -4.3)
+
+[node name="ParcelPickupSpot" type="Marker3D" parent="Markers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 3.4)
+
+[node name="Zone" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_zone")
+display_name = "Willowmere Post Office"
+subtitle = "Courier Guild Hall"
+zone_priority = 10
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("BoxShape3D_zone")

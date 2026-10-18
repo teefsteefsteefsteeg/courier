@@ -1,0 +1,66 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_beard.tres" id="2_beard"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_brass.tres" id="3_brass"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_cloth_dark.tres" id="4_cloth_dark"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_potion_green.tres" id="5_potion_green"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_tuft"]
+size = Vector3(0.3, 0.12, 0.3)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_goggle"]
+top_radius = 0.08
+bottom_radius = 0.08
+height = 0.06
+radial_segments = 8
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_strap"]
+size = Vector3(0.6, 0.05, 0.5)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_vial"]
+top_radius = 0.04
+bottom_radius = 0.06
+height = 0.18
+radial_segments = 6
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_cauldron_bag"]
+size = Vector3(0.3, 0.25, 0.12)
+
+[node name="AlchemistCorvin" instance=ExtResource("1_npc")]
+npc_name = "Alchemist Corvin"
+lines = PackedStringArray("Careful! That cauldron has opinions.", "Potions do not like being shaken. Neither do I.", "Bring anything fizzy straight to me. Do not stop to sniff it.")
+body_color = Color(0.24, 0.4, 0.26, 1)
+metadata/npc_id = &"village_alchemist"
+
+[node name="Hair" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.74, 0.04)
+mesh = SubResource("BoxMesh_tuft")
+surface_material_override/0 = ExtResource("2_beard")
+
+[node name="GoggleLeft" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -0.1, 1.64, -0.24)
+mesh = SubResource("CylinderMesh_goggle")
+surface_material_override/0 = ExtResource("3_brass")
+
+[node name="GoggleRight" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0.1, 1.64, -0.24)
+mesh = SubResource("CylinderMesh_goggle")
+surface_material_override/0 = ExtResource("3_brass")
+
+[node name="Belt" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0)
+mesh = SubResource("BoxMesh_strap")
+surface_material_override/0 = ExtResource("4_cloth_dark")
+
+[node name="Vial" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.86, -0.26)
+mesh = SubResource("CylinderMesh_vial")
+surface_material_override/0 = ExtResource("5_potion_green")
+
+[node name="Pouch" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0.62, -0.27)
+mesh = SubResource("BoxMesh_cauldron_bag")
+surface_material_override/0 = ExtResource("4_cloth_dark")

@@ -1,0 +1,218 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/journal/quest_journal.gd" id="1_script"]
+[ext_resource type="Theme" path="res://assets/ui/courier_theme.tres" id="2_theme"]
+
+[node name="QuestJournal" type="CanvasLayer"]
+layer = 8
+script = ExtResource("1_script")
+
+[node name="HintLabel" type="Label" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.85)
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -44.0
+offset_right = 260.0
+offset_bottom = -14.0
+grow_vertical = 0
+mouse_filter = 2
+theme = ExtResource("2_theme")
+theme_type_variation = &"FrameLabel"
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.14, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 17
+text = "[J] Journal"
+
+[node name="Root" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="Dim" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03, 0.02, 0.06, 0.55)
+
+[node name="Frame" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -540.0
+offset_top = -330.0
+offset_right = 540.0
+offset_bottom = 330.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="VBoxContainer" parent="Root/Frame"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="Root/Frame/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Root/Frame/Layout/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"GoldTitle"
+text = "Courier's Journal"
+
+[node name="TabActive" type="Button" parent="Root/Frame/Layout/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"TabButton"
+toggle_mode = true
+text = "In Progress"
+
+[node name="TabArchive" type="Button" parent="Root/Frame/Layout/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"TabButton"
+toggle_mode = true
+text = "Archive"
+
+[node name="CloseHint" type="Label" parent="Root/Frame/Layout/Header"]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.7)
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_type_variation = &"FrameLabel"
+theme_override_font_sizes/font_size = 15
+text = "[J] Close"
+horizontal_alignment = 2
+
+[node name="HSeparator" type="HSeparator" parent="Root/Frame/Layout"]
+layout_mode = 2
+
+[node name="Body" type="HBoxContainer" parent="Root/Frame/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 14
+
+[node name="ListPanel" type="PanelContainer" parent="Root/Frame/Layout/Body"]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+theme_type_variation = &"ParchmentPanel"
+
+[node name="ListScroll" type="ScrollContainer" parent="Root/Frame/Layout/Body/ListPanel"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="ListColumn" type="VBoxContainer" parent="Root/Frame/Layout/Body/ListPanel/ListScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="QuestList" type="VBoxContainer" parent="Root/Frame/Layout/Body/ListPanel/ListScroll/ListColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="EmptyLabel" type="Label" parent="Root/Frame/Layout/Body/ListPanel/ListScroll/ListColumn"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"InkLabel"
+text = "No deliveries in progress."
+autowrap_mode = 3
+
+[node name="DetailPanel" type="PanelContainer" parent="Root/Frame/Layout/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ParchmentPanel"
+
+[node name="DetailScroll" type="ScrollContainer" parent="Root/Frame/Layout/Body/DetailPanel"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="DetailColumn" type="VBoxContainer" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DetailPlaceholder" type="Label" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"InkLabel"
+text = "Select a delivery to read its notes."
+autowrap_mode = 3
+
+[node name="DetailContent" type="VBoxContainer" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll/DetailColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="DetailTitle" type="Label" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll/DetailColumn/DetailContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"InkTitle"
+text = "Quest"
+autowrap_mode = 3
+
+[node name="StatusLabel" type="Label" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll/DetailColumn/DetailContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"InkLabel"
+theme_override_font_sizes/font_size = 15
+text = "IN PROGRESS"
+
+[node name="RouteLabel" type="Label" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll/DetailColumn/DetailContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"InkLabel"
+theme_override_font_sizes/font_size = 17
+text = "From - · To -"
+autowrap_mode = 3
+
+[node name="DescriptionLabel" type="Label" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll/DetailColumn/DetailContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"InkLabel"
+text = "Description"
+autowrap_mode = 3
+
+[node name="ObjectivesHeader" type="Label" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll/DetailColumn/DetailContent"]
+layout_mode = 2
+theme_type_variation = &"InkTitle"
+theme_override_font_sizes/font_size = 20
+text = "Objectives"
+
+[node name="ObjectivesBox" type="VBoxContainer" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll/DetailColumn/DetailContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RewardLabel" type="Label" parent="Root/Frame/Layout/Body/DetailPanel/DetailScroll/DetailColumn/DetailContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"InkTitle"
+theme_override_font_sizes/font_size = 18
+text = "Reward: -"
+
+[node name="SourceLabel" type="Label" parent="Root/Frame/Layout"]
+unique_name_in_owner = true
+visible = false
+modulate = Color(1, 1, 1, 0.7)
+layout_mode = 2
+theme_type_variation = &"FrameLabel"
+theme_override_font_sizes/font_size = 14
+text = "Preview entries"

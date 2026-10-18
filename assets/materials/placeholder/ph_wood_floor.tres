@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "ph_wood_floor"
+albedo_color = Color(0.6, 0.44, 0.28, 1)
+roughness = 0.9
+

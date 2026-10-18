@@ -1,0 +1,85 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_dark.tres" id="1_wood"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_crate.tres" id="2_crate"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_awning_teal.tres" id="3_awning"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_canvas.tres" id="4_canvas"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_mushroom_cap.tres" id="5_apple"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_leaves_light.tres" id="6_greens"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_counter"]
+size = Vector3(2.8, 0.95, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pole"]
+size = Vector3(0.12, 2.4, 0.12)
+
+[sub_resource type="PrismMesh" id="PrismMesh_awning"]
+size = Vector3(3.3, 0.7, 1.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_basket"]
+size = Vector3(0.6, 0.22, 0.45)
+
+[sub_resource type="SphereMesh" id="SphereMesh_produce"]
+radius = 0.22
+height = 0.3
+radial_segments = 8
+rings = 4
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_counter"]
+size = Vector3(2.9, 1.6, 1.1)
+
+[node name="MarketStall" type="StaticBody3D"]
+
+[node name="Counter" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.475, 0)
+mesh = SubResource("BoxMesh_counter")
+surface_material_override/0 = ExtResource("2_crate")
+
+[node name="PoleFL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 1.2, 0.45)
+mesh = SubResource("BoxMesh_pole")
+surface_material_override/0 = ExtResource("1_wood")
+
+[node name="PoleFR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35, 1.2, 0.45)
+mesh = SubResource("BoxMesh_pole")
+surface_material_override/0 = ExtResource("1_wood")
+
+[node name="PoleBL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 1.2, -0.45)
+mesh = SubResource("BoxMesh_pole")
+surface_material_override/0 = ExtResource("1_wood")
+
+[node name="PoleBR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35, 1.2, -0.45)
+mesh = SubResource("BoxMesh_pole")
+surface_material_override/0 = ExtResource("1_wood")
+
+[node name="Awning" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
+mesh = SubResource("PrismMesh_awning")
+surface_material_override/0 = ExtResource("3_awning")
+
+[node name="BasketA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 1.06, 0.1)
+mesh = SubResource("BoxMesh_basket")
+surface_material_override/0 = ExtResource("4_canvas")
+
+[node name="ApplesA" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 1.2, 0.1)
+mesh = SubResource("SphereMesh_produce")
+surface_material_override/0 = ExtResource("5_apple")
+
+[node name="BasketB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 1.06, 0.1)
+mesh = SubResource("BoxMesh_basket")
+surface_material_override/0 = ExtResource("4_canvas")
+
+[node name="GreensB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 1.2, 0.1)
+mesh = SubResource("SphereMesh_produce")
+surface_material_override/0 = ExtResource("6_greens")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("BoxShape3D_counter")

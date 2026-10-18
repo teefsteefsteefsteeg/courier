@@ -1,0 +1,68 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_beard.tres" id="2_beard"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_cloth_dark.tres" id="3_cloth_dark"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_crystal.tres" id="4_crystal"]
+[ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_trunk.tres" id="5_tree_trunk"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hat_brim"]
+top_radius = 0.44
+bottom_radius = 0.44
+height = 0.04
+radial_segments = 12
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hat_cone"]
+top_radius = 0.0
+bottom_radius = 0.3
+height = 0.75
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_hair"]
+size = Vector3(0.44, 0.6, 0.12)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_staff"]
+top_radius = 0.035
+bottom_radius = 0.045
+height = 2.0
+radial_segments = 6
+rings = 1
+
+[sub_resource type="SphereMesh" id="SphereMesh_orb"]
+radius = 0.12
+height = 0.24
+radial_segments = 8
+rings = 4
+
+[node name="MageElowen" instance=ExtResource("1_npc")]
+npc_name = "Mage Elowen"
+lines = PackedStringArray("The trees told me a courier was coming.", "These moonstones hum when the forest is calm. Listen.", "Few walk this far from the village. You have steady feet.")
+body_color = Color(0.26, 0.3, 0.68, 1)
+metadata/npc_id = &"forest_mage"
+
+[node name="HatBrim" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+mesh = SubResource("CylinderMesh_hat_brim")
+surface_material_override/0 = ExtResource("3_cloth_dark")
+
+[node name="HatCone" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.08, 0.04)
+mesh = SubResource("CylinderMesh_hat_cone")
+surface_material_override/0 = ExtResource("3_cloth_dark")
+
+[node name="Hair" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.38, 0.2)
+mesh = SubResource("BoxMesh_hair")
+surface_material_override/0 = ExtResource("2_beard")
+
+[node name="Staff" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 1.0, -0.12)
+mesh = SubResource("CylinderMesh_staff")
+surface_material_override/0 = ExtResource("5_tree_trunk")
+
+[node name="StaffOrb" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 2.05, -0.12)
+mesh = SubResource("SphereMesh_orb")
+surface_material_override/0 = ExtResource("4_crystal")

@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "ph_plaster"
+albedo_color = Color(0.93, 0.88, 0.76, 1)
+roughness = 0.95
+

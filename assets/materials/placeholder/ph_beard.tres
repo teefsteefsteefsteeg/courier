@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "ph_beard"
+albedo_color = Color(0.92, 0.92, 0.9, 1)
+roughness = 1.0
+
