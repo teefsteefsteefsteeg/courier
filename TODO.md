@@ -15,7 +15,7 @@
   - [ ] Hide InteractionPrompt while a modal UI is open (it currently shows under the board window).
   - [ ] Decide Autoload vs per-level `gameplay_services.tscn`.
   - [ ] Place board, pickups, the 4 quest NPCs and `forest_clearing` in the real hub/village/forest levels.
-- [ ] Merge the gameplay branch into the shared line (owner decision; this phase did not merge).
+- [x] Phase 2 brought onto `main` (fast-forward to `cb67192`, 2026-10-18). `world-ui` not merged.
 - [ ] Quest state is not saved yet. `QuestState.to_dict()` exists for the save phase; it needs `from_dict` and wallet serialization.
 - [ ] Toasts queue sequentially (about 1 s each while backlogged). Consider stacking if many events fire at once.
 - [ ] Board UI is built in code. Move the entry into its own `.tscn` if UI wants to restyle it in the editor.
