@@ -1,0 +1,36 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://assets/shaders/village_ground.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" path="res://assets/textures/terrain/village_splat_a.png" id="2_splat_a"]
+[ext_resource type="Texture2D" path="res://assets/textures/terrain/village_splat_b.png" id="3_splat_b"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_large"]
+seed = 21
+frequency = 0.02
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_large"]
+width = 256
+height = 256
+seamless = true
+noise = SubResource("FastNoiseLite_large")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_detail"]
+seed = 4
+frequency = 0.05
+fractal_octaves = 4
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_detail"]
+width = 256
+height = 256
+seamless = true
+noise = SubResource("FastNoiseLite_detail")
+
+[resource]
+resource_name = "village_ground"
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/splat_a = ExtResource("2_splat_a")
+shader_parameter/splat_b = ExtResource("3_splat_b")
+shader_parameter/noise_large = SubResource("NoiseTexture2D_large")
+shader_parameter/noise_detail = SubResource("NoiseTexture2D_detail")

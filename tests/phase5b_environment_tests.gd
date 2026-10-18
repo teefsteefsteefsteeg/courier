@@ -120,9 +120,11 @@ func _test_village_props() -> void:
 			models += _model_count(n)
 		_check(not nodes.is_empty() and primitive == 0 and models >= nodes.size(), "%s props use real models (%d nodes, %d models)" % [prefix, nodes.size(), models])
 	var dressing := level.get_node("VillageDressing")
-	_check(dressing.get_node("SquarePaving").get_child_count() >= 30, "town square is paved")
+	# Since Phase 5E the plaza, market square and roads are painted by the village terrain
+	# (see phase5e_village_tests.gd) instead of individual paving tiles and slabs.
+	_check(_splat_weight(Vector2(0, 0), 2) > 0.9, "town square is paved (terrain flagstones)")
 	_check(dressing.get_node("Market").get_child_count() >= 6, "market has extra produce, cart and fencing (%d)" % dressing.get_node("Market").get_child_count())
-	_check(dressing.get_node("PathStones").get_child_count() >= 20, "roads have stone paving (%d)" % dressing.get_node("PathStones").get_child_count())
+	_check(_splat_weight(Vector2(12, 1), 1) > 0.9 or _splat_weight(Vector2(12, 1), 2) > 0.9, "roads have stone paving (terrain cobbles)")
 	var houses := level.get_node("Buildings").get_children().filter(func(n: Node) -> bool: return n is MedievalBuilding)
 	var roofs := {}
 	for house in houses:
@@ -147,9 +149,15 @@ func _test_forest() -> void:
 	_check(dressing.find_children("*", "FogVolume", true, false).size() >= 1 and dressing.find_children("*", "GPUParticles3D", true, false).size() >= 1, "forest has mist and fireflies")
 	var env := (level.get_node("WorldEnvironment") as WorldEnvironment).environment
 	_check(env.volumetric_fog_enabled and is_zero_approx(env.volumetric_fog_density), "fog is local to the forest (global density 0)")
-	var floor_material := (forest.get_node("ForestFloor") as MeshInstance3D).get_surface_override_material(0) as StandardMaterial3D
-	var meadow := (level.get_node("Ground/Mesh") as MeshInstance3D).get_surface_override_material(0) as StandardMaterial3D
-	_check(floor_material != meadow and floor_material.resource_path.ends_with("forest_floor.tres"), "forest floor has its own darker material")
+	# Since Phase 5E the forest floor is a channel of the village terrain splat, blended softly into the meadow.
+	_check(_splat_weight(Vector2(14, -31), 0, "b") > 0.9 and _splat_weight(Vector2(-20, 10), 0, "b") < 0.1, "forest floor has its own darker ground")
+
+
+## Weight of one splat channel (0 = R .. 3 = A) of the village terrain at a village XZ position.
+func _splat_weight(at: Vector2, channel: int, map := "a") -> float:
+	var image := Image.load_from_file(ProjectSettings.globalize_path("res://assets/textures/terrain/village_splat_%s.png" % map))
+	var px := Vector2i(((at + Vector2(64, 64)) / 128.0 * image.get_width()).floor())
+	return image.get_pixelv(px)[channel]
 
 
 func _test_clearances() -> void:

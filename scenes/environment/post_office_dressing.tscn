@@ -716,13 +716,13 @@ colors = {"Main": Color(0.62, 0.16, 0.14, 1), "Highlights": Color(0.85, 0.65, 0.
 [node name="Yard" type="Node3D" parent="."]
 
 [node name="PostCart" parent="Yard" instance=ExtResource("27_cart")]
-transform = Transform3D(0.9659, 0, 0.2588, 0, 1, 0, -0.2588, 0, 0.9659, 8.6, 0, -4.6)
+transform = Transform3D(0.9659, 0, 0.2588, 0, 1, 0, -0.2588, 0, 0.9659, 6.4, 0, -6.8)
 
 [node name="ParcelPile" parent="Yard" instance=ExtResource("28_parcels")]
 transform = Transform3D(0.9397, 0, 0.342, 0, 1, 0, -0.342, 0, 0.9397, 7.2, 0, -3.6)
 
 [node name="HayBale" parent="Yard" instance=ExtResource("29_hay")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -5.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 0, -6.0)
 
 [node name="Planter0" parent="Yard" instance=ExtResource("30_flower_planter")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, 5.75)

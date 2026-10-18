@@ -108,5 +108,12 @@ Textures copied: `T_VineLeaf_png.png`, `T_WoodTrim_{BaseColor,Normal,Roughness}.
 `T_RockTrim_{BaseColor,Normal,ORM}.png`, `Flowers.png`, `Leaves.png`, `Leaves_NormalTree_C.png`,
 `Mushrooms.png`, `PathRocks_Diffuse.png`, `Rocks_Diffuse.png`. Wrappers: `scenes/props/megakit/`.
 
+### Phase 5E (2026-10-18): village terrain
+
+No new external assets. Authored in-repo: `assets/shaders/village_ground.gdshader`,
+`assets/materials/environment/village_ground.tres` (NoiseTexture2D inputs), and the generated
+splat maps / layout in `assets/textures/terrain/` (`village_splat_a.png`, `village_splat_b.png`,
+`village_layout.json`). The hill tree line reuses the Phase 5A Quaternius tree scenes.
+
 When adding an external asset, record: name, path, author, source URL, license (with a link), date
 imported, and any modifications.

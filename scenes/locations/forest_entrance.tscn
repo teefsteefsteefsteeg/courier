@@ -94,16 +94,19 @@ size = Vector3(11, 4, 11)
 [node name="ForestEntrance" type="Node3D"]
 
 [node name="ForestFloor" type="MeshInstance3D" parent="."]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.006, -11)
 mesh = SubResource("PlaneMesh_floor")
 surface_material_override/0 = ExtResource("40_floor")
 
 [node name="Path" type="MeshInstance3D" parent="."]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.02, -4.4)
 mesh = SubResource("PlaneMesh_path")
 surface_material_override/0 = ExtResource("41_path")
 
 [node name="ClearingGround" type="MeshInstance3D" parent="."]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.012, -14)
 mesh = SubResource("CylinderMesh_clearing")
 surface_material_override/0 = ExtResource("42_moss")

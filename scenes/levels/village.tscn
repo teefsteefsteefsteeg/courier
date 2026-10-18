@@ -59,6 +59,8 @@
 [ext_resource type="PackedScene" path="res://scenes/props/market_stall_goods.tscn" id="54_stall_goods"]
 [ext_resource type="PackedScene" path="res://scenes/props/env/cauldron.tscn" id="55_cauldron"]
 [ext_resource type="PackedScene" path="res://scenes/environment/megakit_pilot_dressing.tscn" id="56_megakit"]
+[ext_resource type="Script" path="res://scripts/world/village_terrain.gd" id="60_terrain"]
+[ext_resource type="Material" path="res://assets/materials/environment/village_ground.tres" id="61_ground"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -161,6 +163,7 @@ directional_shadow_max_distance = 80.0
 [node name="Ground" type="StaticBody3D" parent="."]
 
 [node name="Mesh" type="MeshInstance3D" parent="Ground"]
+visible = false
 mesh = SubResource("PlaneMesh_grass")
 surface_material_override/0 = ExtResource("50_meadow")
 
@@ -168,39 +171,52 @@ surface_material_override/0 = ExtResource("50_meadow")
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, -0.5, 0)
 shape = SubResource("BoxShape3D_ground")
 
+[node name="Terrain" type="MeshInstance3D" parent="."]
+script = ExtResource("60_terrain")
+ground_material = ExtResource("61_ground")
+tree_scenes = Array[PackedScene]([ExtResource("70_ctree1"), ExtResource("71_ctree2"), ExtResource("72_ctree3"), ExtResource("73_ctree4"), ExtResource("74_ptree1"), ExtResource("75_ptree2"), ExtResource("76_ptree3")])
+tree_count = 70
+
 [node name="Paths" type="Node3D" parent="."]
 
 [node name="Square" type="MeshInstance3D" parent="Paths"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0.012, 0)
 mesh = SubResource("CylinderMesh_square")
 surface_material_override/0 = ExtResource("52_cobble")
 
 [node name="ToPostOffice" type="MeshInstance3D" parent="Paths"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -5.6, 0.008, -6)
 mesh = SubResource("PlaneMesh_path_post")
 surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToForest" type="MeshInstance3D" parent="Paths"]
+visible = false
 transform = Transform3D(0.857493, 0, -0.514496, 0, 1, 0, 0.514496, 0, 0.857493, 9.5, 0.008, -12.5)
 mesh = SubResource("PlaneMesh_path_forest")
 surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToMarket" type="MeshInstance3D" parent="Paths"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 12, 0.008, 1)
 mesh = SubResource("PlaneMesh_path_market")
 surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToSouth" type="MeshInstance3D" parent="Paths"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 9.5, 0.008, 8.5)
 mesh = SubResource("PlaneMesh_path_south")
 surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToAlchemyDoor" type="MeshInstance3D" parent="Paths"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 6, 0.008, 16.6)
 mesh = SubResource("PlaneMesh_path_alchemy")
 surface_material_override/0 = ExtResource("51_dirt")
 
 [node name="ToWest" type="MeshInstance3D" parent="Paths"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -13, 0.008, 4)
 mesh = SubResource("PlaneMesh_path_west")
 surface_material_override/0 = ExtResource("51_dirt")
@@ -240,12 +256,12 @@ roof_color = Color(0.78, 0.3, 0.28, 1)
 wall_color = Color(0.96, 0.9, 0.8, 1)
 
 [node name="CottageOak" parent="Buildings" instance=ExtResource("61_house_2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -17, 0, 10)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -17, 0, 10)
 roof_color = Color(0.86, 0.52, 0.22, 1)
 wall_color = Color(0.95, 0.86, 0.7, 1)
 
 [node name="CottageFern" parent="Buildings" instance=ExtResource("60_house_1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 18, 0, 13)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18, 0, 13)
 roof_color = Color(0.32, 0.58, 0.34, 1)
 wall_color = Color(0.94, 0.94, 0.82, 1)
 
@@ -262,15 +278,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -26, 0, -4)
 roof_color = Color(0.62, 0.24, 0.2, 1)
 
 [node name="CottageWillow" parent="Buildings" instance=ExtResource("62_inn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -22, 0, 22)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 22)
 roof_color = Color(0.7, 0.3, 0.22, 1)
 
 [node name="CottageBrook" parent="Buildings" instance=ExtResource("61_house_2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 14, 0, 26)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 0, 26)
 roof_color = Color(0.8, 0.64, 0.24, 1)
 
 [node name="CottageMoss" parent="Buildings" instance=ExtResource("60_house_1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -6, 0, 27)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -6, 0, 27)
 roof_color = Color(0.34, 0.56, 0.48, 1)
 
 [node name="Cauldron" type="StaticBody3D" parent="Buildings"]
@@ -478,7 +494,7 @@ transform = Transform3D(0.862558, 0, 1.13543, 0, 1.4259, 0, -1.13543, 0, 0.86255
 transform = Transform3D(1.39646, 0, 0.239587, 0, 1.41687, 0, -0.239587, 0, 1.39646, -18, 0, -18)
 
 [node name="Tree03" parent="Trees" instance=ExtResource("72_ctree3")]
-transform = Transform3D(1.60326, 0, -0.217896, 0, 1.618, 0, 0.217896, 0, 1.60326, -28, 0, -12)
+transform = Transform3D(1.60326, 0, -0.217896, 0, 1.618, 0, 0.217896, 0, 1.60326, -26.2, 0, -12.6)
 
 [node name="Tree04" parent="Trees" instance=ExtResource("73_ctree4")]
 transform = Transform3D(-0.416779, 0, -1.18554, 0, 1.25667, 0, 1.18554, 0, -0.416779, -33, 0, 2)
@@ -523,7 +539,7 @@ transform = Transform3D(-1.57167, 0, 0.54111, 0, 1.66221, 0, -0.54111, 0, -1.571
 transform = Transform3D(1.66828, 0, -0.125623, 0, 1.673, 0, 0.125623, 0, 1.66828, -15, 0, 18)
 
 [node name="Tree18" parent="Trees" instance=ExtResource("73_ctree4")]
-transform = Transform3D(-0.812803, 0, 0.926207, 0, 1.23228, 0, -0.926207, 0, -0.812803, 2, 0, 21)
+transform = Transform3D(-0.812803, 0, 0.926207, 0, 1.23228, 0, -0.926207, 0, -0.812803, 2.6, 0, 23.8)
 
 [node name="Tree19" parent="Trees" instance=ExtResource("74_ptree1")]
 transform = Transform3D(0.176576, 0, 1.20516, 0, 1.21802, 0, -1.20516, 0, 0.176576, 26, 0, -18)
