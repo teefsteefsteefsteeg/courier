@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "forest_slime_body"
+transparency = 1
+albedo_color = Color(0.38, 0.74, 0.3, 0.88)
+roughness = 0.3
+metallic_specular = 0.7
+rim_enabled = true
+rim = 0.4

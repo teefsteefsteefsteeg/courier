@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/phase4_visual/combat_hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/phase4_visual/combat_visual_adapter.gd" id="2_adapter"]
+
+[node name="CombatVisualLayer" type="Node3D"]
+
+[node name="Effects" type="Node3D" parent="."]
+
+[node name="CombatHUD" type="CanvasLayer" parent="."]
+script = ExtResource("1_hud")
+
+[node name="CombatVisualAdapter" type="Node" parent="."]
+script = ExtResource("2_adapter")
+hud_path = NodePath("../CombatHUD")
+effects_root_path = NodePath("../Effects")
