@@ -1,11 +1,26 @@
 [gd_scene format=3]
 
+[ext_resource type="Script" path="res://scripts/phase3_visual/package_visual_fx.gd" id="1_fx"]
+
 [sub_resource type="StandardMaterial3D" id="Mat_paper"]
 albedo_color = Color(0.76, 0.58, 0.38, 1)
 roughness = 0.95
 
 [sub_resource type="StandardMaterial3D" id="Mat_string"]
 albedo_color = Color(0.95, 0.92, 0.82, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_tape"]
+albedo_color = Color(0.58, 0.42, 0.26, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_tag"]
+albedo_color = Color(0.97, 0.94, 0.84, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_seal"]
+albedo_color = Color(0.7, 0.1, 0.12, 1)
+roughness = 0.45
+metallic_specular = 0.7
 
 [sub_resource type="BoxMesh" id="Box_parcel"]
 size = Vector3(0.6, 0.4, 0.45)
@@ -16,7 +31,33 @@ size = Vector3(0.62, 0.42, 0.06)
 [sub_resource type="BoxMesh" id="Box_string_b"]
 size = Vector3(0.06, 0.42, 0.47)
 
+[sub_resource type="BoxMesh" id="Box_edge"]
+size = Vector3(0.035, 0.41, 0.035)
+
+[sub_resource type="BoxMesh" id="Box_flap_seam"]
+size = Vector3(0.61, 0.012, 0.05)
+
+[sub_resource type="SphereMesh" id="Sphere_knot"]
+radius = 0.045
+height = 0.06
+radial_segments = 6
+rings = 3
+
+[sub_resource type="PrismMesh" id="Prism_bow"]
+size = Vector3(0.09, 0.07, 0.03)
+
+[sub_resource type="BoxMesh" id="Box_tag"]
+size = Vector3(0.14, 0.006, 0.09)
+
+[sub_resource type="CylinderMesh" id="Cyl_seal"]
+top_radius = 0.05
+bottom_radius = 0.055
+height = 0.016
+radial_segments = 8
+rings = 1
+
 [node name="ParcelVisual" type="Node3D"]
+script = ExtResource("1_fx")
 
 [node name="Box" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
@@ -32,3 +73,53 @@ surface_material_override/0 = SubResource("Mat_string")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
 mesh = SubResource("Box_string_b")
 surface_material_override/0 = SubResource("Mat_string")
+
+[node name="EdgeFL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.2, 0.225)
+mesh = SubResource("Box_edge")
+surface_material_override/0 = SubResource("Mat_tape")
+
+[node name="EdgeFR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.2, 0.225)
+mesh = SubResource("Box_edge")
+surface_material_override/0 = SubResource("Mat_tape")
+
+[node name="EdgeBL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.2, -0.225)
+mesh = SubResource("Box_edge")
+surface_material_override/0 = SubResource("Mat_tape")
+
+[node name="EdgeBR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.2, -0.225)
+mesh = SubResource("Box_edge")
+surface_material_override/0 = SubResource("Mat_tape")
+
+[node name="FlapSeam" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.402, 0)
+mesh = SubResource("Box_flap_seam")
+surface_material_override/0 = SubResource("Mat_tape")
+
+[node name="Knot" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
+mesh = SubResource("Sphere_knot")
+surface_material_override/0 = SubResource("Mat_string")
+
+[node name="BowLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -0.06, 0.43, 0)
+mesh = SubResource("Prism_bow")
+surface_material_override/0 = SubResource("Mat_string")
+
+[node name="BowRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.06, 0.43, 0)
+mesh = SubResource("Prism_bow")
+surface_material_override/0 = SubResource("Mat_string")
+
+[node name="Tag" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.966, 0, 0.259, 0, 1, 0, -0.259, 0, 0.966, 0.17, 0.404, 0.12)
+mesh = SubResource("Box_tag")
+surface_material_override/0 = SubResource("Mat_tag")
+
+[node name="Seal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0.16, 0.12, 0.228)
+mesh = SubResource("Cyl_seal")
+surface_material_override/0 = SubResource("Mat_seal")

@@ -1,17 +1,62 @@
 [gd_scene format=3]
 
+[ext_resource type="Script" path="res://scripts/phase3_visual/potion_crate_visual_fx.gd" id="1_fx"]
+
 [sub_resource type="StandardMaterial3D" id="Mat_wood"]
 albedo_color = Color(0.5, 0.34, 0.2, 1)
 roughness = 0.95
 
+[sub_resource type="StandardMaterial3D" id="Mat_wood_dark"]
+albedo_color = Color(0.36, 0.23, 0.13, 1)
+roughness = 1.0
+
 [sub_resource type="StandardMaterial3D" id="Mat_potion"]
+resource_local_to_scene = true
 albedo_color = Color(0.45, 0.95, 0.55, 1)
 emission_enabled = true
 emission = Color(0.3, 1, 0.45, 1)
 emission_energy_multiplier = 0.8
 
+[sub_resource type="StandardMaterial3D" id="Mat_glass"]
+transparency = 1
+albedo_color = Color(0.8, 0.95, 0.9, 0.45)
+roughness = 0.1
+metallic_specular = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_cork"]
+albedo_color = Color(0.66, 0.48, 0.3, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_rope"]
+albedo_color = Color(0.8, 0.7, 0.48, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_hazard"]
+albedo_color = Color(0.98, 0.78, 0.12, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_hazard_mark"]
+albedo_color = Color(0.1, 0.08, 0.06, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_particle"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
 [sub_resource type="BoxMesh" id="Box_crate"]
 size = Vector3(0.6, 0.32, 0.45)
+
+[sub_resource type="BoxMesh" id="Box_rim_long"]
+size = Vector3(0.64, 0.04, 0.05)
+
+[sub_resource type="BoxMesh" id="Box_rim_short"]
+size = Vector3(0.05, 0.04, 0.45)
+
+[sub_resource type="BoxMesh" id="Box_post"]
+size = Vector3(0.05, 0.34, 0.05)
+
+[sub_resource type="BoxMesh" id="Box_plank"]
+size = Vector3(0.61, 0.025, 0.46)
 
 [sub_resource type="CylinderMesh" id="Cyl_bottle"]
 top_radius = 0.05
@@ -20,24 +65,219 @@ height = 0.26
 radial_segments = 6
 rings = 1
 
+[sub_resource type="CylinderMesh" id="Cyl_neck"]
+top_radius = 0.026
+bottom_radius = 0.034
+height = 0.06
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Cyl_cork"]
+top_radius = 0.034
+bottom_radius = 0.028
+height = 0.045
+radial_segments = 6
+rings = 1
+
+[sub_resource type="TorusMesh" id="Torus_handle"]
+inner_radius = 0.05
+outer_radius = 0.075
+rings = 8
+ring_segments = 4
+
+[sub_resource type="BoxMesh" id="Box_hazard"]
+size = Vector3(0.11, 0.11, 0.008)
+
+[sub_resource type="BoxMesh" id="Box_hazard_bar"]
+size = Vector3(0.016, 0.045, 0.006)
+
+[sub_resource type="BoxMesh" id="Box_hazard_dot"]
+size = Vector3(0.016, 0.016, 0.006)
+
+[sub_resource type="SphereMesh" id="Sphere_particle"]
+material = SubResource("Mat_particle")
+radius = 0.016
+height = 0.032
+radial_segments = 4
+rings = 2
+
+[sub_resource type="SphereMesh" id="Sphere_vapor"]
+material = SubResource("Mat_particle")
+radius = 0.045
+height = 0.09
+radial_segments = 5
+rings = 3
+
+[sub_resource type="Gradient" id="Grad_bubbles"]
+offsets = PackedFloat32Array(0, 0.7, 1)
+colors = PackedColorArray(1, 1, 1, 0.9, 1, 1, 1, 0.7, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Grad_vapor"]
+offsets = PackedFloat32Array(0, 0.3, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.45, 1, 1, 1, 0)
+
 [node name="PotionCrateVisual" type="Node3D"]
+script = ExtResource("1_fx")
 
 [node name="Crate" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
 mesh = SubResource("Box_crate")
 surface_material_override/0 = SubResource("Mat_wood")
 
+[node name="PlankLine" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("Box_plank")
+surface_material_override/0 = SubResource("Mat_wood_dark")
+
+[node name="RimFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 0.215)
+mesh = SubResource("Box_rim_long")
+surface_material_override/0 = SubResource("Mat_wood_dark")
+
+[node name="RimBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, -0.215)
+mesh = SubResource("Box_rim_long")
+surface_material_override/0 = SubResource("Mat_wood_dark")
+
+[node name="RimLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.295, 0.32, 0)
+mesh = SubResource("Box_rim_short")
+surface_material_override/0 = SubResource("Mat_wood_dark")
+
+[node name="RimRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.295, 0.32, 0)
+mesh = SubResource("Box_rim_short")
+surface_material_override/0 = SubResource("Mat_wood_dark")
+
+[node name="PostFL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.295, 0.16, 0.215)
+mesh = SubResource("Box_post")
+surface_material_override/0 = SubResource("Mat_wood_dark")
+
+[node name="PostFR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.295, 0.16, 0.215)
+mesh = SubResource("Box_post")
+surface_material_override/0 = SubResource("Mat_wood_dark")
+
+[node name="PostBL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.295, 0.16, -0.215)
+mesh = SubResource("Box_post")
+surface_material_override/0 = SubResource("Mat_wood_dark")
+
+[node name="PostBR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.295, 0.16, -0.215)
+mesh = SubResource("Box_post")
+surface_material_override/0 = SubResource("Mat_wood_dark")
+
+[node name="HandleLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.325, 0.2, 0)
+mesh = SubResource("Torus_handle")
+surface_material_override/0 = SubResource("Mat_rope")
+
+[node name="HandleRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.325, 0.2, 0)
+mesh = SubResource("Torus_handle")
+surface_material_override/0 = SubResource("Mat_rope")
+
+[node name="HazardLabel" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.707, -0.707, 0, 0.707, 0.707, 0, 0, 0, 1, 0, 0.17, 0.229)
+mesh = SubResource("Box_hazard")
+surface_material_override/0 = SubResource("Mat_hazard")
+
+[node name="HazardBar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 0.235)
+mesh = SubResource("Box_hazard_bar")
+surface_material_override/0 = SubResource("Mat_hazard_mark")
+
+[node name="HazardDot" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.142, 0.235)
+mesh = SubResource("Box_hazard_dot")
+surface_material_override/0 = SubResource("Mat_hazard_mark")
+
 [node name="BottleA" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 0.4, 0)
 mesh = SubResource("Cyl_bottle")
 surface_material_override/0 = SubResource("Mat_potion")
+
+[node name="Neck" type="MeshInstance3D" parent="BottleA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("Cyl_neck")
+surface_material_override/0 = SubResource("Mat_glass")
+
+[node name="Cork" type="MeshInstance3D" parent="BottleA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.205, 0)
+mesh = SubResource("Cyl_cork")
+surface_material_override/0 = SubResource("Mat_cork")
 
 [node name="BottleB" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.08)
 mesh = SubResource("Cyl_bottle")
 surface_material_override/0 = SubResource("Mat_potion")
 
+[node name="Neck" type="MeshInstance3D" parent="BottleB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("Cyl_neck")
+surface_material_override/0 = SubResource("Mat_glass")
+
+[node name="Cork" type="MeshInstance3D" parent="BottleB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.205, 0)
+mesh = SubResource("Cyl_cork")
+surface_material_override/0 = SubResource("Mat_cork")
+
 [node name="BottleC" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, 0.4, -0.04)
 mesh = SubResource("Cyl_bottle")
 surface_material_override/0 = SubResource("Mat_potion")
+
+[node name="Neck" type="MeshInstance3D" parent="BottleC"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("Cyl_neck")
+surface_material_override/0 = SubResource("Mat_glass")
+
+[node name="Cork" type="MeshInstance3D" parent="BottleC"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.205, 0)
+mesh = SubResource("Cyl_cork")
+surface_material_override/0 = SubResource("Mat_cork")
+
+[node name="HazardLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+light_color = Color(0.3, 1, 0.45, 1)
+light_energy = 0.3
+omni_range = 1.1
+
+[node name="Bubbles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+amount = 12
+lifetime = 0.9
+randomness = 0.5
+mesh = SubResource("Sphere_particle")
+emission_shape = 3
+emission_box_extents = Vector3(0.2, 0.02, 0.1)
+direction = Vector3(0, 1, 0)
+spread = 15.0
+gravity = Vector3(0, 0.25, 0)
+initial_velocity_min = 0.05
+initial_velocity_max = 0.15
+scale_amount_min = 0.5
+scale_amount_max = 1.1
+color = Color(0.3, 1, 0.45, 1)
+color_ramp = SubResource("Grad_bubbles")
+
+[node name="Vapor" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+emitting = false
+amount = 16
+lifetime = 1.6
+randomness = 0.6
+mesh = SubResource("Sphere_vapor")
+emission_shape = 3
+emission_box_extents = Vector3(0.22, 0.03, 0.12)
+direction = Vector3(0, 1, 0)
+spread = 30.0
+gravity = Vector3(0, 0.35, 0)
+initial_velocity_min = 0.08
+initial_velocity_max = 0.2
+scale_amount_min = 0.6
+scale_amount_max = 1.6
+color = Color(0.6, 1, 0.7, 1)
+color_ramp = SubResource("Grad_vapor")

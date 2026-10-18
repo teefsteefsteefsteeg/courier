@@ -1,0 +1,141 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/phase3_visual/package_status_hud.gd" id="1_status"]
+
+[sub_resource type="StyleBoxFlat" id="Style_panel"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.08, 0.07, 0.1, 0.82)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.75, 0.45, 0.9)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="Style_bar_bg"]
+bg_color = Color(0.16, 0.14, 0.18, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="Style_bar_fill"]
+bg_color = Color(0.95, 0.7, 0.3, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="PackageStatusHUD" type="Control"]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -150.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("1_status")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Rows" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Panel/Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.9, 0.7, 1)
+text = "Package"
+
+[node name="TemperatureRow" type="HBoxContainer" parent="Panel/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Caption" type="Label" parent="Panel/Rows/TemperatureRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Temp"
+
+[node name="Bar" type="ProgressBar" parent="Panel/Rows/TemperatureRow"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/background = SubResource("Style_bar_bg")
+theme_override_styles/fill = SubResource("Style_bar_fill")
+max_value = 1.0
+step = 0.001
+value = 0.5
+show_percentage = false
+
+[node name="SafeBand" type="ColorRect" parent="Panel/Rows/TemperatureRow/Bar"]
+layout_mode = 1
+anchor_left = 0.35
+anchor_right = 0.65
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0.18)
+
+[node name="Value" type="Label" parent="Panel/Rows/TemperatureRow"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+horizontal_alignment = 2
+text = "50°"
+
+[node name="InstabilityRow" type="HBoxContainer" parent="Panel/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Caption" type="Label" parent="Panel/Rows/InstabilityRow"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Instability"
+
+[node name="Bar" type="ProgressBar" parent="Panel/Rows/InstabilityRow"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/background = SubResource("Style_bar_bg")
+theme_override_styles/fill = SubResource("Style_bar_fill")
+max_value = 1.0
+step = 0.001
+show_percentage = false
+
+[node name="Value" type="Label" parent="Panel/Rows/InstabilityRow"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+horizontal_alignment = 2
+text = "0%"
+
+[node name="Warning" type="Label" parent="Panel/Rows"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.3, 1)
+horizontal_alignment = 1
+text = "WARNING"

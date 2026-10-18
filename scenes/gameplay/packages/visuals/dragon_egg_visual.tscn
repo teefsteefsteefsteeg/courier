@@ -1,6 +1,9 @@
 [gd_scene format=3]
 
+[ext_resource type="Script" path="res://scripts/phase3_visual/dragon_egg_visual_fx.gd" id="1_fx"]
+
 [sub_resource type="StandardMaterial3D" id="Mat_egg"]
+resource_local_to_scene = true
 albedo_color = Color(0.86, 0.32, 0.22, 1)
 roughness = 0.6
 emission_enabled = true
@@ -9,6 +12,32 @@ emission_energy_multiplier = 0.25
 
 [sub_resource type="StandardMaterial3D" id="Mat_spots"]
 albedo_color = Color(0.98, 0.78, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_ridge"]
+albedo_color = Color(0.55, 0.16, 0.12, 1)
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="Mat_glow_shell"]
+resource_local_to_scene = true
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+cull_mode = 1
+albedo_color = Color(1, 0.45, 0.15, 0.12)
+
+[sub_resource type="StandardMaterial3D" id="Mat_straw"]
+albedo_color = Color(0.78, 0.64, 0.34, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_twig"]
+albedo_color = Color(0.42, 0.29, 0.17, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Mat_particle"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
 
 [sub_resource type="SphereMesh" id="Sphere_egg"]
 radius = 0.25
@@ -22,7 +51,41 @@ height = 0.12
 radial_segments = 6
 rings = 3
 
+[sub_resource type="SphereMesh" id="Sphere_glow_shell"]
+radius = 0.29
+height = 0.58
+radial_segments = 10
+rings = 6
+
+[sub_resource type="PrismMesh" id="Prism_ridge"]
+size = Vector3(0.06, 0.08, 0.04)
+
+[sub_resource type="TorusMesh" id="Torus_nest"]
+inner_radius = 0.14
+outer_radius = 0.27
+rings = 8
+ring_segments = 5
+
+[sub_resource type="BoxMesh" id="Box_twig"]
+size = Vector3(0.32, 0.025, 0.025)
+
+[sub_resource type="SphereMesh" id="Sphere_particle"]
+material = SubResource("Mat_particle")
+radius = 0.018
+height = 0.036
+radial_segments = 4
+rings = 2
+
+[sub_resource type="Gradient" id="Grad_embers"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(1, 0.95, 0.6, 1, 1, 0.5, 0.12, 0.9, 0.6, 0.12, 0.05, 0)
+
+[sub_resource type="Gradient" id="Grad_frost"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.85, 0.95, 1, 0.9, 0.5, 0.75, 1, 0)
+
 [node name="DragonEggVisual" type="Node3D"]
+script = ExtResource("1_fx")
 
 [node name="Egg" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1.35, 0, 0, 0, 1, 0, 0.34, 0)
@@ -38,3 +101,85 @@ surface_material_override/0 = SubResource("Mat_spots")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.3, 0.17)
 mesh = SubResource("Sphere_spot")
 surface_material_override/0 = SubResource("Mat_spots")
+
+[node name="SpotC" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0.05, 0.22, -0.22)
+mesh = SubResource("Sphere_spot")
+surface_material_override/0 = SubResource("Mat_spots")
+
+[node name="RidgeTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.66, -0.06)
+mesh = SubResource("Prism_ridge")
+surface_material_override/0 = SubResource("Mat_ridge")
+
+[node name="RidgeMid" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.766, 0.643, 0, -0.643, 0.766, 0, 0.57, -0.19)
+mesh = SubResource("Prism_ridge")
+surface_material_override/0 = SubResource("Mat_ridge")
+
+[node name="RidgeLow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.342, 0.94, 0, -0.94, 0.342, 0, 0.43, -0.25)
+mesh = SubResource("Prism_ridge")
+surface_material_override/0 = SubResource("Mat_ridge")
+
+[node name="GlowShell" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1.35, 0, 0, 0, 1, 0, 0.34, 0)
+cast_shadow = 0
+mesh = SubResource("Sphere_glow_shell")
+surface_material_override/0 = SubResource("Mat_glow_shell")
+
+[node name="Nest" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, 0, 0.04, 0)
+mesh = SubResource("Torus_nest")
+surface_material_override/0 = SubResource("Mat_straw")
+
+[node name="TwigA" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866, 0.02, 0.07, 0.17)
+mesh = SubResource("Box_twig")
+surface_material_override/0 = SubResource("Mat_twig")
+
+[node name="TwigB" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, -0.866, 0, 1, 0, 0.866, 0, 0.5, -0.16, 0.06, -0.06)
+mesh = SubResource("Box_twig")
+surface_material_override/0 = SubResource("Mat_twig")
+
+[node name="GlowLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.34, 0)
+light_color = Color(1, 0.45, 0.15, 1)
+light_energy = 0.4
+omni_range = 1.4
+
+[node name="Embers" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+amount = 14
+lifetime = 1.4
+randomness = 0.5
+mesh = SubResource("Sphere_particle")
+emission_shape = 1
+emission_sphere_radius = 0.26
+direction = Vector3(0, 1, 0)
+spread = 25.0
+gravity = Vector3(0, 0.4, 0)
+initial_velocity_min = 0.12
+initial_velocity_max = 0.32
+scale_amount_min = 0.5
+scale_amount_max = 1.2
+color_ramp = SubResource("Grad_embers")
+
+[node name="Frost" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+emitting = false
+amount = 10
+lifetime = 1.6
+randomness = 0.4
+mesh = SubResource("Sphere_particle")
+emission_shape = 1
+emission_sphere_radius = 0.3
+direction = Vector3(0, -1, 0)
+spread = 40.0
+gravity = Vector3(0, -0.3, 0)
+initial_velocity_min = 0.02
+initial_velocity_max = 0.08
+scale_amount_min = 0.4
+scale_amount_max = 0.9
+color_ramp = SubResource("Grad_frost")
