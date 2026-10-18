@@ -1,0 +1,65 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/phase3_visual/phase3_showcase.gd" id="1_showcase"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/packages/visuals/dragon_egg_visual.tscn" id="2_egg"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/packages/visuals/potion_crate_visual.tscn" id="3_potion"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="4_interactable"]
+[ext_resource type="Resource" path="res://data/packages/pkg_dragon_egg.tres" id="5_egg_data"]
+[ext_resource type="Resource" path="res://data/packages/pkg_potion_crate.tres" id="6_potion_data"]
+
+[sub_resource type="CylinderMesh" id="PedestalMesh"]
+top_radius = 0.48
+bottom_radius = 0.62
+height = 0.55
+radial_segments = 12
+
+[sub_resource type="StandardMaterial3D" id="PedestalMaterial"]
+albedo_color = Color(0.18, 0.13, 0.21, 1)
+metallic = 0.15
+roughness = 0.58
+
+[sub_resource type="SphereShape3D" id="InteractShape"]
+radius = 1.8
+
+[node name="Phase3Showcase" type="Node3D"]
+script = ExtResource("1_showcase")
+dragon_egg_definition = ExtResource("5_egg_data")
+potion_crate_definition = ExtResource("6_potion_data")
+
+[node name="EggPedestal" type="MeshInstance3D" parent="."]
+position = Vector3(-1.25, 0.275, 0)
+mesh = SubResource("PedestalMesh")
+surface_material_override/0 = SubResource("PedestalMaterial")
+
+[node name="PotionPedestal" type="MeshInstance3D" parent="."]
+position = Vector3(1.25, 0.275, 0)
+mesh = SubResource("PedestalMesh")
+surface_material_override/0 = SubResource("PedestalMaterial")
+
+[node name="DragonEgg" parent="." instance=ExtResource("2_egg")]
+position = Vector3(-1.25, 0.62, 0)
+scale = Vector3(1.35, 1.35, 1.35)
+
+[node name="PotionCrate" parent="." instance=ExtResource("3_potion")]
+position = Vector3(1.25, 0.62, 0)
+scale = Vector3(1.15, 1.15, 1.15)
+
+[node name="StatusLabel" type="Label3D" parent="."]
+position = Vector3(0, 1.9, 0.25)
+text = "ARCANE CARGO EXHIBIT"
+font_size = 32
+outline_size = 8
+modulate = Color(1, 0.9, 0.55, 1)
+billboard = 1
+
+[node name="Interactable" type="Area3D" parent="."]
+position = Vector3(0, 0.8, 0)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("4_interactable")
+prompt_verb = "Inspect"
+display_name = "Arcane Cargo Exhibit"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+shape = SubResource("InteractShape")
