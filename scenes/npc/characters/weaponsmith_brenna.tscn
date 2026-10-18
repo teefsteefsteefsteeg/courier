@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="2_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Barbarian.glb" id="3_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="4_anim"]
+
+[node name="WeaponsmithBrenna" instance=ExtResource("1_npc")]
+npc_name = "Weaponsmith Brenna"
+lines = PackedStringArray("Steel for the road, courier? Whisperwood bites back.", "Every blade on that rack was forged next door at the Hill smithy.", "A shield is cheaper than a healer. Remember that.")
+body_color = Color(0.55, 0.36, 0.26, 1)
+npc_id = &"armory_merchant"
+
+[node name="Visual" parent="."]
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 0, 0, 0)
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("2_char")
+model = ExtResource("3_model")
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("4_anim")
+character = NodePath("../Visual/Character")

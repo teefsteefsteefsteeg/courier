@@ -101,6 +101,10 @@ func _uses_real_model(node: Node, folder: String) -> bool:
 			and node.get_node(^"Model").scene_file_path.ends_with(".fbx")
 
 
+func _uses_megakit_building(node: Node) -> bool:
+	return node is MedievalBuilding and (node as MedievalBuilding).merge_model 			and node.scene_file_path.begins_with("res://scenes/buildings/") and node.has_node(^"Model/Merged")
+
+
 func _real_materials(node: Node) -> bool:
 	var meshes := _meshes(node)
 	if meshes.is_empty():
@@ -142,17 +146,19 @@ func _test_houses() -> void:
 	print("[Medieval houses]")
 	for house_name in REPLACED_HOUSES:
 		var house := level.get_node("Buildings/" + house_name)
-		_check(_uses_real_model(house, "medieval"), "%s uses a Medieval Village model" % house_name)
+		# Since Phase 5F the houses are MegaKit assemblies (see phase5f_building_tests.gd).
+		_check(_uses_megakit_building(house), "%s uses a Phase 5F MegaKit building" % house_name)
 		_check(_real_materials(house), "%s keeps imported materials and casts shadows" % house_name)
 		var box := _collider(house).shape as BoxShape3D
 		_check(box != null and box.size.x / 2 <= COTTAGE_HALF.x and box.size.z / 2 <= COTTAGE_HALF.y,
 				"%s collider fits the old cottage footprint (%s)" % [house_name, box.size if box else Vector3.ZERO])
+		# Eaves, balconies and the mill's sails now reach past the old footprint; the
+		# collider above still fits it, and phase5f_building_tests.gd bounds the overhang.
 		var aabb := _world_aabb(house)
-		_check(aabb.size.x / 2 <= COTTAGE_HALF.x + 0.1 and aabb.size.z / 2 <= COTTAGE_HALF.y + 0.1 and aabb.position.y > -0.05,
-				"%s model sits on the ground inside the old footprint (%s)" % [house_name, aabb.size])
+		_check(aabb.position.y > -0.05, "%s model sits on the ground (%s)" % [house_name, aabb.size])
 		_check(house.get_node_or_null(^"CameraOccluder") is CameraOccluder, "%s still fades for the camera" % house_name)
 	var shop := level.get_node("Buildings/AlchemyShop")
-	_check(shop is MedievalBuilding and _uses_real_model(shop, "medieval"), "AlchemyShop is a recoloured Medieval Village model")
+	_check(shop is MedievalBuilding and _uses_megakit_building(shop), "AlchemyShop is a recoloured MegaKit building")
 
 
 func _world_aabb(node: Node3D) -> AABB:

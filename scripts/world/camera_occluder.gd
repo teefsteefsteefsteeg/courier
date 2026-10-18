@@ -26,13 +26,20 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	collect_geometry()
+	set_process(false)
+
+
+## Finds the geometry to fade. Call again if the parent's meshes are replaced
+## (MedievalBuilding merges its pieces after this node is ready).
+func collect_geometry() -> void:
+	_geometry.clear()
 	var stack: Array[Node] = [get_parent()]
 	while not stack.is_empty():
 		var node: Node = stack.pop_back()
-		if node is GeometryInstance3D:
+		if node is GeometryInstance3D and not node.is_queued_for_deletion():
 			_geometry.append(node)
 		stack.append_array(node.get_children())
-	set_process(false)
 
 
 func set_occluding(value: bool) -> void:

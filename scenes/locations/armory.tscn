@@ -1,0 +1,98 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/armory.gd" id="1_2kl3e"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/armory_hall.tscn" id="2_kj3sb"]
+[ext_resource type="Script" path="res://scripts/world/medieval_building.gd" id="3_l7cdv"]
+[ext_resource type="PackedScene" path="res://scenes/props/armory/polearm_rack.tscn" id="4_e12hm"]
+[ext_resource type="Script" path="res://scripts/world/merged_prop.gd" id="5_xu1x8"]
+[ext_resource type="PackedScene" path="res://scenes/props/armory/sword_rack.tscn" id="6_b2xnk"]
+[ext_resource type="PackedScene" path="res://scenes/props/armory/display_table.tscn" id="7_ql51j"]
+[ext_resource type="PackedScene" path="res://scenes/props/armory/merchant_counter.tscn" id="8_j7c2x"]
+[ext_resource type="PackedScene" path="res://scenes/props/armory/weapon_barrel.tscn" id="9_ftkn0"]
+[ext_resource type="PackedScene" path="res://scenes/props/armory/armory_emblem.tscn" id="10_c6qqw"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/shield_C.gltf" id="11_0ktqv"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/shield_B.gltf" id="12_g2ub8"]
+[ext_resource type="Material" path="res://assets/materials/buildings/planks.tres" id="13_r81un"]
+[ext_resource type="PackedScene" path="res://scenes/npc/characters/weaponsmith_brenna.tscn" id="14_2wfef"]
+[ext_resource type="Script" path="res://scripts/npc/npc.gd" id="15_br26x"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1cmjt"]
+material = ExtResource("13_r81un")
+size = Vector3(2, 0.5, 0.06)
+
+[node name="Armory" type="Node3D" unique_id=756642608 node_paths=PackedStringArray("merchant")]
+script = ExtResource("1_2kl3e")
+merchant = NodePath("Merchant")
+
+[node name="Hall" type="StaticBody3D" parent="." unique_id=1517699624 instance=ExtResource("2_kj3sb")]
+script = ExtResource("3_l7cdv")
+roof_color = Color(0.36, 0.42, 0.52, 1)
+window_glow = Color(1, 0.8, 0.45, 1)
+merge_model = true
+
+[node name="Displays" type="Node3D" parent="." unique_id=1793985023]
+
+[node name="PolearmRack" type="StaticBody3D" parent="Displays" unique_id=616759140 instance=ExtResource("4_e12hm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2.78, 0, -0.2)
+script = ExtResource("5_xu1x8")
+
+[node name="SwordRack" type="StaticBody3D" parent="Displays" unique_id=1914621611 instance=ExtResource("6_b2xnk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45, 0, 2)
+script = ExtResource("5_xu1x8")
+
+[node name="DisplayTable" type="StaticBody3D" parent="Displays" unique_id=896772306 instance=ExtResource("7_ql51j")]
+transform = Transform3D(0.9945219, 0, 0.104528464, 0, 1, 0, -0.104528464, 0, 0.9945219, -1.45, 0, 4)
+script = ExtResource("5_xu1x8")
+
+[node name="MerchantCounter" type="StaticBody3D" parent="Displays" unique_id=667737063 instance=ExtResource("8_j7c2x")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 2.85)
+script = ExtResource("5_xu1x8")
+
+[node name="WeaponBarrel" type="StaticBody3D" parent="Displays" unique_id=1698050744 instance=ExtResource("9_ftkn0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.85, 0, 4.25)
+script = ExtResource("5_xu1x8")
+
+[node name="Facade" type="Node3D" parent="." unique_id=471124120]
+
+[node name="GableEmblem" type="StaticBody3D" parent="Facade" unique_id=33797779 instance=ExtResource("10_c6qqw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2.5, 5.75, 0)
+script = ExtResource("5_xu1x8")
+
+[node name="RailShieldL" type="Node3D" parent="Facade" unique_id=2090401796 instance=ExtResource("11_0ktqv")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, -1.7, 2.9, 3.32)
+
+[node name="RailShieldR" type="Node3D" parent="Facade" unique_id=968416013 instance=ExtResource("12_g2ub8")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 1.7, 2.9, 3.32)
+
+[node name="SignBoard" type="MeshInstance3D" parent="Facade" unique_id=617210832]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.95, 3.3)
+mesh = SubResource("BoxMesh_1cmjt")
+
+[node name="SignText" type="Label3D" parent="Facade" unique_id=1494678507]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.95, 3.34)
+pixel_size = 0.006
+modulate = Color(0.95, 0.82, 0.45, 1)
+text = "ARMORY"
+font_size = 64
+outline_size = 0
+
+[node name="Merchant" type="StaticBody3D" parent="." unique_id=1613990544 instance=ExtResource("14_2wfef")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 2.05)
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("15_br26x")
+npc_id = &"armory_merchant"
+npc_name = "Weaponsmith Brenna"
+lines = PackedStringArray("Steel for the road, courier? Whisperwood bites back.", "Every blade on that rack was forged next door at the Hill smithy.", "A shield is cheaper than a healer. Remember that.")
+body_color = Color(0.55, 0.36, 0.26, 1)
+
+[node name="Markers" type="Node3D" parent="." unique_id=1586930164]
+
+[node name="MerchantSpot" type="Marker3D" parent="Markers" unique_id=213401536]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 2.05)
+
+[node name="ShopFront" type="Marker3D" parent="Markers" unique_id=2041824167]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 3.75)
+
+[node name="Entrance" type="Marker3D" parent="Markers" unique_id=529569302]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)

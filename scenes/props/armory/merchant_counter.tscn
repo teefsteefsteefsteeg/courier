@@ -1,0 +1,77 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/merged_prop.gd" id="1_s4fhm"]
+[ext_resource type="Material" path="res://assets/materials/buildings/timber.tres" id="2_m3g5n"]
+[ext_resource type="Material" path="res://assets/materials/buildings/planks.tres" id="3_vb3io"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/bow_A_withString.gltf" id="4_0u712"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/arrow_A.gltf" id="5_a3ki2"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/arrow_B.gltf" id="6_7tgrn"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/wand_A.gltf" id="7_y00mm"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/fistweapon_A_stacked.gltf" id="8_npfrj"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_2qqu7"]
+material = ExtResource("2_m3g5n")
+size = Vector3(1.8, 0.08, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fdk7f"]
+material = ExtResource("3_vb3io")
+size = Vector3(1.76, 0.92, 0.06)
+
+[sub_resource type="BoxMesh" id="BoxMesh_t7hu1"]
+material = ExtResource("3_vb3io")
+size = Vector3(0.06, 0.92, 0.56)
+
+[sub_resource type="BoxMesh" id="BoxMesh_l5oh7"]
+material = ExtResource("3_vb3io")
+size = Vector3(0.06, 0.92, 0.56)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rkxdv"]
+material = ExtResource("2_m3g5n")
+size = Vector3(1.84, 0.1, 0.64)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g8nlk"]
+size = Vector3(1.8, 1, 0.6)
+
+[node name="MerchantCounter" type="StaticBody3D" unique_id=667737063]
+script = ExtResource("1_s4fhm")
+
+[node name="Model" type="Node3D" parent="." unique_id=2063384044]
+
+[node name="Top" type="MeshInstance3D" parent="Model" unique_id=913296442]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.96, 0)
+mesh = SubResource("BoxMesh_2qqu7")
+
+[node name="Front" type="MeshInstance3D" parent="Model" unique_id=1237141843]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.46, 0.26)
+mesh = SubResource("BoxMesh_fdk7f")
+
+[node name="SideL" type="MeshInstance3D" parent="Model" unique_id=953430356]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85, 0.46, 0)
+mesh = SubResource("BoxMesh_t7hu1")
+
+[node name="SideR" type="MeshInstance3D" parent="Model" unique_id=650257878]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.85, 0.46, 0)
+mesh = SubResource("BoxMesh_l5oh7")
+
+[node name="Plinth" type="MeshInstance3D" parent="Model" unique_id=1468831588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0.02)
+mesh = SubResource("BoxMesh_rkxdv")
+
+[node name="bow_A_withString2" type="Node3D" parent="Model" unique_id=1613861280 instance=ExtResource("4_0u712")]
+transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, -0.3, 1.03, 0.12)
+
+[node name="arrow_A2" type="Node3D" parent="Model" unique_id=907094653 instance=ExtResource("5_a3ki2")]
+transform = Transform3D(0.09550653, 0, 0.5416443, 0, 0.55, 0, -0.5416443, 0, 0.09550653, 0.35, 1.02, 0)
+
+[node name="arrow_B2" type="Node3D" parent="Model" unique_id=1460423246 instance=ExtResource("6_7tgrn")]
+transform = Transform3D(-0.047935672, 0, 0.5479071, 0, 0.55, 0, -0.5479071, 0, -0.047935672, 0.42, 1.02, -0.12)
+
+[node name="wand_A2" type="Node3D" parent="Model" unique_id=1500323189 instance=ExtResource("7_y00mm")]
+transform = Transform3D(0.275, 0.47631398, 0, 0, 0, 0.55, 0.47631398, -0.275, 0, 0.6, 1.06, 0.15)
+
+[node name="fistweapon_A_stacked2" type="Node3D" parent="Model" unique_id=1652730239 instance=ExtResource("8_npfrj")]
+transform = Transform3D(0.5168309, 0, 0.18811107, 0, 0.55, 0, -0.18811107, 0, 0.5168309, 0.05, 1, -0.15)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=499853069]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_g8nlk")
