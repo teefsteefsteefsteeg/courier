@@ -6,6 +6,10 @@
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_brass.tres" id="3_brass"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_cloth_dark.tres" id="4_cloth_dark"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_potion_green.tres" id="5_potion_green"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="c5_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Rogue_Hooded.glb" id="c5_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="c5_anim"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/items/spellbook_open.gltf" id="c5_item"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_tuft"]
 size = Vector3(0.3, 0.12, 0.3)
@@ -37,34 +41,50 @@ body_color = Color(0.24, 0.4, 0.26, 1)
 npc_id = &"village_alchemist"
 
 [node name="Hair" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.74, 0.04)
 mesh = SubResource("BoxMesh_tuft")
 surface_material_override/0 = ExtResource("2_beard")
 
 [node name="GoggleLeft" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -0.1, 1.64, -0.24)
 mesh = SubResource("CylinderMesh_goggle")
 surface_material_override/0 = ExtResource("3_brass")
 
 [node name="GoggleRight" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0.1, 1.64, -0.24)
 mesh = SubResource("CylinderMesh_goggle")
 surface_material_override/0 = ExtResource("3_brass")
 
 [node name="Belt" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, 0)
 mesh = SubResource("BoxMesh_strap")
 surface_material_override/0 = ExtResource("4_cloth_dark")
 
 [node name="Vial" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.86, -0.26)
 mesh = SubResource("CylinderMesh_vial")
 surface_material_override/0 = ExtResource("5_potion_green")
 
 [node name="Pouch" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28, 0.62, -0.27)
 mesh = SubResource("BoxMesh_cauldron_bag")
 surface_material_override/0 = ExtResource("4_cloth_dark")
 
 [node name="QuestBehaviour" type="Node" parent="."]
 script = ExtResource("20_qnpc")
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("c5_char")
+model = ExtResource("c5_model")
+held_item = ExtResource("c5_item")
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("c5_anim")
+character = NodePath("../Visual/Character")

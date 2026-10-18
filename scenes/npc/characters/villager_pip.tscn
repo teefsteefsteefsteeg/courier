@@ -3,6 +3,10 @@
 [ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_canvas.tres" id="2_canvas"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_courier_satchel.tres" id="3_courier_satchel"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="c5_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Knight.glb" id="c5_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="c5_anim"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/items/sword_1handed.gltf" id="c5_item"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_straw_brim"]
 top_radius = 0.42
@@ -31,16 +35,29 @@ npc_id = &"villager_pip"
 transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 0, 0, 0)
 
 [node name="StrawBrim" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.74, 0)
 mesh = SubResource("CylinderMesh_straw_brim")
 surface_material_override/0 = ExtResource("2_canvas")
 
 [node name="StrawTop" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.84, 0)
 mesh = SubResource("CylinderMesh_straw_top")
 surface_material_override/0 = ExtResource("2_canvas")
 
 [node name="Satchel" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.8, 0.12)
 mesh = SubResource("BoxMesh_satchel")
 surface_material_override/0 = ExtResource("3_courier_satchel")
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("c5_char")
+model = ExtResource("c5_model")
+held_item = ExtResource("c5_item")
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("c5_anim")
+character = NodePath("../Visual/Character")

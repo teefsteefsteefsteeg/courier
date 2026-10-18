@@ -6,8 +6,8 @@ primitive meshes and flat-colour materials authored in this repo.
 
 | Asset | Path | Type | Source / License | Status |
 |---|---|---|---|---|
-| Courier (player) | `scenes/player/player.tscn` (Visual) | Capsule/sphere/box/cylinder primitives | Authored in-repo, no license needed | PLACEHOLDER |
-| NPC body | `scenes/npc/npc.tscn` (Visual) | Primitives, colour set per instance | Authored in-repo | PLACEHOLDER |
+| Courier (player) | `scenes/player/player.tscn` (Visual) | Primitive meshes kept hidden; KayKit Ranger shown | Authored in-repo | Replaced in 5C |
+| NPC body | `scenes/npc/npc.tscn` (Visual) | Primitives kept hidden; KayKit models per character | Authored in-repo | Replaced in 5C |
 | Crate | `scenes/props/placeholder_crate.tscn` | BoxMesh 1 m | Authored in-repo | PLACEHOLDER |
 | Rock | `scenes/props/placeholder_rock.tscn` | 6-sided CylinderMesh | Authored in-repo | PLACEHOLDER (test yard / sandbox only; village uses Quaternius rocks) |
 | Tree | `scenes/props/placeholder_tree.tscn` | Cylinder trunk + 2 cones | Authored in-repo | PLACEHOLDER (test yard / sandbox only; village and forest use Quaternius trees) |
@@ -15,7 +15,7 @@ primitive meshes and flat-colour materials authored in this repo.
 | Flat materials (32) | `assets/materials/placeholder/ph_*.tres` | StandardMaterial3D (some emissive) | Authored in-repo | PLACEHOLDER |
 | Village buildings and props | `scenes/props/{cottage,signpost,bush}.tscn` | Box/Prism/Cylinder/Sphere primitives | Authored in-repo | PLACEHOLDER (signposts still primitive; `cottage`/`bush` unused in the village since 5B). Well, lamp, stall, barrel, bench, crate and mushroom props use Quaternius models since 5B |
 | Post office, forest entrance | `scenes/locations/*.tscn` | Primitive colliders and Label3D signs; visuals from `scenes/environment/*_dressing.tscn` | Authored in-repo | Primitive meshes hidden since 5B; mailbox, sign boards and forest sign remain primitive |
-| NPC costumes (5) | `scenes/npc/characters/*.tscn` | Primitive accessories on npc.tscn | Authored in-repo | PLACEHOLDER |
+| NPC costumes (5) | `scenes/npc/characters/*.tscn` | Primitive accessories, hidden since 5C | Authored in-repo | Replaced in 5C |
 | UI theme | `assets/ui/courier_theme.tres` | Theme and StyleBoxFlat | Authored in-repo | Temporary |
 | UI font | engine default | Godot default font | Godot (MIT) | Temporary |
 | Parcel / Dragon egg / Potion crate visuals | `scenes/gameplay/packages/visuals/*.tscn` | Primitives + inline materials | Authored in-repo (Phase 2) | PLACEHOLDER |
@@ -67,6 +67,28 @@ files themselves are unmodified. 120 models are imported in total; every one is 
 Not used: packs without a License.txt (Modular Dungeon Pack - Jan 2018, RPG Asset Pack - May 2017,
 Simple Nature Pack - Dec 2016), and the Ruins "Overgrown"/foliage pieces, which need texture files.
 Authored (no licence needed): ground materials in `assets/materials/environment/` (NoiseTexture2D).
+
+### Phase 5C additions (2026-10-18): characters
+
+KayKit Adventurers Character Pack 2.0 (FREE) by Kay Lousberg (www.kaylousberg.com),
+**CC0 1.0** (https://creativecommons.org/publicdomain/zero/1.0/); credit optional, given here.
+License.txt copied to `assets/characters/kaykit_adventurers/`. Source: the pack copy found at
+`D:\courier-phase5a-assets\characters\KayKit_Adventurers_2.0_FREE` (the requested
+`D:\MysticCourierAssets\Characters\` folder does not exist). GLB/glTF, unmodified, Godot 4.7 importer defaults.
+
+| File | Used for |
+|---|---|
+| `Ranger.glb` | Courier (player) |
+| `Barbarian.glb` + `items/mug_full.gltf` | Postmaster Bram |
+| `Rogue.glb` | Merchant Mira |
+| `Rogue_Hooded.glb` + `items/spellbook_open.gltf` | Alchemist Corvin |
+| `Mage.glb` + `items/staff.gltf` | Mage Elowen |
+| `Knight.glb` + `items/sword_1handed.gltf` | Villager Pip (child-scaled) |
+| `animations/Rig_Medium_General.glb`, `animations/Rig_Medium_MovementBasic.glb` | Shared Rig_Medium clips for all six |
+| `items/*_texture.png` | Textures referenced by the item glTFs |
+
+Not imported: Assets/ weapons and shields other than the four above, FBX/OBJ duplicates.
+The pack has no creature models, so Forest Slime and Frost Wisp keep their authored visuals.
 
 When adding an external asset, record: name, path, author, source URL, license (with a link), date
 imported, and any modifications.

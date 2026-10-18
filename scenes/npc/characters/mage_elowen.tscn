@@ -6,6 +6,10 @@
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_cloth_dark.tres" id="3_cloth_dark"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_crystal.tres" id="4_crystal"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_tree_trunk.tres" id="5_tree_trunk"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="c5_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Mage.glb" id="c5_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="c5_anim"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/items/staff.gltf" id="c5_item"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_hat_brim"]
 top_radius = 0.44
@@ -44,29 +48,44 @@ body_color = Color(0.26, 0.3, 0.68, 1)
 npc_id = &"forest_mage"
 
 [node name="HatBrim" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 mesh = SubResource("CylinderMesh_hat_brim")
 surface_material_override/0 = ExtResource("3_cloth_dark")
 
 [node name="HatCone" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.08, 0.04)
 mesh = SubResource("CylinderMesh_hat_cone")
 surface_material_override/0 = ExtResource("3_cloth_dark")
 
 [node name="Hair" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.38, 0.2)
 mesh = SubResource("BoxMesh_hair")
 surface_material_override/0 = ExtResource("2_beard")
 
 [node name="Staff" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 1.0, -0.12)
 mesh = SubResource("CylinderMesh_staff")
 surface_material_override/0 = ExtResource("5_tree_trunk")
 
 [node name="StaffOrb" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.48, 2.05, -0.12)
 mesh = SubResource("SphereMesh_orb")
 surface_material_override/0 = ExtResource("4_crystal")
 
 [node name="QuestBehaviour" type="Node" parent="."]
 script = ExtResource("20_qnpc")
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("c5_char")
+model = ExtResource("c5_model")
+held_item = ExtResource("c5_item")
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("c5_anim")
+character = NodePath("../Visual/Character")

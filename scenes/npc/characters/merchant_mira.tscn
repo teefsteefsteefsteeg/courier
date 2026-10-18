@@ -5,6 +5,9 @@
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_canvas.tres" id="2_canvas"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_mushroom_cap.tres" id="3_mushroom_cap"]
 [ext_resource type="Material" path="res://assets/materials/placeholder/ph_wood_dark.tres" id="4_wood_dark"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="c5_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Rogue.glb" id="c5_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="c5_anim"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_scarf"]
 radius = 0.31
@@ -29,19 +32,31 @@ body_color = Color(0.2, 0.55, 0.55, 1)
 npc_id = &"village_merchant"
 
 [node name="Headscarf" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.53, 0.02)
 mesh = SubResource("SphereMesh_scarf")
 surface_material_override/0 = ExtResource("3_mushroom_cap")
 
 [node name="Bun" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0.28)
 mesh = SubResource("SphereMesh_bun")
 surface_material_override/0 = ExtResource("4_wood_dark")
 
 [node name="Apron" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.72, -0.38)
 mesh = SubResource("BoxMesh_apron")
 surface_material_override/0 = ExtResource("2_canvas")
 
 [node name="QuestBehaviour" type="Node" parent="."]
 script = ExtResource("20_qnpc")
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("c5_char")
+model = ExtResource("c5_model")
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("c5_anim")
+character = NodePath("../Visual/Character")

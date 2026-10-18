@@ -12,6 +12,9 @@
 [ext_resource type="PackedScene" path="res://scenes/gameplay/packages/package_pickup.tscn" id="10_pickup"]
 [ext_resource type="Script" path="res://scripts/combat/combat_controller.gd" id="11_combat"]
 [ext_resource type="Script" path="res://scripts/combat/combat_health.gd" id="12_health"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="c5_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Ranger.glb" id="c5_model"]
+[ext_resource type="Script" path="res://scripts/characters/player_animator.gd" id="c5_anim"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -68,34 +71,44 @@ shape = SubResource("CapsuleShape3D_body")
 [node name="Visual" type="Node3D" parent="."]
 
 [node name="Body" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 mesh = SubResource("CapsuleMesh_body")
 surface_material_override/0 = ExtResource("5_coat")
 
 [node name="Head" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.36, 0)
 mesh = SubResource("SphereMesh_head")
 surface_material_override/0 = ExtResource("7_skin")
 
 [node name="Nose" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.36, -0.27)
 mesh = SubResource("BoxMesh_nose")
 surface_material_override/0 = ExtResource("7_skin")
 
 [node name="Satchel" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0.38)
 mesh = SubResource("BoxMesh_satchel")
 surface_material_override/0 = ExtResource("6_satchel")
 
 [node name="HatBrim" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.58, 0)
 mesh = SubResource("CylinderMesh_hat_brim")
 surface_material_override/0 = ExtResource("8_hat")
 
 [node name="HatTop" type="MeshInstance3D" parent="Visual"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.71, 0)
 mesh = SubResource("CylinderMesh_hat_top")
 surface_material_override/0 = ExtResource("8_hat")
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("c5_char")
+model = ExtResource("c5_model")
 
 [node name="MovementComponent" type="Node" parent="."]
 script = ExtResource("2_move")
@@ -125,3 +138,11 @@ health = NodePath("Health")
 
 [node name="Health" type="Node" parent="Combat"]
 script = ExtResource("12_health")
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character", "movement", "combat", "interaction", "carrier")]
+script = ExtResource("c5_anim")
+character = NodePath("../Visual/Character")
+movement = NodePath("../MovementComponent")
+combat = NodePath("../Combat")
+interaction = NodePath("../InteractionDetector")
+carrier = NodePath("../PackageCarrier")
