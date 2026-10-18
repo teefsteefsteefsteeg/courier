@@ -101,7 +101,8 @@ func _test_alchemy_shop() -> void:
 	_check(shop != null, "AlchemyShop is a MedievalBuilding")
 	if shop == null:
 		return
-	_check(_visible_primitives(shop).is_empty() and _model_count(shop) >= 1, "AlchemyShop is a real model, not primitive boxes")
+	# Since Phase 5F the shop is a merged MegaKit assembly rather than one FBX model.
+	_check(_visible_primitives(shop).is_empty() and (_model_count(shop) >= 1 or shop.has_node(^"Model/Merged")), "AlchemyShop is a real model, not primitive boxes")
 	_check(shop.roof_color.b > shop.roof_color.g and shop.roof_color.r > shop.roof_color.g, "AlchemyShop keeps its purple roof identity (%s)" % shop.roof_color)
 	var decor := level.get_node("VillageDressing/Alchemy")
 	_check(decor.get_child_count() >= 3, "alchemy shop has magical dressing (%d pieces)" % decor.get_child_count())

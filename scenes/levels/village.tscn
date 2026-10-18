@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/location_banner.tscn" id="7_banner"]
 [ext_resource type="PackedScene" path="res://scenes/locations/post_office.tscn" id="8_post"]
 [ext_resource type="PackedScene" path="res://scenes/locations/forest_entrance.tscn" id="9_forest"]
-[ext_resource type="PackedScene" path="res://scenes/props/medieval/alchemy_shop.tscn" id="10_alchemy"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/alchemy_shop.tscn" id="10_alchemy"]
 [ext_resource type="PackedScene" path="res://scenes/props/well.tscn" id="11_well"]
 [ext_resource type="PackedScene" path="res://scenes/props/lamp_post.tscn" id="12_lamp"]
 [ext_resource type="PackedScene" path="res://scenes/props/market_stall.tscn" id="13_stall"]
@@ -34,11 +34,15 @@
 [ext_resource type="PackedScene" path="res://scenes/gameplay/ui/gameplay_hud.tscn" id="35_gameplay_hud"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/ui/quest_board_ui.tscn" id="36_board_ui"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/phase4_integration/phase4_delivery_integration.tscn" id="37_phase4_delivery"]
-[ext_resource type="PackedScene" path="res://scenes/props/medieval/house_1.tscn" id="60_house_1"]
-[ext_resource type="PackedScene" path="res://scenes/props/medieval/house_2.tscn" id="61_house_2"]
-[ext_resource type="PackedScene" path="res://scenes/props/medieval/inn.tscn" id="62_inn"]
-[ext_resource type="PackedScene" path="res://scenes/props/medieval/blacksmith.tscn" id="63_blacksmith"]
-[ext_resource type="PackedScene" path="res://scenes/props/medieval/mill.tscn" id="64_mill"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/rose_cottage.tscn" id="60_rose_cottage"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/oak_house.tscn" id="61_oak_house"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/fern_cottage.tscn" id="62_fern_cottage"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/blue_house.tscn" id="63_blue_house"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/mill.tscn" id="64_mill"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/blacksmith.tscn" id="65_blacksmith"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/inn.tscn" id="66_inn"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/brook_cottage.tscn" id="67_brook_cottage"]
+[ext_resource type="PackedScene" path="res://scenes/buildings/moss_cottage.tscn" id="68_moss_cottage"]
 [ext_resource type="PackedScene" path="res://scenes/props/nature/common_tree_1.tscn" id="70_ctree1"]
 [ext_resource type="PackedScene" path="res://scenes/props/nature/common_tree_2.tscn" id="71_ctree2"]
 [ext_resource type="PackedScene" path="res://scenes/props/nature/common_tree_3.tscn" id="72_ctree3"]
@@ -250,22 +254,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 14, 0, -20)
 [node name="AlchemyShop" parent="Buildings" instance=ExtResource("10_alchemy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 4, 0, 12)
 
-[node name="CottageRose" parent="Buildings" instance=ExtResource("60_house_1")]
+[node name="CottageRose" parent="Buildings" instance=ExtResource("60_rose_cottage")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -8, 0, 13)
 roof_color = Color(0.78, 0.3, 0.28, 1)
 wall_color = Color(0.96, 0.9, 0.8, 1)
 
-[node name="CottageOak" parent="Buildings" instance=ExtResource("61_house_2")]
+[node name="CottageOak" parent="Buildings" instance=ExtResource("61_oak_house")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -17, 0, 10)
 roof_color = Color(0.86, 0.52, 0.22, 1)
 wall_color = Color(0.95, 0.86, 0.7, 1)
 
-[node name="CottageFern" parent="Buildings" instance=ExtResource("60_house_1")]
+[node name="CottageFern" parent="Buildings" instance=ExtResource("62_fern_cottage")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18, 0, 13)
 roof_color = Color(0.32, 0.58, 0.34, 1)
 wall_color = Color(0.94, 0.94, 0.82, 1)
 
-[node name="CottageBlue" parent="Buildings" instance=ExtResource("61_house_2")]
+[node name="CottageBlue" parent="Buildings" instance=ExtResource("63_blue_house")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -4, 0, -17)
 roof_color = Color(0.28, 0.44, 0.78, 1)
 wall_color = Color(0.86, 0.9, 0.96, 1)
@@ -273,19 +277,19 @@ wall_color = Color(0.86, 0.9, 0.96, 1)
 [node name="CottageMill" parent="Buildings" instance=ExtResource("64_mill")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 25, 0, -6)
 
-[node name="CottageHill" parent="Buildings" instance=ExtResource("63_blacksmith")]
+[node name="CottageHill" parent="Buildings" instance=ExtResource("65_blacksmith")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -26, 0, -4)
 roof_color = Color(0.62, 0.24, 0.2, 1)
 
-[node name="CottageWillow" parent="Buildings" instance=ExtResource("62_inn")]
+[node name="CottageWillow" parent="Buildings" instance=ExtResource("66_inn")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 22)
 roof_color = Color(0.7, 0.3, 0.22, 1)
 
-[node name="CottageBrook" parent="Buildings" instance=ExtResource("61_house_2")]
+[node name="CottageBrook" parent="Buildings" instance=ExtResource("67_brook_cottage")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 0, 26)
 roof_color = Color(0.8, 0.64, 0.24, 1)
 
-[node name="CottageMoss" parent="Buildings" instance=ExtResource("60_house_1")]
+[node name="CottageMoss" parent="Buildings" instance=ExtResource("68_moss_cottage")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -6, 0, 27)
 roof_color = Color(0.34, 0.56, 0.48, 1)
 

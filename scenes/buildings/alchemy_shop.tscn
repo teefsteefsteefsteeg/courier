@@ -1,0 +1,224 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/medieval_building.gd" id="1_mofo8"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_UnevenBrick_Straight.gltf" id="2_df2v7"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_UnevenBrick_Window_Thin_Round.gltf" id="3_4prld"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Window_Thin_Round1.gltf" id="4_f5p2u"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Corner_Exterior_Brick.gltf" id="5_dexjk"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_Straight.gltf" id="6_bh30o"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_WoodGrid.gltf" id="7_lmv72"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_Window_Thin_Round.gltf" id="8_vr8mt"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Corner_Exterior_Wood.gltf" id="9_ogrta"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_Window_Wide_Round.gltf" id="10_1iimb"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Window_Wide_Round1.gltf" id="11_duuwd"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Roof_Tower_RoundTiles.gltf" id="12_8jryn"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_UnevenBrick_Window_Wide_Round.gltf" id="13_n3llk"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/WindowShutters_Wide_Round_Open.gltf" id="14_6lr7m"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_UnevenBrick_Door_Round.gltf" id="15_a3eji"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Door_1_Round.gltf" id="16_j7man"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Roof_RoundTiles_4x4.gltf" id="17_tc0xp"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Roof_Front_Brick4.gltf" id="18_3kib6"]
+[ext_resource type="Script" path="res://scripts/world/camera_occluder.gd" id="19_yrek3"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_iv2ef"]
+size = Vector3(3.0965, 3.2, 4.77)
+
+[node name="AlchemyShop" type="StaticBody3D" unique_id=943641405]
+script = ExtResource("1_mofo8")
+roof_color = Color(0.48, 0.26, 0.68, 1)
+wall_color = Color(0.86, 0.8, 0.94, 1)
+window_glow = Color(0.75, 0.45, 1, 1)
+window_glow_energy = 1.4
+merge_model = true
+
+[node name="Model" type="Node3D" parent="." unique_id=1366916245]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+
+[node name="Wall_UnevenBrick_Straight2" type="Node3D" parent="Model" unique_id=1906125336 instance=ExtResource("2_df2v7")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 0, 0)
+
+[node name="Wall_UnevenBrick_Window_Thin_Round2" type="Node3D" parent="Model" unique_id=1098152323 instance=ExtResource("3_4prld")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 0, -2)
+
+[node name="Window_Thin_Round12" type="Node3D" parent="Model" unique_id=1003538304 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 0, -2)
+
+[node name="Wall_UnevenBrick_Window_Thin_Round3" type="Node3D" parent="Model" unique_id=275995896 instance=ExtResource("3_4prld")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 0, -2)
+
+[node name="Window_Thin_Round13" type="Node3D" parent="Model" unique_id=1987961773 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 0, -2)
+
+[node name="Wall_UnevenBrick_Straight3" type="Node3D" parent="Model" unique_id=553801711 instance=ExtResource("2_df2v7")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 0, 0)
+
+[node name="Wall_UnevenBrick_Straight4" type="Node3D" parent="Model" unique_id=1818685214 instance=ExtResource("2_df2v7")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1, 0, -3)
+
+[node name="Wall_UnevenBrick_Straight5" type="Node3D" parent="Model" unique_id=1812174749 instance=ExtResource("2_df2v7")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1, 0, -3)
+
+[node name="Corner_Exterior_Brick2" type="Node3D" parent="Model" unique_id=148590683 instance=ExtResource("5_dexjk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+
+[node name="Corner_Exterior_Brick3" type="Node3D" parent="Model" unique_id=1035272247 instance=ExtResource("5_dexjk")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 0, 1)
+
+[node name="Corner_Exterior_Brick4" type="Node3D" parent="Model" unique_id=1727938235 instance=ExtResource("5_dexjk")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 2, 0, -3)
+
+[node name="Corner_Exterior_Brick5" type="Node3D" parent="Model" unique_id=571015124 instance=ExtResource("5_dexjk")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 0, -3)
+
+[node name="Wall_Plaster_Straight2" type="Node3D" parent="Model" unique_id=562464983 instance=ExtResource("6_bh30o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 3, 1)
+
+[node name="Wall_Plaster_Straight3" type="Node3D" parent="Model" unique_id=370003942 instance=ExtResource("6_bh30o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 3, 1)
+
+[node name="Wall_Plaster_WoodGrid2" type="Node3D" parent="Model" unique_id=483663215 instance=ExtResource("7_lmv72")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 3, 0)
+
+[node name="Wall_Plaster_Window_Thin_Round2" type="Node3D" parent="Model" unique_id=148826684 instance=ExtResource("8_vr8mt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 3, -2)
+
+[node name="Window_Thin_Round14" type="Node3D" parent="Model" unique_id=1968991639 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 3, -2)
+
+[node name="Wall_Plaster_Window_Thin_Round3" type="Node3D" parent="Model" unique_id=1039743886 instance=ExtResource("8_vr8mt")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 3, -2)
+
+[node name="Window_Thin_Round15" type="Node3D" parent="Model" unique_id=731139339 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 3, -2)
+
+[node name="Wall_Plaster_WoodGrid3" type="Node3D" parent="Model" unique_id=877296482 instance=ExtResource("7_lmv72")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 3, 0)
+
+[node name="Wall_Plaster_WoodGrid4" type="Node3D" parent="Model" unique_id=353710918 instance=ExtResource("7_lmv72")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1, 3, -3)
+
+[node name="Wall_Plaster_WoodGrid5" type="Node3D" parent="Model" unique_id=1282498339 instance=ExtResource("7_lmv72")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1, 3, -3)
+
+[node name="Corner_Exterior_Wood2" type="Node3D" parent="Model" unique_id=422853269 instance=ExtResource("9_ogrta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3, 1)
+
+[node name="Corner_Exterior_Wood3" type="Node3D" parent="Model" unique_id=688825816 instance=ExtResource("9_ogrta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 3, 1)
+
+[node name="Corner_Exterior_Wood4" type="Node3D" parent="Model" unique_id=116474815 instance=ExtResource("9_ogrta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 3, -3)
+
+[node name="Corner_Exterior_Wood5" type="Node3D" parent="Model" unique_id=1268307010 instance=ExtResource("9_ogrta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3, -3)
+
+[node name="Wall_Plaster_Window_Wide_Round2" type="Node3D" parent="Model" unique_id=2091578051 instance=ExtResource("10_1iimb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 6, 1)
+
+[node name="Window_Wide_Round12" type="Node3D" parent="Model" unique_id=791459195 instance=ExtResource("11_duuwd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 6, 1)
+
+[node name="Wall_Plaster_Window_Wide_Round3" type="Node3D" parent="Model" unique_id=712382683 instance=ExtResource("10_1iimb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 6, 1)
+
+[node name="Window_Wide_Round13" type="Node3D" parent="Model" unique_id=1498029610 instance=ExtResource("11_duuwd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 6, 1)
+
+[node name="Wall_Plaster_Window_Thin_Round4" type="Node3D" parent="Model" unique_id=903902544 instance=ExtResource("8_vr8mt")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 6, 0)
+
+[node name="Window_Thin_Round16" type="Node3D" parent="Model" unique_id=910207057 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 6, 0)
+
+[node name="Wall_Plaster_Window_Wide_Round4" type="Node3D" parent="Model" unique_id=463824203 instance=ExtResource("10_1iimb")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 6, -2)
+
+[node name="Window_Wide_Round14" type="Node3D" parent="Model" unique_id=75013418 instance=ExtResource("11_duuwd")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 6, -2)
+
+[node name="Wall_Plaster_Window_Wide_Round5" type="Node3D" parent="Model" unique_id=338975658 instance=ExtResource("10_1iimb")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 6, -2)
+
+[node name="Window_Wide_Round15" type="Node3D" parent="Model" unique_id=1386114448 instance=ExtResource("11_duuwd")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 6, -2)
+
+[node name="Wall_Plaster_Window_Thin_Round5" type="Node3D" parent="Model" unique_id=102078399 instance=ExtResource("8_vr8mt")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 6, 0)
+
+[node name="Window_Thin_Round17" type="Node3D" parent="Model" unique_id=415525246 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -2, 6, 0)
+
+[node name="Wall_Plaster_Window_Thin_Round6" type="Node3D" parent="Model" unique_id=2038286694 instance=ExtResource("8_vr8mt")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1, 6, -3)
+
+[node name="Window_Thin_Round18" type="Node3D" parent="Model" unique_id=1502847272 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1, 6, -3)
+
+[node name="Wall_Plaster_Window_Thin_Round7" type="Node3D" parent="Model" unique_id=1303594662 instance=ExtResource("8_vr8mt")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1, 6, -3)
+
+[node name="Window_Thin_Round19" type="Node3D" parent="Model" unique_id=117021581 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1, 6, -3)
+
+[node name="Corner_Exterior_Wood6" type="Node3D" parent="Model" unique_id=1434289251 instance=ExtResource("9_ogrta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 6, 1)
+
+[node name="Corner_Exterior_Wood7" type="Node3D" parent="Model" unique_id=1733156010 instance=ExtResource("9_ogrta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 6, 1)
+
+[node name="Corner_Exterior_Wood8" type="Node3D" parent="Model" unique_id=2008476944 instance=ExtResource("9_ogrta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 6, -3)
+
+[node name="Corner_Exterior_Wood9" type="Node3D" parent="Model" unique_id=412124853 instance=ExtResource("9_ogrta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 6, -3)
+
+[node name="Roof_Tower_RoundTiles2" type="Node3D" parent="Model" unique_id=1606899110 instance=ExtResource("12_8jryn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9, -1)
+
+[node name="Wall_UnevenBrick_Window_Wide_Round2" type="Node3D" parent="Model" unique_id=457722570 instance=ExtResource("13_n3llk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 3)
+
+[node name="Window_Wide_Round16" type="Node3D" parent="Model" unique_id=715266826 instance=ExtResource("11_duuwd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 3)
+
+[node name="WindowShutters_Wide_Round_Open2" type="Node3D" parent="Model" unique_id=851355500 instance=ExtResource("14_6lr7m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 3)
+
+[node name="Wall_UnevenBrick_Door_Round2" type="Node3D" parent="Model" unique_id=2097859923 instance=ExtResource("15_a3eji")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 3)
+
+[node name="Door_1_Round2" type="Node3D" parent="Model" unique_id=26413520 instance=ExtResource("16_j7man")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.47000003, 0, 3)
+
+[node name="Wall_UnevenBrick_Window_Thin_Round4" type="Node3D" parent="Model" unique_id=1422709317 instance=ExtResource("3_4prld")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 0, 2)
+
+[node name="Window_Thin_Round20" type="Node3D" parent="Model" unique_id=813166525 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 0, 2)
+
+[node name="Wall_UnevenBrick_Window_Thin_Round5" type="Node3D" parent="Model" unique_id=964428889 instance=ExtResource("3_4prld")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -2, 0, 2)
+
+[node name="Window_Thin_Round21" type="Node3D" parent="Model" unique_id=1920436128 instance=ExtResource("4_f5p2u")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -2, 0, 2)
+
+[node name="Corner_Exterior_Brick6" type="Node3D" parent="Model" unique_id=760703406 instance=ExtResource("5_dexjk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 3)
+
+[node name="Corner_Exterior_Brick7" type="Node3D" parent="Model" unique_id=1990626822 instance=ExtResource("5_dexjk")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2, 0, 3)
+
+[node name="Roof_RoundTiles_4x42" type="Node3D" parent="Model" unique_id=89415446 instance=ExtResource("17_tc0xp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 1)
+
+[node name="Roof_Front_Brick42" type="Node3D" parent="Model" unique_id=464579728 instance=ExtResource("18_3kib6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 3)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1362956170]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+shape = SubResource("BoxShape3D_iv2ef")
+
+[node name="CameraOccluder" type="Node3D" parent="." unique_id=1989969417]
+script = ExtResource("19_yrek3")
+radius = 2.84
+height = 12.63
