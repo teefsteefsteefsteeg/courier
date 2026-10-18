@@ -17,12 +17,12 @@ focus and changes the Magic Bolt; the shield strengthens the Package Shield.
 
 | Item | Price | Slot | Effect | Held model |
 |---|---|---|---|---|
-| Wooden Sword | 50 | main hand | +4 bolt damage | sword_1handed |
-| Iron Sword | 150 | main hand | +8 bolt damage | sword_1handed |
-| Steel Sword | 300 | main hand | +13 bolt damage, 10% faster casting | sword_1handed |
-| Battle Axe | 400 | main hand | +20 bolt damage, 25% slower casting | none (no model in the pack) |
+| Wooden Sword | 50 | main hand | +4 bolt damage | KayKit Weapons Bits `sword_A` |
+| Iron Sword | 150 | main hand | +8 bolt damage | `sword_B` |
+| Steel Sword | 300 | main hand | +13 bolt damage, 10% faster casting | `sword_D` |
+| Battle Axe | 400 | main hand | +20 bolt damage, 25% slower casting | `axe_B` |
 | Magic Staff | 500 | main hand | +10 bolt damage, 25% faster casting, +6 m range | staff |
-| Wooden Shield | 100 | off-hand | +25 Package Shield durability | none (no model in the pack) |
+| Wooden Shield | 100 | off-hand | +25 Package Shield durability | `shield_A` (left hand) |
 
 Base courier stats: bolt damage 20, cooldown 0.45 s, range 18 m, shield 60.
 Icons: `assets/ui/item_icons/*.png`, 16 px placeholder pixel art saved at 32x32 by
@@ -36,7 +36,7 @@ Icons: `assets/ui/item_icons/*.png`, 16 px placeholder pixel art saved at 32x32 
 | `slot` | `Slot.MAIN_HAND` / `Slot.OFF_HAND` | One item per slot is equipped |
 | `price` | int > 0 | Gold |
 | `icon` | Texture2D | 32x32 pixel art, nearest filter |
-| `held_model` | PackedScene (optional) | Shown in the courier's right hand while equipped (main hand) |
+| `held_model` | PackedScene (optional) | Shown while equipped: main hand in the courier's right hand (`handslot.r`), off-hand in the left (`handslot.l`) |
 | `bolt_damage_bonus` | float, + | Added to `CombatController.bolt_damage` |
 | `bolt_cooldown_multiplier` | float, x | Multiplies `bolt_cooldown` (< 1 is faster) |
 | `bolt_range_bonus` | float, + | Added to `bolt_range` |
@@ -51,7 +51,7 @@ A `ShopCatalog` (`scripts/shop/shop_catalog.gd`) holds `shop_id`, `title`, `gree
 |---|---|
 | `scripts/inventory/courier_inventory.gd` (`CourierInventory`, in GameplayServices) | Owned items (unique) and equipped item per slot; `add_item`, `equip`, `unequip`, `to_dict` / `from_dict`. |
 | `scripts/shop/shop_service.gd` (`ShopService`) | `can_buy` / `buy`: refuses when already owned or gold < price (nothing changes), otherwise spends gold and adds the item in one step. |
-| `scripts/inventory/equipment_stats.gd` (`EquipmentStats`, in GameplayServices) | Reads the courier's base combat stats once, recomputes them from the equipped items on every change (unequipping restores them exactly), and puts the weapon's model in the courier's hand (`KayKitCharacter.set_held_item`). |
+| `scripts/inventory/equipment_stats.gd` (`EquipmentStats`, in GameplayServices) | Reads the courier's base combat stats once, recomputes them from the equipped items on every change (unequipping restores them exactly), and puts the weapon's model in the right hand and the off-hand item's in the left (`KayKitCharacter.set_held_item` / `set_off_hand_item`). |
 | `scripts/core/save_game.gd` (`SaveGame`, in GameplayServices) | New minimal save: `user://savegame.json` with gold, reputation, items, equipment, every REWARDED quest and the starting-gold flag. Loads on start and autosaves 0.5 s after a change. Deliveries in progress are not saved (the carried package is not persisted). Run with `-- --new-game` to start over. Disabled in headless runs, so tests never touch the player's save. |
 | `scripts/core/dev_mode.gd` (`DevMode`) | Development/test mode: debug build with a window (editor play, debug export). Off in release exports and headless tests. `-- --dev` / `-- --no-dev` override. |
 | `scripts/shop/merchant.gd` (`Merchant`) | Reusable merchant interface (below). |
@@ -109,3 +109,35 @@ the development-mode 500 gold and the sword in hand.
 - Removing the shield lowers the shield's maximum but not its current durability, so it can
   read above 100% until it is next used.
 - Saving is new. Only finished contracts persist; a delivery in progress is lost on quit.
+
+## Fix: equipped weapon not visible (2026-10-18, `phase5f-integrated`)
+
+**Symptom:** after buying and equipping a weapon, the courier's hand was empty.
+
+**Root cause:** data, not code. The Battle Axe and Wooden Shield had no `held_model`. When this
+branch was written the project had no axe or shield model (the KayKit Weapons Bits pack arrived
+with the Armory displays from `phase5f-building-visual`). Equipping the axe made
+`EquipmentStats.apply()` call `set_held_item(null)`, which emptied the hand and also removed the
+sword or staff equipped before. The off-hand slot was never shown at all: `EquipmentStats` only
+applied the main hand, and `KayKitCharacter` had only a right-hand slot. All three swords also
+shared `sword_1handed`, so switching between them changed nothing on screen. The integration
+merge did not change any player, character, inventory or combat file.
+
+**Fix:**
+- Every item has a `held_model` reused from `assets/models/kaykit_weapons/` (`sword_A`, `sword_B`,
+  `sword_D`, `axe_B`, `shield_A`). The staff keeps its Adventurers model. The Weapons Bits share
+  the KayKit hand-slot convention (grip at the origin, blade +Y), so the right hand needs no
+  transform.
+- `KayKitCharacter.set_off_hand_item()` and `get_off_hand_item_node()` add a `LeftHandSlot`
+  (`handslot.l`) beside the existing `RightHandSlot`, through the same code path.
+- `EquipmentStats.apply()` sets both hands.
+
+Equipping is unchanged: buying only adds the item and **Equip** is a separate button, as designed.
+
+Regression test: `tests/equipment_visual_tests.gd` (31 checks). It checks that every item has a
+held model; that each item appears on the right bone, visible and at the courier; that switching
+replaces the model; that unequipping removes it; that a save round trip shows the axe and shield;
+that the attack animation keeps the weapon; and that Pip's prop is unchanged. On the original item
+data it fails 12 checks. Rendered: `docs/validation/phase5f/equipment/` (regenerate with
+`tests/capture_equipped_weapon_screenshots.gd`, which removes SaveGame so the real save is never
+touched).

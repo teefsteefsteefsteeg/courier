@@ -146,7 +146,6 @@ and `capture_armory_screenshots.gd`.
   - In normal windowed play the save file is real, so playtests carry progress between launches.
 - **Economy and gear:**
   - Weapons are Magic Bolt foci (the game has no melee).
-  - The Battle Axe and Wooden Shield have no 3D model.
   - Item icons are placeholders.
   - Unequipping the shield can leave current shield durability above the new max until used.
   - Ranks gate nothing yet.

@@ -3,7 +3,7 @@ extends Node
 ## Applies the courier's equipped items to the combat stats the game already has:
 ## Magic Bolt damage, cooldown and range, and Package Shield durability. Base values are
 ## read from the player's CombatController once, so unequipping restores them exactly.
-## Also shows the main-hand item's held_model in the courier's hand.
+## Also shows the main-hand and off-hand items' held_model in the courier's hands.
 ## Lives in GameplayServices; the player is found through CombatController.PLAYER_GROUP.
 
 @export var inventory: CourierInventory
@@ -61,6 +61,8 @@ func apply() -> void:
 	if _character != null:
 		var weapon := inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND)
 		_character.set_held_item(weapon.held_model if weapon != null else null)
+		var off_hand := inventory.get_equipped(ItemDefinition.Slot.OFF_HAND)
+		_character.set_off_hand_item(off_hand.held_model if off_hand != null else null)
 
 
 func get_base_stat(stat: String) -> float:

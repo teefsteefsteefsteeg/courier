@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
 [ext_resource type="Texture2D" path="res://assets/ui/item_icons/steel_sword.png" id="2_icon"]
-[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/items/sword_1handed.gltf" id="3_model"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/sword_D.gltf" id="3_model"]
 
 [resource]
 script = ExtResource("1_item")

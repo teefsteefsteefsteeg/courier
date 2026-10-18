@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
 [ext_resource type="Texture2D" path="res://assets/ui/item_icons/wooden_shield.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/shield_A.gltf" id="3_model"]
 
 [resource]
 script = ExtResource("1_item")
@@ -11,4 +12,5 @@ description = "Strapped to the satchel, it steadies the Package Shield."
 slot = 1
 price = 100
 icon = ExtResource("2_icon")
+held_model = ExtResource("3_model")
 shield_durability_bonus = 25.0

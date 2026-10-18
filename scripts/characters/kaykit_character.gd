@@ -37,6 +37,9 @@ const LOOPING := [&"general/Idle_A", &"general/Idle_B", &"move/Walking_A", &"mov
 ## Optional prop held in the right hand (staff, mug, ...).
 @export var held_item: PackedScene
 @export var held_item_transform := Transform3D.IDENTITY
+## Optional prop held in the left hand (a shield).
+@export var off_hand_item: PackedScene
+@export var off_hand_item_transform := Transform3D.IDENTITY
 ## NPCs occasionally swap to the second idle so a crowd does not move in lockstep.
 @export var idle_variation: bool = false
 
@@ -76,6 +79,7 @@ func _ready() -> void:
 		animation_player.add_animation_library(key, _library(key))
 	animation_player.animation_finished.connect(_on_animation_finished)
 	set_held_item(held_item)
+	set_off_hand_item(off_hand_item)
 	_idle_timer = randf_range(4.0, 9.0)
 	play_loop(&"idle")
 
@@ -84,28 +88,48 @@ func _ready() -> void:
 ## one; null empties the hand. Used for NPC props and the courier's equipped weapon.
 func set_held_item(scene: PackedScene) -> void:
 	held_item = scene
+	_set_hand_item(&"RightHandSlot", &"handslot.r", scene, held_item_transform)
+
+
+## Puts scene (a shield) in the left hand, replacing the current one; null empties it.
+## Used for the courier's equipped off-hand item.
+func set_off_hand_item(scene: PackedScene) -> void:
+	off_hand_item = scene
+	_set_hand_item(&"LeftHandSlot", &"handslot.l", scene, off_hand_item_transform)
+
+
+func get_held_item_node() -> Node3D:
+	return _hand_item_node(^"RightHandSlot")
+
+
+func get_off_hand_item_node() -> Node3D:
+	return _hand_item_node(^"LeftHandSlot")
+
+
+## Replaces the prop on the bone attachment `slot_name` (created on `bone` when needed).
+func _set_hand_item(slot_name: StringName, bone: StringName, scene: PackedScene, xform: Transform3D) -> void:
 	if skeleton == null:
 		return
-	var slot := skeleton.get_node_or_null(^"RightHandSlot") as BoneAttachment3D
+	var slot := skeleton.get_node_or_null(NodePath(slot_name)) as BoneAttachment3D
 	if slot == null and scene == null:
 		return
 	if slot == null:
 		slot = BoneAttachment3D.new()
-		slot.name = "RightHandSlot"
+		slot.name = slot_name
 		skeleton.add_child(slot)
-		slot.bone_name = "handslot.r"
+		slot.bone_name = bone
 	for child in slot.get_children():
 		slot.remove_child(child)
 		child.queue_free()
 	if scene != null:
 		var item := scene.instantiate() as Node3D
 		item.name = "HeldItem"
-		item.transform = held_item_transform
+		item.transform = xform
 		slot.add_child(item)
 
 
-func get_held_item_node() -> Node3D:
-	var slot := skeleton.get_node_or_null(^"RightHandSlot") if skeleton != null else null
+func _hand_item_node(slot_name: NodePath) -> Node3D:
+	var slot := skeleton.get_node_or_null(slot_name) if skeleton != null else null
 	return slot.get_child(0) as Node3D if slot != null and slot.get_child_count() > 0 else null
 
 

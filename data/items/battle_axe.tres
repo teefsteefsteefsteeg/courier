@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
 [ext_resource type="Texture2D" path="res://assets/ui/item_icons/battle_axe.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/axe_B.gltf" id="3_model"]
 
 [resource]
 script = ExtResource("1_item")
@@ -11,5 +12,6 @@ description = "Heavy and slow, but every bolt lands hard."
 slot = 0
 price = 400
 icon = ExtResource("2_icon")
+held_model = ExtResource("3_model")
 bolt_damage_bonus = 20.0
 bolt_cooldown_multiplier = 1.25
