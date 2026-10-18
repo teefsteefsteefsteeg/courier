@@ -37,7 +37,10 @@ func _ready() -> void:
 	interactable.display_name = package_definition.package_name
 	interactable.interacted.connect(_on_interacted)
 	if package_definition.package_scene != null:
-		visual_root.add_child(package_definition.package_scene.instantiate())
+		var visual := package_definition.package_scene.instantiate() as Node3D
+		if package_instance != null:
+			visual.set_meta(&"package_instance", package_instance)
+		visual_root.add_child(visual)
 	_quest_manager = QuestManager.find(get_tree())
 	if _quest_manager != null:
 		_quest_manager.quest_state_changed.connect(_on_quest_state_changed)

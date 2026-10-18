@@ -9,6 +9,7 @@ extends CanvasLayer
 @onready var package_indicator: PackageIndicator = $PackageIndicator
 @onready var wallet_display: WalletDisplay = $WalletDisplay
 @onready var quest_notification: QuestNotification = $QuestNotification
+@onready var package_status_hud: PackageStatusHUD = $PackageStatusHUD
 
 
 func _ready() -> void:
@@ -18,3 +19,13 @@ func _ready() -> void:
 	if carrier != null:
 		package_indicator.bind_carrier(carrier)
 		quest_notification.bind_carrier(carrier)
+		if not carrier.carried_package_changed.is_connected(_on_carried_package_changed):
+			carrier.carried_package_changed.connect(_on_carried_package_changed)
+		_on_carried_package_changed(carrier.get_package())
+
+
+func _on_carried_package_changed(package: PackageInstance) -> void:
+	if package == null:
+		package_status_hud.unbind_package()
+	else:
+		package_status_hud.bind_package(package)

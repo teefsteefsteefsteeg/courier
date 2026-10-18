@@ -145,6 +145,9 @@ func _show_visual() -> void:
 	var scene := _package.definition.package_scene
 	if scene != null:
 		_visual = scene.instantiate() as Node3D
+		# Phase 3 visual effects consume the runtime package through metadata so
+		# package scenes remain reusable and do not depend on the carrier.
+		_visual.set_meta(&"package_instance", _package)
 		add_child(_visual)
 
 

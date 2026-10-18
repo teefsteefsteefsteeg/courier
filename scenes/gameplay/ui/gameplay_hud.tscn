@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/gameplay/ui/package_indicator.tscn" id="3_pkg"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/ui/wallet_display.tscn" id="4_wallet"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/ui/quest_notification.tscn" id="5_toast"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/phase3_visual/package_status_hud.tscn" id="6_phase3_status"]
 
 [node name="GameplayHUD" type="CanvasLayer"]
 layer = 8
@@ -17,3 +18,5 @@ script = ExtResource("1_hud")
 [node name="WalletDisplay" parent="." instance=ExtResource("4_wallet")]
 
 [node name="QuestNotification" parent="." instance=ExtResource("5_toast")]
+
+[node name="PackageStatusHUD" parent="." instance=ExtResource("6_phase3_status")]
