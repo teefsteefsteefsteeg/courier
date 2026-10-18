@@ -739,8 +739,9 @@ visible = false
 player = NodePath("../Player")
 camera_rig = NodePath("../IsoCameraRig")
 
-[node name="OccluderFader" type="Node" parent="." node_paths=PackedStringArray("camera_rig", "target")]
+[node name="OccluderFader" type="Node" parent="." node_paths=PackedStringArray("camera_rig", "target", "interior_root")]
 script = ExtResource("33_fader")
+interior_root = NodePath("../PostOffice")
 camera_rig = NodePath("../IsoCameraRig")
 target = NodePath("../Player")
 

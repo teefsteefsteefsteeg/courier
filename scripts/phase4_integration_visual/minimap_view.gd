@@ -5,11 +5,11 @@ extends Control
 ## Purely visual: give it a model, then call update_view() each frame (or leave
 ## auto_update on). Several views can share one model.
 
-const Projection := preload("res://scripts/phase4_integration_visual/minimap_projection.gd")
+const MinimapProjection := preload("res://scripts/phase4_integration_visual/minimap_projection.gd")
 const Model := preload("res://scripts/phase4_integration_visual/minimap_model.gd")
 
 const KIND_COLORS := {
-	&"player": Color(1.0, 0.95, 0.75),
+	&"player": Color(0.2, 0.65, 1.0),
 	&"objective": Color(1.0, 0.82, 0.3),
 	&"npc": Color(0.45, 0.9, 1.0),
 	&"enemy": Color(1.0, 0.38, 0.32),
@@ -43,7 +43,7 @@ const ROUTE_END := Color(1.0, 0.85, 0.3, 0.9)
 @export var font_size := 12
 
 var model: Model
-var projection := Projection.new()
+var projection := MinimapProjection.new()
 ## id -> {point: Vector2 (map px), inside: bool, pinned: bool}
 var placements: Dictionary = {}
 var _time := 0.0

@@ -95,6 +95,8 @@ func bind_controller(node: Node) -> bool:
 	if connected == 0:
 		return false
 	controller = node
+	if controller.has_method(&"get_shield_durability") and controller.has_method(&"is_shield_active"):
+		show_shield(bool(controller.call(&"is_shield_active")), float(controller.call(&"get_shield_durability")))
 	if actor == null and node.get_parent() is Node3D:
 		actor = node.get_parent()
 	if player_health == null and node.get_parent() != null:
@@ -130,6 +132,8 @@ func bind_player_health(node: Node) -> bool:
 	if not bound:
 		return false
 	player_health = node
+	if node.has_method(&"get_health") and node.has_method(&"get_max_health"):
+		show_player_health(float(node.call(&"get_health")), float(node.call(&"get_max_health")))
 	_set_preview_mode(false)
 	return true
 
