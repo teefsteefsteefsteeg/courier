@@ -52,6 +52,12 @@ func push_message(text: String) -> void:
 
 
 func _process(delta: float) -> void:
+	var width := minf(520.0, get_viewport().get_visible_rect().size.x * 0.4)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.add_theme_font_size_override("font_size", 18)
+	panel.offset_left = -width * 0.5
+	panel.offset_right = width * 0.5
+	offset_top = 186.0
 	if not panel.visible:
 		return
 	_time_left -= delta

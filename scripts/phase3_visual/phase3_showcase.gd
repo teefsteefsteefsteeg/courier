@@ -1,8 +1,8 @@
 class_name Phase3Showcase
 extends Node3D
 ## A permanent post-office exhibit for evaluating the two magical delivery types.
-## It does not alter quest availability, pickups, or rewards.  Interacting with
-## the placard switches the existing gameplay HUD between the live egg and crate.
+## It does not alter quest availability, pickups, rewards, or the cargo HUD.
+## Interacting switches the placard between its demonstration egg and crate.
 
 @export var dragon_egg_definition: PackageDefinition
 @export var potion_crate_definition: PackageDefinition
@@ -17,7 +17,6 @@ var _egg: PackageInstance
 var _potion: PackageInstance
 var _showing_egg := true
 var _time := 0.0
-var _hud: PackageStatusHUD
 
 
 func _ready() -> void:
@@ -26,9 +25,7 @@ func _ready() -> void:
 	egg_visual.bind_package(_egg)
 	potion_visual.bind_package(_potion)
 	interactable.interacted.connect(_on_interacted)
-	_hud = _find_scene_root().get_node_or_null("GameplayHUD/PackageStatusHUD") as PackageStatusHUD
-	# GameplayHUD initializes later in the village scene and clears its initial
-	# empty carrier binding, so bind after the whole scene has entered the tree.
+	# Populate the exhibit placard after the scene enters the tree.
 	_show_selected_package.call_deferred()
 
 
@@ -46,8 +43,8 @@ func _on_interacted(_interactor: Node) -> void:
 
 
 func _show_selected_package() -> void:
-	if _hud != null:
-		_hud.bind_package(_egg if _showing_egg else _potion)
+	# Exhibit samples belong to this placard, never to the carried-package HUD.
+	# GameplayHUD exclusively owns the binding to the player's actual cargo.
 	interactable.display_name = "Arcane Cargo Exhibit — %s (press E to switch)" % ("Dragon Egg" if _showing_egg else "Volatile Potion")
 	_update_label()
 

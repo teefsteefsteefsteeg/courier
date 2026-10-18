@@ -24,6 +24,12 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	var width := minf(520.0, get_viewport().get_visible_rect().size.x * 0.4)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.add_theme_font_size_override("font_size", 20)
+	panel.offset_left = -width * 0.5
+	panel.offset_right = width * 0.5
+	(panel.get_parent() as Control).offset_top = -144.0
 	# Groups have no change signal, and modals come from both World/UI and gameplay.
 	var modal_open := get_tree().get_node_count_in_group(QuestJournal.MODAL_GROUP) > 0
 	if modal_open != _modal_open:

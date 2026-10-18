@@ -35,6 +35,8 @@ const QUEST_COLORS := {
 @export var auto_animate := true
 @export var alert_duration := 1.6
 @export var arrive_radius := 2.5
+## Live village uses GameplayHUD's authoritative active-quest tracker.
+@export var use_shared_quest_tracker := false
 
 var probe := Probe.new()
 var quest_title := "Forest Delivery"
@@ -284,7 +286,7 @@ func _refresh_banner() -> void:
 func _refresh_tracker() -> void:
 	if tracker_panel == null:
 		return
-	tracker_panel.visible = quest_state != &"hidden" and (_has_quest or distance >= 0.0)
+	tracker_panel.visible = not use_shared_quest_tracker and quest_state != &"hidden" and (_has_quest or distance >= 0.0)
 	var state_color: Color = QUEST_COLORS.get(quest_state, QUEST_COLORS[&"active"])
 	title_label.text = quest_title
 	title_label.add_theme_color_override(&"font_color", state_color.lightened(0.2))
@@ -376,8 +378,8 @@ func _ensure_built() -> void:
 	banner_panel.anchor_right = 0.5
 	banner_panel.offset_left = -240.0
 	banner_panel.offset_right = 240.0
-	banner_panel.offset_top = 18.0
-	banner_panel.offset_bottom = 60.0
+	banner_panel.offset_top = 132.0
+	banner_panel.offset_bottom = 174.0
 	_banner_style = StyleBoxFlat.new()
 	_banner_style.bg_color = CAUTION_COLOR.darkened(0.75)
 	_banner_style.border_color = CAUTION_COLOR

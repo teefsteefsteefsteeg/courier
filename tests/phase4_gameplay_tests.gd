@@ -66,6 +66,23 @@ func _physics_frames(count: int) -> void:
 		await physics_frame
 
 
+func _test_village_delivery() -> void:
+	print("[Live village delivery wiring]")
+	var village := load("res://scenes/levels/village.tscn") as PackedScene
+	_check(village != null, "F5 village scene loads")
+	if village == null:
+		return
+	var world := village.instantiate()
+	get_root().add_child(world)
+	await process_frame
+	var integration := world.get_node_or_null("Phase4DeliveryIntegration")
+	_check(integration != null, "village instances Phase4DeliveryIntegration")
+	if integration != null:
+		_check(integration.quest_manager != null, "integration connects quest manager")
+		_check(integration.player != null, "integration retains village player")
+	world.queue_free()
+
+
 func _new_arena() -> Node3D:
 	arena = Node3D.new()
 	arena.name = "Arena"

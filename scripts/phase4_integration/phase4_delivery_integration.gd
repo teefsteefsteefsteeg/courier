@@ -627,6 +627,9 @@ func _attach_visual_layer() -> void:
 		return
 	if _visual_layer.has_method(&"bind_integration"):
 		_visual_layer.call(&"bind_integration", self)
+	var delivery_hud := _visual_layer.get_node_or_null("DeliveryHUD")
+	if delivery_hud != null:
+		delivery_hud.set("use_shared_quest_tracker", true)
 	_sync_presentation()
 
 

@@ -27,7 +27,7 @@ func _run() -> void:
 	_check(egg_pickup != null and potion_pickup != null, "both magical pickup scenes are instanced in the post office")
 	_check(showcase != null and showcase.egg_visual != null and showcase.potion_visual != null, "showcase has both live magical models")
 	_check(showcase.egg_visual.get_bound_package() != null and showcase.potion_visual.get_bound_package() != null, "showcase visuals bind live PackageInstances")
-	_check(hud.visible and hud.is_temperature_shown(), "showcase exposes the live Egg temperature HUD on village start")
+	_check(not hud.visible and hud.get_bound_package() == null, "exhibit does not impersonate carried cargo on village start")
 
 	_check(manager.accept_quest(&"q002_dragon_egg") == QuestManager.AcceptResult.OK, "Dragon Egg mission accepts")
 	await process_frame
@@ -36,15 +36,17 @@ func _run() -> void:
 	await process_frame
 	_check(carrier.get_package().get_package_id() == &"pkg_dragon_egg", "carrying the egg uses the actual package")
 	_check(hud.visible and hud.is_temperature_shown(), "carrying the egg shows the live temperature HUD")
+	showcase.interactable.interact(player)
+	_check(hud.get_bound_package() == carrier.get_package(), "exhibit interaction preserves the actual carried egg binding")
 	_check(carrier.get_child(-1) is DragonEggVisualFX, "carrying the egg instances its visual/effects scene")
 	carrier.remove_package(&"audit")
 
 	showcase.interactable.interact(player)
 	await process_frame
-	_check(hud.visible and hud.is_instability_shown(), "showcase interaction switches HUD to live potion instability")
+	_check(not hud.visible and hud.get_bound_package() == null, "exhibit stays on its placard after cargo is removed")
 	_check(showcase.potion_visual.get_agitation() >= 0.0, "potion visual effect updates from instability")
 
-	print("phase3_demo_tests: ", 13 - failures, " passed, ", failures, " failed")
+	print("phase3_demo_tests: ", 14 - failures, " passed, ", failures, " failed")
 	quit(failures)
 
 
