@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/medieval_village/Inn.fbx" id="1_model"]
+[ext_resource type="Script" path="res://scripts/world/camera_occluder.gd" id="2_occluder"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(4.896, 3.2, 4.884)
+
+[node name="MedievalInn" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+transform = Transform3D(1.35, 0, 0, 0, 1.35, 0, 0, 0, 1.35, 0.007, 0, -0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+shape = SubResource("BoxShape3D_body")
+
+[node name="CameraOccluder" type="Node3D" parent="."]
+script = ExtResource("2_occluder")
+radius = 2.992
+height = 4.005

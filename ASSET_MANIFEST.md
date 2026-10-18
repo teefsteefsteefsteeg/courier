@@ -1,19 +1,19 @@
 # Asset Manifest
 
-No external assets are imported yet. Everything below is a **PLACEHOLDER** made from Godot
-built-in primitive meshes and flat-colour materials authored in this repo. It should be replaced
-with properly licensed low-poly art.
+Phase 5A imported the first external models (Quaternius, CC0) for village houses and nature props;
+see **External assets** below. Everything else is still a **PLACEHOLDER** made from Godot built-in
+primitive meshes and flat-colour materials authored in this repo.
 
 | Asset | Path | Type | Source / License | Status |
 |---|---|---|---|---|
 | Courier (player) | `scenes/player/player.tscn` (Visual) | Capsule/sphere/box/cylinder primitives | Authored in-repo, no license needed | PLACEHOLDER |
 | NPC body | `scenes/npc/npc.tscn` (Visual) | Primitives, colour set per instance | Authored in-repo | PLACEHOLDER |
 | Crate | `scenes/props/placeholder_crate.tscn` | BoxMesh 1 m | Authored in-repo | PLACEHOLDER |
-| Rock | `scenes/props/placeholder_rock.tscn` | 6-sided CylinderMesh | Authored in-repo | PLACEHOLDER |
-| Tree | `scenes/props/placeholder_tree.tscn` | Cylinder trunk + 2 cones | Authored in-repo | PLACEHOLDER |
+| Rock | `scenes/props/placeholder_rock.tscn` | 6-sided CylinderMesh | Authored in-repo | PLACEHOLDER (test yard / sandbox only; village uses Quaternius rocks) |
+| Tree | `scenes/props/placeholder_tree.tscn` | Cylinder trunk + 2 cones | Authored in-repo | PLACEHOLDER (test yard / sandbox only; village and forest use Quaternius trees) |
 | Ground, path, fence | `scenes/levels/test_yard.tscn` | PlaneMesh / BoxMesh | Authored in-repo | PLACEHOLDER |
 | Flat materials (32) | `assets/materials/placeholder/ph_*.tres` | StandardMaterial3D (some emissive) | Authored in-repo | PLACEHOLDER |
-| Village buildings and props | `scenes/props/{cottage,well,lamp_post,market_stall,signpost,barrel,bench,bush,mushroom_cluster}.tscn` | Box/Prism/Cylinder/Sphere primitives | Authored in-repo | PLACEHOLDER |
+| Village buildings and props | `scenes/props/{cottage,well,lamp_post,market_stall,signpost,barrel,bench,bush,mushroom_cluster}.tscn` | Box/Prism/Cylinder/Sphere primitives | Authored in-repo | PLACEHOLDER (`cottage` now only used by the tinted AlchemyShop; `bush` no longer placed in village/forest) |
 | Post office, forest entrance | `scenes/locations/*.tscn` | Primitives and Label3D signs | Authored in-repo | PLACEHOLDER |
 | NPC costumes (5) | `scenes/npc/characters/*.tscn` | Primitive accessories on npc.tscn | Authored in-repo | PLACEHOLDER |
 | UI theme | `assets/ui/courier_theme.tres` | Theme and StyleBoxFlat | Authored in-repo | Temporary |
@@ -24,6 +24,28 @@ with properly licensed low-poly art.
 | Destination ring | `scenes/gameplay/world/destination_area.tscn` | TorusMesh, unshaded | Authored in-repo (Phase 2) | PLACEHOLDER |
 | Gameplay UI theme | `scenes/gameplay/ui/gameplay_ui_theme.tres` | Theme, StyleBoxFlat | Authored in-repo (Phase 2) | Temporary |
 | Phase 2 sandbox ground/fence/signs | `scenes/gameplay/sandbox/phase2_delivery_sandbox.tscn` | PlaneMesh / BoxMesh / Label3D | Authored in-repo (Phase 2) | PLACEHOLDER (test scene) |
+
+## External assets
+
+Both packs are by Quaternius (https://quaternius.com, https://www.patreon.com/quaternius), licensed
+**CC0 1.0 Universal** (https://creativecommons.org/publicdomain/zero/1.0/). The original License.txt
+is copied next to each model folder. Source copies live in `D:\MysticCourierAssets`. Imported
+2026-10-18 (Phase 5A) as FBX (the packs ship no GLB/glTF); Godot 4.7 native FBX importer, default
+settings (LODs + shadow meshes on). Embedded flat-colour materials are kept; there are no textures.
+Modifications: none to the files. Each model is wrapped in a prop scene that scales it, centres it,
+and adds collision and a CameraOccluder.
+
+| Model file | Source pack / path | Wrapper scene | Scale | Tris |
+|---|---|---|---|---|
+| `assets/models/quaternius/medieval_village/House_1.fbx` | Medieval Village Pack - Dec 2020 / Buildings/FBX | `scenes/props/medieval/house_1.tscn` | 2.0 | 5758 |
+| `.../medieval_village/House_2.fbx` | same | `scenes/props/medieval/house_2.tscn` | 1.6 | 7162 |
+| `.../medieval_village/Inn.fbx` | same | `scenes/props/medieval/inn.tscn` | 1.35 | 7756 |
+| `.../medieval_village/Blacksmith.fbx` | same | `scenes/props/medieval/blacksmith.tscn` | 1.6 | 7659 |
+| `.../medieval_village/Mill.fbx` | same | `scenes/props/medieval/mill.tscn` | 1.8 | 8126 |
+| `assets/models/quaternius/ultimate_nature/CommonTree_1..4.fbx` | Ultimate Nature Pack - Jun 2019 / FBX | `scenes/props/nature/common_tree_1..4.tscn` | 1.2-1.5 | 1352-2952 |
+| `.../ultimate_nature/PineTree_1..3.fbx` | same | `scenes/props/nature/pine_tree_1..3.tscn` | 1.15-1.45 | 1692-2392 |
+| `.../ultimate_nature/Rock_2.fbx`, `Rock_3.fbx`, `Rock_Moss_2.fbx` | same | `scenes/props/nature/rock_2.tscn`, `rock_3.tscn`, `rock_moss_2.tscn` | 2.2 | 72-80 |
+| `.../ultimate_nature/Bush_1.fbx`, `Bush_2.fbx`, `BushBerries_1.fbx` | same | `scenes/props/nature/bush_1.tscn`, `bush_2.tscn`, `bush_berries_1.tscn` | 0.7-0.75 | 268-892 |
 
 When adding an external asset, record: name, path, author, source URL, license (with a link), date
 imported, and any modifications.

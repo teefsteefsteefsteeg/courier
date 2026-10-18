@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/ultimate_nature/PineTree_2.fbx" id="1_model"]
+[ext_resource type="Script" path="res://scripts/world/camera_occluder.gd" id="2_occluder"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_trunk"]
+height = 1.6
+radius = 0.4
+
+[node name="PineTree2" type="StaticBody3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+transform = Transform3D(1.15, 0, 0, 0, 1.15, 0, 0, 0, 1.15, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CylinderShape3D_trunk")
+
+[node name="CameraOccluder" type="Node3D" parent="."]
+script = ExtResource("2_occluder")
+radius = 1.5
+height = 4.094
