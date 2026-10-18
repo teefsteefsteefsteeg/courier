@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/combat_projectile.gd" id="1_proj"]
+
+[node name="FrostShard" type="Node3D"]
+script = ExtResource("1_proj")
+damage = 12.0
+speed = 10.0
+max_distance = 14.0
+collision_mask = 3
+placeholder_color = Color(0.75, 0.95, 1, 1)

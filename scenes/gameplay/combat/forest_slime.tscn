@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/forest_slime.gd" id="1_slime"]
+[ext_resource type="Script" path="res://scripts/combat/combat_health.gd" id="2_health"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_body"]
+radius = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_slime"]
+albedo_color = Color(0.36, 0.72, 0.3, 1)
+roughness = 0.35
+
+[sub_resource type="SphereMesh" id="SphereMesh_body"]
+material = SubResource("StandardMaterial3D_slime")
+radius = 0.5
+height = 0.8
+radial_segments = 16
+rings = 8
+
+[node name="ForestSlime" type="CharacterBody3D" node_paths=PackedStringArray("health")]
+collision_layer = 16
+script = ExtResource("1_slime")
+health = NodePath("Health")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("SphereShape3D_body")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+mesh = SubResource("SphereMesh_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("2_health")
+max_health = 40.0
