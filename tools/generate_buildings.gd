@@ -23,6 +23,8 @@ const BOX_MILL := Vector3(3.305, 3.2, 4.423)
 ## The Phase 5B bell tower's collider (scenes/props/env/bell_tower.tscn), centred at y = 1.5.
 const BOX_BELL_TOWER := Vector3(3.1125, 3.0, 3.5811)
 const BELL := "res://assets/models/quaternius/medieval_village/Bell.fbx"
+## New in Phase 5F: the armory hall (scenes/locations/armory.tscn), walls plus 0.1 m.
+const BOX_ARMORY := Vector3(5.0, 3.2, 3.4)
 
 ## Wall letters -> piece suffix. Upper case = with a door or window fill.
 const WALLS := {
@@ -56,6 +58,7 @@ func _initialize() -> void:
 		["mill", BOX_MILL, _mill],
 		["alchemy_shop", BOX_ALCHEMY, _alchemy_shop],
 		["bell_tower", BOX_BELL_TOWER, _bell_tower],
+		["armory_hall", BOX_ARMORY, _armory_hall],
 	]:
 		_begin(spec[0], spec[1])
 		(spec[2] as Callable).call()
@@ -214,6 +217,18 @@ func _bell_tower() -> void:
 	model.add_child(bell, true)
 	bell.owner = building
 	_piece("Roof_Tower_RoundTiles", Vector3(0, 3 * STOREY, 0))
+
+
+## Armory hall: stone ground floor with the shop door, timber upper floor with
+## a balcony for the shields and sign, side-on slate roof whose gable (with the
+## shop's emblem, see scenes/locations/armory.tscn) faces the camera.
+func _armory_hall() -> void:
+	building.roof_color = Color(0.36, 0.42, 0.52)
+	_storey(3, 2, 0, "brick", {"front": "WDW", "right": "Sw", "left": "wS", "back": "SSS"}, true)
+	_storey(3, 2, 1, "plaster", {"front": "wGw", "right": "Gw", "left": "wG", "back": "GGG"})
+	_balcony_front(3, 2, 1)
+	_gable_roof(3, 2, 2, true)
+	_piece("Prop_Chimney", Vector3(-2.0, 2 * STOREY + 0.3, -0.8))
 
 
 # --- building blocks ---------------------------------------------------------

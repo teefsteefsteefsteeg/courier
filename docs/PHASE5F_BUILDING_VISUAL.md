@@ -112,3 +112,53 @@ for the runtime merge.
 - The Phase 5A scenes in `scenes/props/medieval/` and `scenes/props/env/bell_tower.tscn` are no
   longer used by the village; they are kept for comparison and rollback.
 - Not yet playtested by a human.
+
+## Armory (weapon shop)
+
+`scenes/locations/armory.tscn` (root script `Armory`, `scripts/world/armory.gd`) is instanced in
+`village.tscn` as `Armory` at (4.4, 0, -16.6). It faces south onto the forest road, north of
+the plaza, between the bell tower and the road. That ground was open: no colliders, markers or
+NPCs, and the road core stays clear. It is a self-contained, modular location the gameplay branch
+can instance or move:
+
+| Node | Contents |
+|---|---|
+| `Hall` | `scenes/buildings/armory_hall.tscn` (MegaKit, generated with the other buildings): stone ground floor with the round shop door between two windows, timber upper floor with a full-width balcony, slate-blue roof turned side-on so its gable faces the camera, chimney. Collider 5.0 x 3.4 m |
+| `Displays/SwordRack` | Five swords standing blade-up, under the balcony beside the door |
+| `Displays/MerchantCounter` | Closed counter with a bow, arrows, a wand and knuckle-dusters |
+| `Displays/DisplayTable` | Trestle table with two axes, a hammer and two daggers, a shield leaning on it |
+| `Displays/WeaponBarrel` | Barrel of swords (blade down), an axe and a mace |
+| `Displays/PolearmRack` | Two spears, a halberd and a staff on the camera-facing side wall |
+| `Facade` | Two shields and an "ARMORY" sign board on the balcony rail; `GableEmblem` (crossed swords and a shield) on the gable |
+| `Merchant` | `scenes/npc/characters/weaponsmith_brenna.tscn`: NPC "Weaponsmith Brenna", `npc_id = &"armory_merchant"`, KayKit Barbarian, three idle lines |
+| `Markers` | `MerchantSpot`, `ShopFront` (where the courier stands to trade), `Entrance` (the door) |
+
+**Integration contract (no shop UI or economy here):** `Armory.shop_requested(interactor)` fires
+whenever the courier talks to the merchant ("[E] Talk to Weaponsmith Brenna"). The merchant also
+says one of her lines through the normal NPC bubble. `get_shop_front()` and `get_entrance()`
+return the markers. The hall has no interior; the door is decorative.
+
+The display props (`scenes/props/armory/*.tscn`) are `MergedProp`s
+(`scripts/world/merged_prop.gd`): pieces under `Model` merge into one mesh per material at
+runtime, 3 or 4 surfaces each. All 23 KayKit weapons share `assets/materials/armory/weapons.tres`
+(mapped at import), so the 29 weapons on show cost one surface per prop. Props and the location
+are written by `tools/generate_armory.gd`. Run `tools/generate_buildings.gd` first if the hall
+changes.
+
+Not added: a `LocationZone` banner for the armory. `world_ui_tests.gd` asserts exactly six
+zones, so adding one is left to the world/UI owner.
+
+Validation: new `tests/phase5f_armory_tests.gd` (37 checks):
+- Every imported weapon is on display and uses the shared material, the texture is at most 1024 px,
+  and the licence is kept.
+- 29 weapons are on show, covering all nine kinds.
+- The location, hall and props are merged, the sign reads ARMORY, and the markers resolve.
+- Talking to the merchant raises `shop_requested`.
+- No armory collider overlaps another solid, and every collider keeps 1.2 m from NPCs and
+  gameplay markers.
+- The courier walks to the counter from the plaza centre and from the forest road, and the prompt
+  then focuses the weaponsmith.
+
+Screenshots: `docs/validation/phase5f/armory/` (`armory_03_counter_hud.png` is the in-game view with
+the HUD and the interaction prompt). Regenerate with
+`godot --path . --resolution 1600x900 --script res://tests/capture_armory_screenshots.gd -- <dir>`.
