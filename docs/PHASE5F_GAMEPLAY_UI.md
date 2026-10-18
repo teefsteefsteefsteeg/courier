@@ -60,6 +60,39 @@ has no marker.
   the wallet height).
 - The onboarding hint mentions the `!` and `?` markers.
 
+### Second pass: dialogue, retry, minimap and modal fixes
+Found by driving the real village with scripted input (board, journal, map and dialogue in every
+combination) and a failed potion run.
+
+- **Giver dialogue** (`QuestNPCBehaviour.get_giver_line`). When no talk, delivery or recipient
+  line applies, the NPC who gave a contract (Bram) now says where things stand, all generated from
+  quest data (exported, `%s`-templated lines; no `.tres` edits):
+  crate still to collect (`The Unstable Potion Crate is ready for you here. It goes to Alchemist
+  Corvin, Village Alchemy Shop.`), en route, package dropped, a failed contract to retry, and
+  `Every contract delivered! Not bad at all for a Journeyman Courier.` once the board is done.
+  Talking to the giver while carrying their package gives the en-route reminder instead of the
+  wrong-recipient refusal (and no "Wrong recipient" toast).
+- **Not-ready line** names the missing step: `That's for me? Finish the route first, courier:
+  carry the egg to the Forest Clearing.`
+- **Bug: failed contracts were soft-locked.** In the village only Q2 was put back on the board (by
+  the Phase 4 integration); a failed Q3 stayed FAILED with its button hidden. The board now shows
+  `Retry` (status `Failed: <reason>`) and `QuestManager.retry_quest()` / `can_retry()` reset and
+  re-accept it in one step, respecting the one-delivery rule. The journal's failed entry says the
+  contract can be taken again.
+- **Bug: the village minimap was not modal.** `minimap_controller.gd` (the map GameplayHUD
+  actually uses) opened the expanded map over the board and journal, let the journal open over
+  it, kept the courier walking underneath, ignored Escape, and drew the compact map above the open
+  journal. The expanded map now refuses to open over another window, joins `ui_modal` while open,
+  pauses the courier's input (restored deferred on close), closes on M or Escape, shows a close
+  hint, and the whole layer hides while the journal is open.
+- **Minimap content.** No node was in the `npcs` group, so the map showed no NPCs; `NPC` now joins
+  it and markers carry the NPC's display name. The objective marker followed only Q2 (via the
+  Phase 4 integration); `QuestWaypoint` resolves the current objective of any contract to its NPC,
+  source pickup, destination or dropped package, with a matching label. The integration still wins
+  where it has a target, so its board/forest routing and the Phase 4 HUD tests are unchanged.
+  `PackagePickup` and `DestinationArea` join `package_pickups` / `destination_areas` for lookup.
+- The dialogue box hides with the journal and comes back when it closes.
+
 ## Tests
 New `tests/phase5f_gameplay_ui_tests.gd` (real village plus standalone unit checks):
 - Rank thresholds, progress clamping, titles, and `rank_changed` up and down on a standalone wallet.
@@ -74,6 +107,12 @@ New `tests/phase5f_gameplay_ui_tests.gd` (real village plus standalone unit chec
   after the delivery toast; the wallet shows Apprentice.
 - Q3: the board feedback names the first step; the tracker header for a two-step contract.
 - The tracker and taller wallet stay on screen, apart, and above the minimap.
+- Second pass: Elowen's not-ready line names the step; Bram's pickup / en-route / dropped / failed
+  / all-done lines and no wrong-recipient toast from the giver; map NPC labels; the map objective
+  through Q3 pickup, delivery and a dropped crate; Q3 failure -> journal hint -> board `Retry` with
+  the reason -> crate back on the counter -> redelivered; the expanded map as a modal (pauses and
+  restores input, hides the prompt, blocks the journal, refused over the board, Escape closes);
+  the journal hiding and restoring the map and dialogue layers.
 
 Existing suites were not edited. Compatibility points they rely on are kept: wallet and tracker label
 text, `[E] Talk to Postmaster Bram`, `[E] Read Courier Guild Board`, the `Wrong recipient`,
@@ -83,11 +122,11 @@ text, `[E] Talk to Postmaster Bram`, `[E] Read Courier Guild Board`, the `Wrong 
 ## Validation
 
 Run headless with Godot 4.7.2 (`D:\godot\Godot_v4.7.2-stable_win64_console.exe`) from the project root
-on 2026-10-18: `--import` clean, `--quit-after 180` boot of the village clean (no errors or warnings).
+on 2026-10-18, rerun after the second pass with the same results: `--import` clean, `--quit-after 180` boot of the village clean (no errors or warnings).
 
 | Suite | Result |
 |---|---|
-| phase5f_gameplay_ui_tests | 84 passed, 0 failed |
+| phase5f_gameplay_ui_tests | 125 passed, 0 failed (84 after the first pass) |
 | phase1_tests | 52 / 0 |
 | phase2_tests | 105 / 0 |
 | phase3_tests | 79 / 0 |

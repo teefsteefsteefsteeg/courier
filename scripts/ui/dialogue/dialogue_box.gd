@@ -45,6 +45,8 @@ var _bound_npcs: Dictionary[int, bool] = {}
 
 func _ready() -> void:
 	box.visible = false
+	# The open journal covers the screen; hide this layer meanwhile (it restores it after).
+	add_to_group(QuestJournal.HIDDEN_WHILE_OPEN_GROUP)
 	_portrait_style.set_corner_radius_all(10)
 	_portrait_style.set_border_width_all(3)
 	_portrait_style.border_color = Color(0.95, 0.78, 0.35)

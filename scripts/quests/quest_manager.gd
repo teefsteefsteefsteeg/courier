@@ -268,6 +268,28 @@ func reset_failed_quest(quest_id: StringName) -> bool:
 	return true
 
 
+## Whether retry_quest(quest_id) would succeed: the quest is FAILED and, for a delivery,
+## the delivery slot is free.
+func can_retry(quest_id: StringName) -> AcceptResult:
+	var state := get_state(quest_id)
+	if state == null:
+		return AcceptResult.UNKNOWN_QUEST
+	if state.status != QuestState.Status.FAILED:
+		return AcceptResult.NOT_AVAILABLE
+	if _definitions[quest_id].is_delivery and _active_delivery_id != &"":
+		return AcceptResult.DELIVERY_IN_PROGRESS
+	return AcceptResult.OK
+
+
+## Takes a FAILED contract again in one step (quest board "Retry"): resets and accepts it.
+func retry_quest(quest_id: StringName) -> AcceptResult:
+	var result := can_retry(quest_id)
+	if result != AcceptResult.OK:
+		return result
+	reset_failed_quest(quest_id)
+	return accept_quest(quest_id)
+
+
 ## Grants the reward for a COMPLETED quest. Returns false if already granted or not completed.
 func grant_reward(quest_id: StringName) -> bool:
 	var state := get_state(quest_id)

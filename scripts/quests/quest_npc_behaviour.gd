@@ -34,7 +34,22 @@ const MARKER_COLORS := {
 }
 
 @export_multiline var wrong_recipient_line: String = "This isn't addressed to me. It's for %s."
-@export_multiline var not_ready_line: String = "That's for me? Finish the route first, courier."
+## %s (optional) is the current objective, e.g. "carry the egg to the Forest Clearing".
+@export_multiline var not_ready_line: String = "That's for me? Finish the route first, courier: %s."
+
+@export_group("Giver lines")
+## Lines for the NPC who hands out a contract (QuestDefinition.giver_id), used when no
+## talk, delivery or recipient line applies. Empty disables a line.
+## Package still to collect: package name, recipient, destination.
+@export_multiline var giver_pickup_line: String = "The %s is ready for you here. It goes to %s, %s."
+## Package on its way: package name, recipient, destination.
+@export_multiline var giver_en_route_line: String = "That %s is for %s, %s. Safe travels, courier!"
+## Courier past pickup without the package: package name.
+@export_multiline var giver_dropped_line: String = "Where's the %s? Go back and fetch it before it comes to harm."
+## A contract from this giver failed and can be retried: quest title.
+@export_multiline var giver_failed_line: String = "Word travels fast. \"%s\" fell through, but the board has it again if you want another go."
+## Every contract from this giver delivered: courier rank title.
+@export_multiline var giver_all_done_line: String = "Every contract delivered! Not bad at all for a %s."
 
 @export_group("Marker")
 @export var show_marker: bool = true
@@ -87,6 +102,13 @@ func get_interaction_line(npc: NPC, interactor: Node) -> String:
 	# 1. Delivery attempt with whatever the player carries.
 	if carrier != null and carrier.is_carrying():
 		var package := carrier.get_package()
+		# The giver of the carried contract is not a wrong address: remind instead of refusing.
+		var carried_quest := manager.get_definition(package.get_quest_id())
+		if carried_quest != null and carried_quest.giver_id == npc.npc_id \
+				and manager.check_delivery(npc.npc_id, package) == QuestManager.DeliveryResult.WRONG_RECIPIENT:
+			var reminder := get_giver_line(manager, npc.npc_id, carrier)
+			if not reminder.is_empty():
+				return reminder
 		var result := manager.try_deliver(npc.npc_id, package)
 		if result == QuestManager.DeliveryResult.OK:
 			carrier.remove_package(&"delivered")
@@ -102,7 +124,8 @@ func get_interaction_line(npc: NPC, interactor: Node) -> String:
 			var recipient := target_quest.recipient_name if target_quest != null else "someone else"
 			return wrong_recipient_line % recipient if wrong_recipient_line.contains("%s") else wrong_recipient_line
 		if result == QuestManager.DeliveryResult.NOT_READY:
-			return not_ready_line
+			var pending := manager.get_current_objective(package.get_quest_id())
+			return _format(not_ready_line, [_lower_first(pending.description) if pending != null else "the route"])
 
 	# 2. Talk objectives.
 	var talked := manager.notify_talked_to(npc.npc_id)
@@ -119,7 +142,58 @@ func get_interaction_line(npc: NPC, interactor: Node) -> String:
 	var rewarded := manager.get_rewarded_quests_for_recipient(npc.npc_id)
 	if not rewarded.is_empty() and not rewarded[-1].recipient_after_line.is_empty():
 		return rewarded[-1].recipient_after_line
+
+	# 5. Giver reminders.
+	return get_giver_line(manager, npc.npc_id, carrier)
+
+
+## What the contract giver npc_id says about its contracts, or "" for the default lines.
+## In progress: where the package is and where it goes. Otherwise a failed contract
+## to retry, or praise once every contract from this giver is delivered.
+func get_giver_line(manager: QuestManager, npc_id: StringName, carrier: PackageCarrier) -> String:
+	var given: Array[QuestDefinition] = []
+	for quest_id in manager.get_quest_ids():
+		var definition := manager.get_definition(quest_id)
+		if definition.giver_id == npc_id:
+			given.append(definition)
+	if given.is_empty():
+		return ""
+	for definition in given:
+		var objective := manager.get_current_objective(definition.quest_id)
+		if objective == null:
+			continue
+		var package_name := definition.package.package_name if definition.package != null else "package"
+		if objective.type == QuestObjective.Type.PICK_UP_PACKAGE:
+			return _format(giver_pickup_line, [package_name, definition.recipient_name, definition.destination_name])
+		if objective.type == QuestObjective.Type.TALK_TO_NPC:
+			continue
+		if definition.package != null and not QuestWaypoint.is_carrying(carrier, definition.quest_id):
+			return _format(giver_dropped_line, [package_name])
+		return _format(giver_en_route_line, [package_name, definition.recipient_name, definition.destination_name])
+	for definition in given:
+		var state := manager.get_state(definition.quest_id)
+		var retryable := state.status == QuestState.Status.FAILED \
+				or (state.status == QuestState.Status.AVAILABLE and not state.fail_reason.is_empty())
+		if retryable:
+			return _format(giver_failed_line, [definition.title])
+	if given.all(func(d: QuestDefinition) -> bool: return manager.get_status(d.quest_id) == QuestState.Status.REWARDED):
+		var wallet := CourierWallet.find(get_tree())
+		return _format(giver_all_done_line, [wallet.get_rank_title() if wallet != null else "courier"])
 	return ""
+
+
+## Fills %s placeholders when line has as many; a line without them is used as is.
+static func _format(line: String, values: Array) -> String:
+	if line.is_empty():
+		return ""
+	var slots := line.count("%s")
+	if slots == 0 or slots > values.size():
+		return line
+	return line % values.slice(0, slots)
+
+
+static func _lower_first(text: String) -> String:
+	return text.left(1).to_lower() + text.substr(1) if not text.is_empty() else text
 
 
 ## Prompt verb for NPC.get_interaction_prompt(): "Deliver <package> to" when handing the

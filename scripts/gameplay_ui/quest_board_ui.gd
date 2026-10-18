@@ -132,13 +132,18 @@ func _build_entry(definition: QuestDefinition) -> Control:
 	status_label.text = _status_text(status)
 	side.add_child(status_label)
 	var button := Button.new()
-	button.text = "Accept"
-	var check := quest_manager.can_accept(definition.quest_id)
+	var failed := status == QuestState.Status.FAILED
+	button.text = "Retry" if failed else "Accept"
+	var check := quest_manager.can_retry(definition.quest_id) if failed else quest_manager.can_accept(definition.quest_id)
 	button.disabled = check != QuestManager.AcceptResult.OK
-	if status == QuestState.Status.AVAILABLE and check != QuestManager.AcceptResult.OK:
+	if failed:
+		var reason := quest_manager.get_state(definition.quest_id).fail_reason
+		if not reason.is_empty():
+			status_label.text = "Failed: %s" % reason
+	if (status == QuestState.Status.AVAILABLE or failed) and check != QuestManager.AcceptResult.OK:
 		button.tooltip_text = QuestManager.accept_result_text(check)
 		status_label.text = QuestManager.accept_result_text(check)
-	button.visible = status == QuestState.Status.AVAILABLE
+	button.visible = status == QuestState.Status.AVAILABLE or failed
 	button.pressed.connect(_on_accept_pressed.bind(definition.quest_id))
 	side.add_child(button)
 	accept_buttons[definition.quest_id] = button
@@ -157,7 +162,10 @@ func _status_text(status: QuestState.Status) -> String:
 
 
 func _on_accept_pressed(quest_id: StringName) -> void:
-	var result := quest_manager.accept_quest(quest_id)
+	# A failed contract's button reads "Retry"; anything else is a plain accept.
+	var result := quest_manager.retry_quest(quest_id) \
+			if quest_manager.get_status(quest_id) == QuestState.Status.FAILED \
+			else quest_manager.accept_quest(quest_id)
 	if result == QuestManager.AcceptResult.OK:
 		var definition := quest_manager.get_definition(quest_id)
 		feedback_label.text = "Contract accepted: %s" % definition.title

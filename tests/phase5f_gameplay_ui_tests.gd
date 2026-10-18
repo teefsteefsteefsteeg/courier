@@ -1,7 +1,9 @@
 extends SceneTree
 ## Phase 5F gameplay / UI checks in the real village: NPC quest markers, context
 ## interaction prompts, delivery feedback (toast kinds, NPC thanks), the quest tracker
-## stage/step/reward lines, the courier rank and the wallet payout delta.
+## stage/step/reward lines, the courier rank and the wallet payout delta; giver dialogue,
+## failed-contract retry from the board, the minimap objective/NPC labels and the
+## expanded map as a modal window.
 ## Run headless from the project root:
 ##   godot --headless --path . --script res://tests/phase5f_gameplay_ui_tests.gd
 ## Exit code = number of failed checks.
@@ -61,6 +63,8 @@ func _run() -> void:
 	await _test_q1_feedback()
 	await _test_q2_not_ready_and_rank_up()
 	await _test_board_feedback()
+	await _test_q3_giver_retry_and_map()
+	await _test_map_modal()
 	_test_hud_fits()
 
 	print("\n=== Phase 5F gameplay/UI tests: %d passed, %d failed ===" % [_passes, _failures])
@@ -134,6 +138,36 @@ func _toast_index(text: String) -> int:
 func _close_dialogue() -> void:
 	dialogue.close()
 	await _frames(1)
+
+
+## Interacts with the NPC and returns the line it said (as shown in the dialogue box).
+func _talk(npc: NPC) -> String:
+	npc.interactable.interact(player)
+	await _frames(1)
+	var line := dialogue.get_text()
+	await _close_dialogue()
+	return line
+
+
+func _minimap() -> Node:
+	return hud.get_node("Minimap")
+
+
+## World position of the minimap objective after a refresh, or null when there is none.
+func _map_objective() -> Variant:
+	var map := _minimap()
+	map.refresh_objective()
+	return map.model.get_marker_world(&"objective") if map.model.has_marker(&"objective") else null
+
+
+func _press(action: StringName) -> void:
+	for pressed in [true, false]:
+		var event := InputEventAction.new()
+		event.action = action
+		event.pressed = pressed
+		Input.parse_input_event(event)
+	Input.flush_buffered_events()
+	await _frames(2)
 
 
 # --- pure logic --------------------------------------------------------------
@@ -290,6 +324,7 @@ func _test_q2_not_ready_and_rank_up() -> void:
 	await _frames(1)
 	var not_yet := _toast_index("Not yet: Carry the egg to the Forest Clearing")
 	_check(not_yet >= 0 and hud.quest_notification.kind_history[not_yet] == QuestNotification.KIND_WARNING, "early handover explains the missing step")
+	_check(dialogue.get_text().contains("carry the egg to the Forest Clearing"), "Elowen names the missing step: '%s'" % dialogue.get_text())
 	_check(carrier.is_carrying() and manager.get_status(Q2) == S.ACTIVE, "egg kept, Q2 still active")
 	await _close_dialogue()
 
@@ -326,6 +361,124 @@ func _test_board_feedback() -> void:
 	board_ui.close()
 	await _frames(2)
 	_check(hud.quest_tracker.header_label.text == "CONTRACT ACCEPTED · STEP 1/2", "Q3 header '%s'" % hud.quest_tracker.header_label.text)
+
+
+func _test_q3_giver_retry_and_map() -> void:
+	print("[Q3: giver lines, minimap objective, failure and retry]")
+	var bram := _npc("PostmasterBram")
+	var corvin := _npc("AlchemistCorvin")
+	var crate_pickup := _pickup_for(&"pkg_potion_crate")
+	var map := _minimap()
+	var bram_marker: Dictionary = map.model.get_marker(map.model.find_id_for_node(bram))
+	_check(not bram_marker.is_empty() and bram_marker["label"] == "Postmaster Bram", "map labels NPCs by name (%s)" % bram_marker.get("label", "-"))
+	_check(map.model.count(&"npc") >= 5, "every village NPC is on the map (%d)" % map.model.count(&"npc"))
+
+	var objective: Variant = _map_objective()
+	_check(objective != null and (objective as Vector3).is_equal_approx(crate_pickup.global_position), "map objective points at the crate pickup")
+	var line := await _talk(bram)
+	_check(line.contains("Unstable Potion Crate is ready") and line.contains("Alchemist Corvin"), "Bram reminds where the crate goes: '%s'" % line)
+
+	crate_pickup.interactable.interact(player)
+	await _frames(2)
+	_check(carrier.is_carrying() and carrier.get_package().get_quest_id() == Q3, "carrying the potion crate")
+	objective = _map_objective()
+	_check(objective != null and (objective as Vector3).is_equal_approx(corvin.global_position), "map objective moves to Corvin")
+	_check(map.model.get_marker(&"objective")["label"] == "Deliver the crate to Alchemist Corvin", "map objective label '%s'" % map.model.get_marker(&"objective")["label"])
+	var toasts_before := hud.quest_notification.history.size()
+	line = await _talk(bram)
+	_check(line.contains("Unstable Potion Crate is for Alchemist Corvin"), "Bram's en-route line: '%s'" % line)
+	_check(hud.quest_notification.history.size() == toasts_before and carrier.is_carrying(), "the giver keeps the crate out of the wrong-recipient path")
+
+	var dropped := carrier.drop_package()
+	await _frames(2)
+	objective = _map_objective()
+	_check(objective != null and (objective as Vector3).is_equal_approx(dropped.global_position), "map objective points at the dropped crate")
+	_check(map.model.get_marker(&"objective")["label"] == "Pick up the dropped Unstable Potion Crate", "dropped label '%s'" % map.model.get_marker(&"objective")["label"])
+	line = await _talk(bram)
+	_check(line.begins_with("Where's the Unstable Potion Crate?"), "Bram notices the dropped crate: '%s'" % line)
+
+	print("[Failed contract: retry from the board]")
+	_check(manager.can_retry(Q3) == QuestManager.AcceptResult.NOT_AVAILABLE, "an active contract cannot be retried")
+	_check(manager.fail_quest(Q3, "The potion exploded."), "Q3 fails")
+	await _frames(2)
+	_check(_map_objective() == null, "failed contract leaves no map objective")
+	line = await _talk(bram)
+	_check(line.contains("\"Unstable Potion\" fell through"), "Bram mentions the failed contract: '%s'" % line)
+	var journal := level.get_node("QuestJournal") as QuestJournal
+	journal.refresh()
+	var failed_entry: Dictionary = {}
+	for entry in journal.entries:
+		if entry["id"] == Q3:
+			failed_entry = entry
+	_check(not failed_entry.is_empty() and failed_entry["status"] == JournalData.STATUS_FAILED, "journal lists Q3 as failed")
+	_check(str(failed_entry.get("description", "")).contains(JournalData.RETRY_HINT), "journal says the contract can be taken again")
+
+	_check(manager.can_retry(Q3) == QuestManager.AcceptResult.OK, "failed Q3 can be retried")
+	board_ui.open(board, player)
+	await _frames(1)
+	var button: Button = board_ui.accept_buttons.get(Q3)
+	_check(button != null and button.visible and not button.disabled and button.text == "Retry", "board offers Retry for the failed contract")
+	var status_text := ""
+	if button != null:
+		status_text = ((button.get_parent() as Control).get_child(0) as Label).text
+	_check(status_text == "Failed: The potion exploded.", "board shows why it failed: '%s'" % status_text)
+	if button != null:
+		button.pressed.emit()
+	await _frames(1)
+	_check(manager.get_status(Q3) == S.ACCEPTED, "Retry takes the contract again")
+	_check(board_ui.feedback_label.text.begins_with("Contract accepted: Unstable Potion"), "board confirms the retry: '%s'" % board_ui.feedback_label.text)
+	board_ui.close()
+	await _frames(2)
+	_check(crate_pickup.is_available(), "the crate is back on the counter")
+	_check(manager.get_state(Q3).fail_reason.is_empty(), "retry clears the failure")
+
+	print("[Q3 redelivered: giver praise]")
+	crate_pickup.interactable.interact(player)
+	await _frames(2)
+	await _stand_near(corvin, _spot("Markers/AlchemyDeliverySpot"))
+	corvin.interactable.interact(player)
+	await _frames(3)
+	await _close_dialogue()
+	_check(manager.get_status(Q3) == S.REWARDED, "retried Q3 delivered")
+	line = await _talk(bram)
+	_check(line.begins_with("Every contract delivered!") and line.contains(wallet.get_rank_title()), "Bram praises a finished board: '%s'" % line)
+	_check(_map_objective() == null, "no map objective once everything is delivered")
+
+
+func _test_map_modal() -> void:
+	print("[Expanded map is a modal window]")
+	var map := _minimap()
+	var journal := level.get_node("QuestJournal") as QuestJournal
+	_check(not map.is_expanded(), "map starts collapsed")
+	await _press(&"toggle_map")
+	_check(map.is_expanded() and map.is_in_group(QuestJournal.MODAL_GROUP), "M opens the map as a modal")
+	_check(not player.input_enabled, "courier input pauses under the open map")
+	_check(not prompt.panel.visible, "interaction prompt stands down under the map")
+	await _press(&"toggle_journal")
+	_check(not journal.is_open(), "journal does not open over the map")
+	await _press(&"ui_cancel")
+	_check(not map.is_expanded() and not map.is_in_group(QuestJournal.MODAL_GROUP), "Escape closes the map")
+	await _frames(1)
+	_check(player.input_enabled, "courier input restored after the map closes")
+
+	board_ui.open(board, player)
+	await _frames(1)
+	await _press(&"toggle_map")
+	_check(not map.is_expanded(), "map does not open over the quest board")
+	board_ui.close()
+	await _frames(2)
+
+	_npc("VillagerPip").interactable.interact(player)
+	await _frames(1)
+	_check(dialogue.is_open() and dialogue.visible, "dialogue on screen")
+	journal.open()
+	await _frames(1)
+	_check(journal.is_open() and not map.visible and not dialogue.visible, "journal hides the minimap and dialogue layers")
+	journal.close()
+	await _frames(1)
+	_check(map.visible and dialogue.visible and dialogue.is_open(), "both layers come back when the journal closes")
+	await _close_dialogue()
+	_check(player.input_enabled, "courier input enabled after all windows close")
 
 
 func _test_hud_fits() -> void:
