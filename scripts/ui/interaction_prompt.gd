@@ -1,7 +1,8 @@
 class_name InteractionPrompt
 extends CanvasLayer
 ## Shows "[E] Talk to X" while the player's InteractionDetector has a focus.
-## Other UI (e.g. the dialogue box) can suppress it while it owns the screen.
+## Other UI (e.g. the dialogue box) can suppress it while it owns the screen; the
+## open quest journal hides the whole layer.
 
 @export var detector: InteractionDetector
 @export var action: StringName = &"interact"
@@ -15,6 +16,7 @@ var _suppressed: bool = false
 
 func _ready() -> void:
 	panel.visible = false
+	add_to_group(QuestJournal.HIDDEN_WHILE_OPEN_GROUP)
 	if detector != null:
 		detector.focus_changed.connect(_on_focus_changed)
 

@@ -23,7 +23,7 @@
       instance `gameplay_services.tscn`, the quest board, package pickups and destination areas at the Marker3D spots.
 - [ ] Turn off `QuestJournal.use_sample_data_when_unconnected` once the quest system is always present.
 - [ ] Manual playtest: dialogue flow feel, typewriter speed (55 chars/s), journal with mouse and keyboard focus.
-- [ ] Hide the interaction prompt and location banner while the journal is open (they are only dimmed).
+- [x] Hide the interaction prompt and location banner while the journal is open (they are only dimmed).
 - [ ] Standing stones and small props can still briefly hide the courier; consider occluders for them.
 - [ ] Profile the village (12 omni lights, about 120 occluders) on lower-end hardware.
 - [ ] Portrait art for the dialogue box (currently a coloured initial).

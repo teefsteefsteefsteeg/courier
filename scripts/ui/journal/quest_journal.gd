@@ -7,6 +7,8 @@ extends CanvasLayer
 ## Data comes from JournalData: the gameplay QuestManager when one is in the
 ## scene, otherwise optional preview entries. While open, the player's input is
 ## paused and the journal joins the "ui_modal" group so other UI ignores input.
+## HUD layers in the "hidden_by_journal" group (interaction prompt, location
+## banner) are hidden while open and restored to their prior visibility on close.
 
 signal opened
 signal closed
@@ -15,6 +17,7 @@ signal entry_selected(id: StringName)
 enum Tab { IN_PROGRESS, ARCHIVE }
 
 const MODAL_GROUP := &"ui_modal"
+const HIDDEN_WHILE_OPEN_GROUP := &"hidden_by_journal"
 const WATCHED_SIGNALS: Array[StringName] = [&"quest_state_changed", &"objective_progressed", &"objective_completed", &"quest_failed"]
 const STATUS_TEXT := {
 	JournalData.STATUS_ACTIVE: "In progress",
@@ -57,6 +60,8 @@ var _selected_id: StringName = &""
 var _manager: Node = null
 var _player_input_was_enabled: bool = true
 var _refresh_queued: bool = false
+## Instance id -> visibility before open() hid it.
+var _hidden_hud: Dictionary[int, bool] = {}
 var _tab_group := ButtonGroup.new()
 var _entry_group := ButtonGroup.new()
 
@@ -103,6 +108,7 @@ func open() -> void:
 	if player != null:
 		_player_input_was_enabled = player.input_enabled
 		player.input_enabled = false
+	_hide_hud()
 	_focus_selected()
 	opened.emit()
 
@@ -115,6 +121,7 @@ func close() -> void:
 	remove_from_group(MODAL_GROUP)
 	if player != null:
 		player.input_enabled = _player_input_was_enabled
+	_restore_hud()
 	closed.emit()
 
 
@@ -281,6 +288,22 @@ func _focus_selected() -> void:
 			button.grab_focus()
 			return
 	tab_active.grab_focus()
+
+
+func _hide_hud() -> void:
+	_hidden_hud.clear()
+	for node in get_tree().get_nodes_in_group(HIDDEN_WHILE_OPEN_GROUP):
+		if node is CanvasLayer or node is CanvasItem:
+			_hidden_hud[node.get_instance_id()] = node.get(&"visible")
+			node.set(&"visible", false)
+
+
+func _restore_hud() -> void:
+	for id in _hidden_hud:
+		var node := instance_from_id(id)
+		if node != null:
+			node.set(&"visible", _hidden_hud[id])
+	_hidden_hud.clear()
 
 
 func _npc_name(npc_id: StringName) -> String:

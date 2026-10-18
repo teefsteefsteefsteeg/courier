@@ -2,7 +2,8 @@ class_name LocationBanner
 extends CanvasLayer
 ## Announces the player's current LocationZone ("Willowmere Post Office") with a
 ## fade in / hold / fade out at the top of the screen. When zones overlap, the
-## highest-priority one the player is inside is the current location.
+## highest-priority one the player is inside is the current location. The open
+## quest journal hides the whole layer.
 
 signal location_changed(zone: LocationZone)
 
@@ -21,6 +22,7 @@ var _tween: Tween
 
 func _ready() -> void:
 	banner.modulate.a = 0.0
+	add_to_group(QuestJournal.HIDDEN_WHILE_OPEN_GROUP)
 	get_tree().node_added.connect(_on_node_added)
 	for zone in get_tree().get_nodes_in_group(LocationZone.GROUP):
 		_watch(zone as LocationZone)

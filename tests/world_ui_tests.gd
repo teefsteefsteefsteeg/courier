@@ -54,6 +54,7 @@ func _run() -> void:
 	await _test_scripted_dialogue()
 	await _test_journal_preview()
 	await _test_journal_blocks_other_input()
+	await _test_journal_hides_hud()
 	await _test_journal_quest_manager_adapter()
 
 	print("\n=== World/UI tests: %d passed, %d failed ===" % [_passes, _failures])
@@ -348,6 +349,50 @@ func _test_journal_blocks_other_input() -> void:
 	_press(&"ui_accept")
 	await _frames(2)
 	_check(not dialogue.is_open(), "dialogue responds again once the journal closes")
+
+
+func _test_journal_hides_hud() -> void:
+	print("[Quest journal: hides prompt and banner]")
+	var bram := level.get_node("NPCs/PostmasterBram") as NPC
+	_reset_player(Vector3(-15, 0, -6.8))
+	await _frames(6)
+	banner.show_location("Willowmere Post Office")
+	await create_timer(banner.fade_in_time + 0.1).timeout
+	_check(prompt.visible and prompt.panel.visible and banner.visible and banner.banner.modulate.a > 0.5,
+			"prompt and banner on screen before opening the journal")
+
+	_press(&"toggle_journal")
+	await _frames(2)
+	_check(journal.is_open() and not prompt.visible and not banner.visible, "open journal hides the prompt and banner layers")
+	_check(prompt.panel.visible, "prompt keeps its own state while hidden")
+	_press(&"toggle_journal")
+	await _frames(2)
+	_check(not journal.is_open() and prompt.visible and banner.visible, "closing the journal restores the prompt and banner")
+	_check(prompt.panel.visible and player.input_enabled, "prompt shown again and player input restored")
+
+	banner.visible = false
+	journal.open()
+	_check(not prompt.visible and not banner.visible, "both hidden while open")
+	journal.close()
+	_check(prompt.visible and not banner.visible, "a layer hidden before opening stays hidden after closing")
+	banner.visible = true
+
+	var before := bram.interaction_count
+	_press(&"interact")
+	await _frames(2)
+	_check(dialogue.is_open() and bram.interaction_count == before + 1 and not prompt.panel.visible, "dialogue opens and suppresses the prompt")
+	journal.open()
+	_check(not prompt.visible and not banner.visible, "journal over dialogue hides the HUD")
+	_press(&"interact")
+	await _frames(2)
+	_check(bram.interaction_count == before + 1 and dialogue.is_open(), "interact is ignored while the journal is open")
+	_press(&"ui_cancel")
+	await _frames(2)
+	_check(not journal.is_open() and dialogue.is_open(), "Escape closes only the journal")
+	_check(prompt.visible and not prompt.panel.visible, "prompt layer restored but still suppressed by dialogue")
+	_press(&"ui_cancel")
+	await _frames(2)
+	_check(not dialogue.is_open() and prompt.panel.visible, "closing the dialogue brings the prompt back")
 
 
 func _test_journal_quest_manager_adapter() -> void:

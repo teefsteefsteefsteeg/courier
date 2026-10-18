@@ -178,3 +178,24 @@ ringed by trees. Spawn: inside the post office, one step from the counter.
   not the real QuestManager.
 - Performance with about 120 fading occluders and 12 omni lights was not profiled.
 - Opening the new scenes in the editor UI (only the headless import ran).
+
+## 2026-10-18 — World & UI: journal hides the HUD
+
+### Behavior
+- `InteractionPrompt` and `LocationBanner` join the `hidden_by_journal` group
+  (`QuestJournal.HIDDEN_WHILE_OPEN_GROUP`). `QuestJournal.open()` hides every layer in that group and
+  records its prior visibility; `close()` restores it. A layer that was already hidden stays hidden.
+- Only the layer's `visible` is toggled, so the prompt's own state (focus, dialogue suppression) is
+  kept and comes back unchanged.
+
+### Tests
+- New `_test_journal_hides_hud` in `tests/world_ui_tests.gd`: prompt and banner hidden on open and
+  restored on close; a pre-hidden banner stays hidden; opening the journal over dialogue hides the
+  HUD and blocks interact; Escape closes only the journal and the prompt stays suppressed until the
+  dialogue closes.
+
+### Validation performed
+1. `godot --headless --path . --import`: exit 0.
+2. `godot --headless --path . --script res://tests/world_ui_tests.gd`: **126/126 passed**.
+3. `godot --headless --path . --script res://tests/phase1_tests.gd`: **52/52 passed**.
+4. `git diff --check`: passed.
