@@ -29,6 +29,10 @@ var _player: Node = null
 var _player_input_was: bool = true
 var _refresh_left: float = 0.0
 var _npc_scan_left: float = 0.0
+## NPC marker id -> its display-name label.
+var _npc_labels: Dictionary[StringName, String] = {}
+## NPC marker currently hidden under the objective marker, &"" for none.
+var _objective_npc: StringName = &""
 
 
 func _ready():
@@ -47,6 +51,9 @@ func _ready():
 	expanded_hint.offset_top = 8
 	expanded_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	expanded.add_child(expanded_hint)
+	InputPromptLabel.attach(expanded_hint)
+	compact.add_to_group(InputPrompt.AVOID_GROUP)
+	expanded.add_to_group(InputPrompt.AVOID_GROUP)
 	var p=get_tree().get_first_node_in_group(&"combat_player"); if p: model.set_player(p)
 	_scan_npcs()
 	for n in get_tree().get_nodes_in_group(&"enemies"): model.set_marker(Model.id_for_node(n,"enemy"),Model.KIND_ENEMY,n)
@@ -127,6 +134,14 @@ func refresh_objective() -> void:
 		model.set_marker(OBJECTIVE_ID,Model.KIND_OBJECTIVE,target,{"label":label})
 	elif model.has_marker(OBJECTIVE_ID):
 		model.remove_marker(OBJECTIVE_ID)
+	# An NPC under the objective marker drops its own label so the two do not overprint.
+	var objective_npc: StringName = Model.id_for_node(target,"npc") if target is NPC and target.is_inside_tree() else &""
+	if objective_npc != _objective_npc:
+		if model.has_marker(_objective_npc):
+			model.set_marker_label(_objective_npc, _npc_labels.get(_objective_npc, ""))
+		if model.has_marker(objective_npc):
+			model.set_marker_label(objective_npc, "")
+		_objective_npc = objective_npc
 
 
 func _scan_npcs() -> void:
@@ -134,7 +149,8 @@ func _scan_npcs() -> void:
 		var id: StringName = Model.id_for_node(n,"npc")
 		if not model.has_marker(id):
 			var label: String = n.npc_name if n is NPC else String(n.name)
-			model.set_marker(id,Model.KIND_NPC,n,{"label":label})
+			_npc_labels[id] = label
+			model.set_marker(id,Model.KIND_NPC,n,{"label":"" if id == _objective_npc else label})
 
 
 func _other_modal_open() -> bool:

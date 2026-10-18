@@ -13,6 +13,7 @@ var _package: PackageInstance = null
 
 func _ready() -> void:
 	visible = false
+	InputPromptLabel.attach(hint_label)
 	if carrier != null:
 		bind_carrier(carrier)
 
@@ -42,8 +43,4 @@ func _on_integrity_changed(value: float, _old: float) -> void:
 
 
 func _key_text(action: StringName) -> String:
-	for event in InputMap.action_get_events(action):
-		if event is InputEventKey:
-			var key := event as InputEventKey
-			return OS.get_keycode_string(key.physical_keycode if key.physical_keycode != KEY_NONE else key.keycode)
-	return "?"
+	return InputHints.key_for(action)

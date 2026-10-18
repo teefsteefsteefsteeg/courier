@@ -117,3 +117,11 @@ splat maps / layout in `assets/textures/terrain/` (`village_splat_a.png`, `villa
 
 When adding an external asset, record: name, path, author, source URL, license (with a link), date
 imported, and any modifications.
+
+### Phase 5F (2026-10-18): input prompt icons
+`assets/ui/input_prompts/input_prompts.png` (1774x887) is an AI-generated pixel-art input prompt
+sheet supplied by the project owner (originally named `601f027d-f495-417a-9a52-8d86fcf11972.png`;
+renamed). License: not recorded; supplied by the owner. `tools/crop_input_prompts.py` crops 62 keyboard and mouse icons
+from it into `assets/ui/input_prompts/icons/*.png` (32 px tall, box-downsampled; source rectangles in
+`regions.json`). Gamepad buttons and the "UI prompt examples" row are not exported. The sheet has no
+I, O, P, T, U, Y, 0 or 7-9 keys. See `docs/PHASE5F_INPUT_PROMPTS.md`.

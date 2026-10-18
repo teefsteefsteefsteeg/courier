@@ -4,12 +4,27 @@ extends CanvasLayer
 ## Other UI (e.g. the dialogue box) can suppress it while it owns the screen. It also
 ## hides while any modal window (group "ui_modal": journal, quest board) is open; the
 ## open quest journal additionally hides the whole layer.
+##
+## The key in the line is drawn as a pixel-art keycap of the actual binding
+## (InputPromptLabel; label.text keeps the full "[E] ..." line). A matching keycap
+## (world_badge) also floats beside the focused NPC or object; it shows only while the
+## line does, and hides when it would leave the screen or cover the HUD widgets in
+## InputPrompt.AVOID_GROUP (tracker, wallet, minimap, toasts, package panels, dialogue).
 
 ## Text color for context prompts (e.g. "Deliver ... to ...").
 const CONTEXT_COLOR := Color(1.0, 0.86, 0.4)
 
 @export var detector: InteractionDetector
 @export var action: StringName = &"interact"
+@export_group("World badge")
+@export var show_world_badge: bool = true
+## Badge anchor above an NPC's origin (about head height).
+@export_range(0.0, 5.0, 0.05, "suffix:m") var npc_badge_height: float = 1.9
+## Badge anchor above any other interactable. An Interactable (or its owner) may set
+## metadata "prompt_anchor_height" to override either height.
+@export_range(0.0, 5.0, 0.05, "suffix:m") var object_badge_height: float = 0.9
+## Screen offset of the badge's left-centre from the projected anchor.
+@export var badge_offset: Vector2 = Vector2(26, 0)
 
 @onready var panel: Control = %PromptPanel
 @onready var label: Label = %PromptLabel
@@ -17,11 +32,21 @@ const CONTEXT_COLOR := Color(1.0, 0.86, 0.4)
 var _focused: Interactable = null
 var _suppressed: bool = false
 var _modal_open: bool = false
+## Keycap beside the focused object in the world.
+var world_badge: InputPrompt
+## Draws label's "[E]" as a keycap.
+var label_overlay: InputPromptLabel
 
 
 func _ready() -> void:
 	panel.visible = false
 	add_to_group(QuestJournal.HIDDEN_WHILE_OPEN_GROUP)
+	label_overlay = InputPromptLabel.attach(label)
+	world_badge = InputPrompt.new()
+	world_badge.name = "WorldBadge"
+	world_badge.actions = [action]
+	world_badge.visible = false
+	add_child(world_badge)
 	if detector != null:
 		detector.focus_changed.connect(_on_focus_changed)
 
@@ -36,6 +61,7 @@ func _process(_delta: float) -> void:
 	if not _sync_modal() and _focused != null and is_instance_valid(_focused) and get_prompt_text() != label.text:
 		# Context prompts change without a focus change (package picked up, quest advanced).
 		_refresh()
+	_update_world_badge()
 
 
 func _physics_process(_delta: float) -> void:
@@ -83,6 +109,9 @@ func _on_focus_changed(interactable: Interactable) -> void:
 
 
 func _refresh() -> void:
+	# Re-placed (or kept hidden) on the next frame by _update_world_badge().
+	if world_badge != null:
+		world_badge.visible = false
 	if _focused == null or not is_instance_valid(_focused):
 		panel.visible = false
 		return
@@ -92,3 +121,43 @@ func _refresh() -> void:
 	else:
 		label.remove_theme_color_override(&"font_color")
 	panel.visible = not _suppressed and not _modal_open
+
+
+## World point the badge is drawn beside, for interactable.
+func get_badge_anchor(interactable: Interactable) -> Vector3:
+	var owner_node := interactable.get_parent() as Node3D
+	var base := owner_node if owner_node != null else interactable
+	var height := npc_badge_height if owner_node is NPC else object_badge_height
+	if interactable.has_meta(&"prompt_anchor_height"):
+		height = float(interactable.get_meta(&"prompt_anchor_height"))
+	elif owner_node != null and owner_node.has_meta(&"prompt_anchor_height"):
+		height = float(owner_node.get_meta(&"prompt_anchor_height"))
+	return base.global_position + Vector3.UP * height
+
+
+## True when rect overlaps a visible HUD widget in InputPrompt.AVOID_GROUP.
+func overlaps_hud(rect: Rect2) -> bool:
+	for node in get_tree().get_nodes_in_group(InputPrompt.AVOID_GROUP):
+		var control := node as Control
+		if control != null and control.is_visible_in_tree() and rect.intersects(control.get_global_rect()):
+			return true
+	return false
+
+
+func _update_world_badge() -> void:
+	world_badge.visible = false
+	if not show_world_badge or not panel.visible or _focused == null or not is_instance_valid(_focused) 			or not _focused.enabled or not _focused.is_inside_tree():
+		return
+	var camera := get_viewport().get_camera_3d()
+	if camera == null:
+		return
+	var anchor := get_badge_anchor(_focused)
+	if camera.is_position_behind(anchor):
+		return
+	var badge_size := world_badge.get_combined_minimum_size()
+	var rect := Rect2(camera.unproject_position(anchor) + badge_offset - Vector2(0, badge_size.y * 0.5), badge_size)
+	if not get_viewport().get_visible_rect().encloses(rect) or rect.intersects(panel.get_global_rect()) or overlaps_hud(rect):
+		return
+	world_badge.position = rect.position
+	world_badge.size = badge_size
+	world_badge.visible = true
