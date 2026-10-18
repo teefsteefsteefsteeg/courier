@@ -123,6 +123,15 @@ func get_temperature() -> float:
 	return temperature
 
 
+## UI range for temperature meters. The safe range is exposed separately.
+func get_temperature_limits() -> Vector2:
+	return Vector2(0.0, 100.0)
+
+
+func get_safe_temperature_range() -> Vector2:
+	return Vector2(definition.ideal_temperature_min, definition.ideal_temperature_max)
+
+
 func set_temperature(value: float) -> void:
 	var old := temperature
 	temperature = value
@@ -175,6 +184,14 @@ func add_instability(amount: float) -> void:
 ## 0..1, for UI meters.
 func get_instability_ratio() -> float:
 	return instability / MAX_INSTABILITY
+
+
+func get_max_instability() -> float:
+	return MAX_INSTABILITY
+
+
+func get_display_name() -> String:
+	return definition.package_name
 
 
 # --- condition & rewards --------------------------------------------------------

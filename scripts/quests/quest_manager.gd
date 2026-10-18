@@ -34,6 +34,9 @@ var _definitions: Dictionary[StringName, QuestDefinition] = {}
 var _states: Dictionary[StringName, QuestState] = {}
 var _quest_order: Array[StringName] = []
 var _active_delivery_id: StringName = &""
+## Runtime package retained only while its DELIVER objective completes, so the
+## reward can reflect the condition in which the recipient received it.
+var _delivery_reward_packages: Dictionary[StringName, PackageInstance] = {}
 
 
 func _enter_tree() -> void:
@@ -202,7 +205,9 @@ func try_deliver(npc_id: StringName, package: PackageInstance) -> DeliveryResult
 	if result != DeliveryResult.OK:
 		delivery_rejected.emit(package.get_quest_id() if package != null else &"", npc_id, result)
 		return result
+	_delivery_reward_packages[package.get_quest_id()] = package
 	_advance_objective(_states[package.get_quest_id()], 1)
+	_delivery_reward_packages.erase(package.get_quest_id())
 	return result
 
 
@@ -255,6 +260,9 @@ func grant_reward(quest_id: StringName) -> bool:
 		return false
 	state.reward_granted = true
 	var reward := _definitions[quest_id].reward
+	var delivered_package := _delivery_reward_packages.get(quest_id) as PackageInstance
+	if delivered_package != null:
+		reward = delivered_package.get_adjusted_reward(reward)
 	if reward != null and wallet != null:
 		wallet.add_gold(reward.gold)
 		wallet.add_reputation(reward.reputation)
