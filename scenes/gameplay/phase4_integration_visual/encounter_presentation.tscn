@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/phase4_integration_visual/encounter_presentation.gd" id="1_presentation"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/phase4_visual/combat_visual_layer.tscn" id="2_layer"]
+[ext_resource type="Script" path="res://scripts/phase4_integration_visual/route_indicator.gd" id="3_route"]
+[ext_resource type="Script" path="res://scripts/phase4_integration_visual/delivery_hud.gd" id="4_hud"]
+
+[node name="EncounterPresentation" type="Node3D"]
+script = ExtResource("1_presentation")
+
+[node name="CombatVisualLayer" parent="." instance=ExtResource("2_layer")]
+
+[node name="RouteIndicator" type="Node3D" parent="."]
+script = ExtResource("3_route")
+
+[node name="EnemyBars" type="Node3D" parent="."]
+
+[node name="DeliveryHUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")

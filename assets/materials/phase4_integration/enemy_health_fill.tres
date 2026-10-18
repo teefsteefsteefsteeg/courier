@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "enemy_health_fill"
+transparency = 1
+shading_mode = 0
+cull_mode = 2
+no_depth_test = true
+albedo_color = Color(0.45, 0.95, 0.35, 1)
