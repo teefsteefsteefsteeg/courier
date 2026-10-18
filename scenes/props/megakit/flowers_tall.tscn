@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/megakit/nature/Flower_4_Group.gltf" id="1_flower_4_group"]
+
+[node name="FlowersTall" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_flower_4_group")]
+transform = Transform3D(0.4423, 0, 0, 0, 0.4423, 0, 0, 0, 0.4423, 0.0182, 0.0252, -0.0211)

@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/megakit/nature/Mushroom_Common.gltf" id="1_mushroom_common"]
+
+[node name="Mushrooms" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_mushroom_common")]
+transform = Transform3D(0.7701, 0, 0, 0, 0.7701, 0, 0, 0, 0.7701, 0.0397, 0.0135, 0.0429)

@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/megakit/nature/Bush_Common_Flowers.gltf" id="1_bush_common_flowers"]
+
+[node name="FlowerBush" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_bush_common_flowers")]
+transform = Transform3D(0.6322, 0, 0, 0, 0.6322, 0, 0, 0, 0.6322, -0.0215, 0.1484, -0.0052)

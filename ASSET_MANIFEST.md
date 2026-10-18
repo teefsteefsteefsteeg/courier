@@ -90,5 +90,23 @@ License.txt copied to `assets/characters/kaykit_adventurers/`. Source: the pack 
 Not imported: Assets/ weapons and shields other than the four above, FBX/OBJ duplicates.
 The pack has no creature models, so Forest Slime and Frost Wisp keep their authored visuals.
 
+### Phase 5D additions (2026-10-18): MegaKit pilot
+
+Two Quaternius packs, both **CC0 1.0** per the included `License_Standard.txt` (copied unchanged
+into each folder; "Models by Quaternius", attribution optional): **Medieval Village MegaKit
+(Standard/free tier)** and **Stylized Nature MegaKit (Standard, 68 of 116 models)**. Source: the
+copy at `D:\courier-phase5a-assets\Medieval Village MegaKit[Standard]` (the nature pack is in its
+`field/` subfolder). glTF files and textures are unmodified; only the textures these 25 models
+reference were copied, and their import is capped at 1024 px (`process/size_limit`).
+
+| Folder (`assets/models/megakit/`) | Models (25) |
+|---|---|
+| `village/` (Medieval Village MegaKit) | Prop_Vine1, Prop_Vine2, Prop_Vine4, Prop_Vine5, Prop_WoodenFence_Single, Prop_WoodenFence_Extension1, Prop_ExteriorBorder_Straight1, Prop_ExteriorBorder_Corner, Prop_Wagon |
+| `nature/` (Stylized Nature MegaKit) | Rock_Medium_1/2/3, Pebble_Round_1, Pebble_Round_3, Pebble_Square_2, RockPath_Square_Small_1/2/3, Mushroom_Common, Clover_1, Plant_7, Plant_7_Big, Bush_Common_Flowers, Flower_3_Group, Flower_4_Group |
+
+Textures copied: `T_VineLeaf_png.png`, `T_WoodTrim_{BaseColor,Normal,Roughness}.png`,
+`T_RockTrim_{BaseColor,Normal,ORM}.png`, `Flowers.png`, `Leaves.png`, `Leaves_NormalTree_C.png`,
+`Mushrooms.png`, `PathRocks_Diffuse.png`, `Rocks_Diffuse.png`. Wrappers: `scenes/props/megakit/`.
+
 When adding an external asset, record: name, path, author, source URL, license (with a link), date
 imported, and any modifications.

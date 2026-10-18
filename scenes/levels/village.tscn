@@ -58,6 +58,7 @@
 [ext_resource type="PackedScene" path="res://scenes/environment/village_dressing.tscn" id="53_dressing"]
 [ext_resource type="PackedScene" path="res://scenes/props/market_stall_goods.tscn" id="54_stall_goods"]
 [ext_resource type="PackedScene" path="res://scenes/props/env/cauldron.tscn" id="55_cauldron"]
+[ext_resource type="PackedScene" path="res://scenes/environment/megakit_pilot_dressing.tscn" id="56_megakit"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -465,6 +466,8 @@ transform = Transform3D(-0.892645, 0, -0.450761, 0, 1, 0, 0.450761, 0, -0.892645
 transform = Transform3D(-0.987494, 0, -0.157654, 0, 1, 0, 0.157654, 0, -0.987494, 5, 0, -26)
 
 [node name="VillageDressing" parent="." instance=ExtResource("53_dressing")]
+
+[node name="MegaKitPilotDressing" parent="." instance=ExtResource("56_megakit")]
 
 [node name="Trees" type="Node3D" parent="."]
 

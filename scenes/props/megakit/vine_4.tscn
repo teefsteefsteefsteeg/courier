@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/models/megakit/village/Prop_Vine4.gltf" id="1_prop_vine4"]
+
+[node name="Vine4" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_prop_vine4")]
+transform = Transform3D(0.9445, 0, 0, 0, 0.9445, 0, 0, 0, 0.9445, 0.1982, -0.5424, 0.0253)
