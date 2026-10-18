@@ -12,3 +12,5 @@ recipient_id = &"village_merchant"
 quest_id = &"q001_first_delivery"
 package_scene = ExtResource("2_vis")
 integrity = 100.0
+behavior = 0
+impact_sensitivity = 1.0

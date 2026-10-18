@@ -13,6 +13,10 @@ signal picked_up(package: PackageInstance)
 @export var package_definition: PackageDefinition
 ## Source mode only: hide unless an in-progress quest needs this package picked up.
 @export var only_when_quest_needs: bool = true
+## Dropped mode only: keep ticking the package's mechanic (speed 0) while it lies here.
+@export var simulate_while_dropped: bool = true
+## Temperature a dropped package drifts toward.
+@export var ambient_temperature: float = 20.0
 
 var package_instance: PackageInstance = null
 
@@ -25,6 +29,7 @@ var _quest_manager: QuestManager = null
 func _ready() -> void:
 	if package_instance != null:
 		package_definition = package_instance.definition
+		package_instance.destroyed.connect(_on_package_destroyed)
 	if package_definition == null:
 		push_error("PackagePickup %s has no package" % name)
 		return
@@ -38,6 +43,11 @@ func _ready() -> void:
 		_quest_manager.quest_state_changed.connect(_on_quest_state_changed)
 		_quest_manager.objective_completed.connect(_on_objective_completed)
 	_refresh()
+
+
+func _physics_process(delta: float) -> void:
+	if simulate_while_dropped and is_dropped() and not is_queued_for_deletion():
+		package_instance.tick(delta, 0.0, ambient_temperature)
 
 
 func is_dropped() -> bool:
@@ -57,6 +67,8 @@ func _on_interacted(interactor: Node) -> void:
 		return
 	picked_up.emit(package)
 	if is_dropped():
+		if package_instance.destroyed.is_connected(_on_package_destroyed):
+			package_instance.destroyed.disconnect(_on_package_destroyed)
 		queue_free()
 	else:
 		# Report after hiding so listeners see a consistent world.
@@ -88,3 +100,11 @@ func _on_quest_state_changed(quest_id: StringName, new_status: QuestState.Status
 
 func _on_objective_completed(_quest_id: StringName, _index: int) -> void:
 	_refresh()
+
+
+## A dropped package was ruined/exploded on the ground: fail its quest and disappear.
+func _on_package_destroyed(_reason: StringName) -> void:
+	if _quest_manager != null:
+		_quest_manager.fail_quest(package_instance.get_quest_id(), package_instance.get_destroyed_message())
+	if not is_queued_for_deletion():
+		queue_free()
