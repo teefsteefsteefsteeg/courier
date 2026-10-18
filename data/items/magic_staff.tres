@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/magic_staff.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/items/staff.gltf" id="3_model"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = &"magic_staff"
+display_name = "Magic Staff"
+description = "A mage's focus: quicker, farther-reaching bolts."
+slot = 0
+price = 500
+icon = ExtResource("2_icon")
+held_model = ExtResource("3_model")
+bolt_damage_bonus = 10.0
+bolt_cooldown_multiplier = 0.75
+bolt_range_bonus = 6.0

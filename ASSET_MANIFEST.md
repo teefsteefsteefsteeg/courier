@@ -125,3 +125,10 @@ renamed). License: not recorded; supplied by the owner. `tools/crop_input_prompt
 from it into `assets/ui/input_prompts/icons/*.png` (32 px tall, box-downsampled; source rectangles in
 `regions.json`). Gamepad buttons and the "UI prompt examples" row are not exported. The sheet has no
 I, O, P, T, U, Y, 0 or 7-9 keys. See `docs/PHASE5F_INPUT_PROMPTS.md`.
+
+### Phase 5F (2026-10-18): Armory item icons
+| Asset | Path | Type | Source / License | Status |
+|---|---|---|---|---|
+| Shop item icons (6) | `assets/ui/item_icons/*.png` | 16 px pixel art saved at 32x32 | Authored in-repo by `tools/make_item_icons.py` | PLACEHOLDER |
+Swords and the Magic Staff show the existing KayKit `sword_1handed.gltf` / `staff.gltf` in the
+courier's hand when equipped; the Battle Axe and Wooden Shield have no model.

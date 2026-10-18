@@ -290,6 +290,26 @@ func retry_quest(quest_id: StringName) -> AcceptResult:
 	return accept_quest(quest_id)
 
 
+## Marks quests from a save as REWARDED (quest_id -> QuestState.to_dict()) without paying
+## them again; only REWARDED entries for known, not yet started quests are applied.
+## Emits quest_state_changed so boards, pickups and the journal refresh.
+func restore_finished_quests(saved: Dictionary) -> void:
+	for key in saved:
+		var quest_id := StringName(key)
+		var state := get_state(quest_id)
+		var entry: Dictionary = saved[key]
+		if state == null or str(entry.get("status", "")) != "REWARDED":
+			continue
+		if state.status != QuestState.Status.AVAILABLE and state.status != QuestState.Status.REWARDED:
+			continue
+		state.objective_index = _definitions[quest_id].objectives.size()
+		for i in state.objective_progress.size():
+			state.objective_progress[i] = _definitions[quest_id].objectives[i].required_count
+		state.reward_granted = true
+		state.fail_reason = ""
+		_set_status(state, QuestState.Status.REWARDED)
+
+
 ## Grants the reward for a COMPLETED quest. Returns false if already granted or not completed.
 func grant_reward(quest_id: StringName) -> bool:
 	var state := get_state(quest_id)

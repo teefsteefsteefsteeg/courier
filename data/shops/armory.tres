@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ShopCatalog" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/shop_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="2_item"]
+[ext_resource type="Resource" path="res://data/items/wooden_sword.tres" id="3_wooden_sword"]
+[ext_resource type="Resource" path="res://data/items/iron_sword.tres" id="4_iron_sword"]
+[ext_resource type="Resource" path="res://data/items/steel_sword.tres" id="5_steel_sword"]
+[ext_resource type="Resource" path="res://data/items/battle_axe.tres" id="6_battle_axe"]
+[ext_resource type="Resource" path="res://data/items/magic_staff.tres" id="7_magic_staff"]
+[ext_resource type="Resource" path="res://data/items/wooden_shield.tres" id="8_wooden_shield"]
+
+[resource]
+script = ExtResource("1_catalog")
+shop_id = &"armory"
+title = "Willowmere Armory"
+greeting = "Steel for the road, courier. Every bolt you cast hits harder with the right focus."
+items = Array[ExtResource("2_item")]([ExtResource("3_wooden_sword"), ExtResource("4_iron_sword"), ExtResource("5_steel_sword"), ExtResource("6_battle_axe"), ExtResource("7_magic_staff"), ExtResource("8_wooden_shield")])

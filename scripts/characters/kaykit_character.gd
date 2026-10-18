@@ -75,16 +75,38 @@ func _ready() -> void:
 	for key in LIBRARIES:
 		animation_player.add_animation_library(key, _library(key))
 	animation_player.animation_finished.connect(_on_animation_finished)
-	if held_item != null:
-		var slot := BoneAttachment3D.new()
+	set_held_item(held_item)
+	_idle_timer = randf_range(4.0, 9.0)
+	play_loop(&"idle")
+
+
+## Puts scene (a prop such as a sword or staff) in the right hand, replacing the current
+## one; null empties the hand. Used for NPC props and the courier's equipped weapon.
+func set_held_item(scene: PackedScene) -> void:
+	held_item = scene
+	if skeleton == null:
+		return
+	var slot := skeleton.get_node_or_null(^"RightHandSlot") as BoneAttachment3D
+	if slot == null and scene == null:
+		return
+	if slot == null:
+		slot = BoneAttachment3D.new()
 		slot.name = "RightHandSlot"
 		skeleton.add_child(slot)
 		slot.bone_name = "handslot.r"
-		var item := held_item.instantiate() as Node3D
+	for child in slot.get_children():
+		slot.remove_child(child)
+		child.queue_free()
+	if scene != null:
+		var item := scene.instantiate() as Node3D
+		item.name = "HeldItem"
 		item.transform = held_item_transform
 		slot.add_child(item)
-	_idle_timer = randf_range(4.0, 9.0)
-	play_loop(&"idle")
+
+
+func get_held_item_node() -> Node3D:
+	var slot := skeleton.get_node_or_null(^"RightHandSlot") if skeleton != null else null
+	return slot.get_child(0) as Node3D if slot != null and slot.get_child_count() > 0 else null
 
 
 func _process(delta: float) -> void:

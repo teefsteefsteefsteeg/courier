@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/wooden_shield.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = &"wooden_shield"
+display_name = "Wooden Shield"
+description = "Strapped to the satchel, it steadies the Package Shield."
+slot = 1
+price = 100
+icon = ExtResource("2_icon")
+shield_durability_bonus = 25.0

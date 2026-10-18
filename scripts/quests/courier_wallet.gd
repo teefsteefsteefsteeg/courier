@@ -33,6 +33,23 @@ func add_gold(amount: int) -> void:
 	gold_changed.emit(gold, amount)
 
 
+## Pays amount (> 0) if the courier has it; false (and no change) otherwise.
+func spend_gold(amount: int) -> bool:
+	if amount <= 0 or gold < amount:
+		return false
+	add_gold(-amount)
+	return true
+
+
+## Sets both values from a save. Signals carry a delta of 0, so displays refresh without
+## showing a payout and no rank-up is announced.
+func restore(saved_gold: int, saved_reputation: int) -> void:
+	gold = maxi(saved_gold, 0)
+	reputation = maxi(saved_reputation, 0)
+	gold_changed.emit(gold, 0)
+	reputation_changed.emit(reputation, 0)
+
+
 func add_reputation(amount: int) -> void:
 	if amount == 0:
 		return
