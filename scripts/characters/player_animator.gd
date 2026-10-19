@@ -19,11 +19,14 @@ func _ready() -> void:
 	if movement != null:
 		movement.state_changed.connect(_on_state_changed)
 	if combat != null:
-		combat.magic_bolt_fired.connect(func(_origin: Vector3, _direction: Vector3) -> void: character.play_once(&"attack", 1.6))
-		# Swing speed follows the weapon: a quick slice for a sword, a slow chop for an axe.
+		# Attack poses meet the gameplay hit (Phase 7): a swing reaches its strike when the
+		# hit lands (melee_windup after melee_started; a quick slice for a sword, a slower
+		# chop for an axe), and a cast or bow pull is at its release when the projectile
+		# leaves. AttackEffects times its swing arc to the same moment.
+		combat.magic_bolt_fired.connect(func(_origin: Vector3, _direction: Vector3) -> void: character.play_once_strike(&"attack", 0.0, 1.6))
 		combat.melee_started.connect(func(_direction: Vector3, heavy: bool) -> void:
-			character.play_once(&"melee_heavy" if heavy else &"melee_fast", 1.1 if heavy else 2.6))
-		combat.arrow_fired.connect(func(_origin: Vector3, _direction: Vector3) -> void: character.play_once(&"shoot", 2.0))
+			character.play_once_strike(&"melee_heavy" if heavy else &"melee_fast", combat.melee_windup))
+		combat.arrow_fired.connect(func(_origin: Vector3, _direction: Vector3) -> void: character.play_once_strike(&"shoot", 0.0, 2.0))
 		combat.dash_started.connect(func() -> void: character.play_once(&"dash", 1.8))
 		# The dash pose lasts as long as the dash (finished, blocked by a wall or cut short
 		# by a knockout), then the current movement loop takes over: idle, walk or run.

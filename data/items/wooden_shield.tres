@@ -14,3 +14,4 @@ price = 100
 icon = ExtResource("2_icon")
 held_model = ExtResource("3_model")
 shield_durability_bonus = 25.0
+defense = 2.0

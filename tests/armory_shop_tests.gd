@@ -14,6 +14,7 @@ const SAVE_PATH := "user://armory_shop_test_save.json"
 const PRICES := {
 	&"wooden_sword": 50, &"iron_sword": 150, &"steel_sword": 300,
 	&"battle_axe": 400, &"magic_staff": 500, &"wooden_shield": 100, &"hunting_bow": 250,
+	&"leather_vest": 120, &"iron_mail": 320,
 }
 const Q1 := &"q001_first_delivery"
 
@@ -108,7 +109,7 @@ func _character() -> KayKitCharacter:
 func _test_catalog() -> void:
 	print("[Armory catalog]")
 	# Six items from the brief plus the Hunting Bow added with weapon switching.
-	_check(catalog != null and catalog.items.size() == 7, "seven items for sale")
+	_check(catalog != null and catalog.items.size() == 9, "nine items for sale (Phase 7 added two armors)")
 	var prices := {}
 	var missing_icons: PackedStringArray = []
 	for item in catalog.items:
@@ -118,6 +119,9 @@ func _test_catalog() -> void:
 	_check(prices == PRICES, "test prices match the brief %s" % prices)
 	_check(missing_icons.is_empty(), "every item has a 32x32 icon %s" % missing_icons)
 	_check(catalog.get_item(&"wooden_shield").slot == ItemDefinition.Slot.OFF_HAND and catalog.get_item(&"iron_sword").slot == ItemDefinition.Slot.MAIN_HAND, "shield is off-hand, weapons main-hand")
+	_check(catalog.get_item(&"leather_vest").slot == ItemDefinition.Slot.ARMOR and catalog.get_item(&"iron_mail").slot == ItemDefinition.Slot.ARMOR, "vest and mail go in the armor slot")
+	_check(catalog.get_item(&"iron_mail").defense > catalog.get_item(&"leather_vest").defense and catalog.get_item(&"leather_vest").defense > catalog.get_item(&"wooden_shield").defense, "iron mail > leather vest > shield in defense")
+	_check(catalog.enhances_items, "the Armory enhances gear")
 	_check(catalog.get_item(&"magic_staff").get_stat_lines() == PackedStringArray(["+10 bolt damage", "25% faster casting", "+6 m bolt range"]), "staff stat lines %s" % catalog.get_item(&"magic_staff").get_stat_lines())
 	_check(catalog.get_item(&"iron_sword").held_model != null and catalog.get_item(&"magic_staff").held_model != null, "swords and staff have a held model")
 

@@ -8,6 +8,8 @@
 [ext_resource type="Resource" path="res://data/items/battle_axe.tres" id="6_battle_axe"]
 [ext_resource type="Resource" path="res://data/items/magic_staff.tres" id="7_magic_staff"]
 [ext_resource type="Resource" path="res://data/items/wooden_shield.tres" id="8_wooden_shield"]
+[ext_resource type="Resource" path="res://data/items/leather_vest.tres" id="10_leather_vest"]
+[ext_resource type="Resource" path="res://data/items/iron_mail.tres" id="11_iron_mail"]
 [ext_resource type="Resource" path="res://data/items/hunting_bow.tres" id="9_hunting_bow"]
 
 [resource]
@@ -15,4 +17,5 @@ script = ExtResource("1_catalog")
 shop_id = &"armory"
 title = "Willowmere Armory"
 greeting = "Steel for the road, courier. Quick blades, a heavy axe, a hunting bow or a mage's staff: pick what suits your route."
-items = Array[ExtResource("2_item")]([ExtResource("3_wooden_sword"), ExtResource("4_iron_sword"), ExtResource("5_steel_sword"), ExtResource("6_battle_axe"), ExtResource("9_hunting_bow"), ExtResource("7_magic_staff"), ExtResource("8_wooden_shield")])
+items = Array[ExtResource("2_item")]([ExtResource("3_wooden_sword"), ExtResource("4_iron_sword"), ExtResource("5_steel_sword"), ExtResource("6_battle_axe"), ExtResource("9_hunting_bow"), ExtResource("7_magic_staff"), ExtResource("8_wooden_shield"), ExtResource("10_leather_vest"), ExtResource("11_iron_mail")])
+enhances_items = true

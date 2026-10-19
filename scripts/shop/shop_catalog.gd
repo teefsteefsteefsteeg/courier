@@ -8,6 +8,8 @@ extends Resource
 @export var items: Array[ItemDefinition] = []
 ## The merchant also buys the courier's gathered materials (MaterialItem.sell_price each).
 @export var buys_materials: bool = false
+## The merchant enhances owned weapons, shields and armor (Phase 7: Brenna).
+@export var enhances_items: bool = false
 ## Stackable goods the merchant sells for MaterialItem.buy_price each (Phase 7: seeds).
 @export var sells_materials: Array[MaterialItem] = []
 

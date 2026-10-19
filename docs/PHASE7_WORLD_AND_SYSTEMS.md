@@ -8,7 +8,7 @@ Branch `phase5f-integrated`, Godot 4.7.2, Blender 5.2.2 LTS
 |---|---|---|
 | A | Guild board, exhibit removal, NPC facing, village roads, Whisperwood relocation | **Done** (this document, section A) |
 | B | Inventory redesign + Q view switch, farming near spawn | **Done** (section B) |
-| C | Weapon/armor enhancement VFX, skill VFX timing | not started |
+| C | Armor, enhancement at Brenna, weapon/armor enhancement VFX, skill VFX timing | **Done** (section C) |
 | D | Dragon boss | not started |
 
 ## A. Village and Whisperwood
@@ -166,3 +166,77 @@ level). How levels are gained and what they do in combat is Milestone C.
 - Crops grow only while the game runs (by design, see above).
 - There is no watering or soil quality; the garden is four beds.
 - Two beds sit partly behind a cottage from the camera; that cottage fades (CameraOccluder).
+
+## C. Armor, enhancement and skill VFX
+
+### Armor and defense
+- `ItemDefinition.Slot.ARMOR` (appended; saves store slot names) and a `defense` stat. Brenna
+  sells the **Leather Vest** (defense 4, 120 g) and **Iron Mail** (defense 8, 320 g); the
+  Wooden Shield now gives defense 2. Armor shows under "Gear" in the inventory window, is
+  worn (no held model) and leaves both hands alone.
+- `EquipmentStats` sums the defense of the shield and armor plus `Enhancement.defense_bonus`
+  (+2 per level) into `CombatController.defense`. `reduce_by_defense()` runs first in the
+  damage interceptor: damage x 20 / (20 + defense), at least 1. A 10 damage hit: 10 bare,
+  8.33 in a +0 vest, 5.88 in a +5 vest, 4.00 in +5 mail with a +5 shield.
+- The main-hand weapon's level multiplies its damage by 1 + 0.1 x level (sword/axe melee,
+  bow arrows, staff bolts; bare-hand bolts are unaffected).
+
+### Enhancing at Brenna
+- The Armory catalog has `enhances_items`; the shop shows "Enhance your gear" with a row per
+  owned weapon, shield and armor (never tools). A step from +L costs 60 x (L+1) gold and L+1
+  iron ore; `ShopService.enhance` checks both first and takes them together or not at all.
+  +5 is the cap (the button reads Max). Levels are saved (CourierInventory).
+
+### Enhancement effects (`scripts/vfx/`)
+- `EnhancementVisuals` (GameplayServices) rebuilds the effects whenever the equipment, a
+  level, a held model or the setting changes (including after a load). Effects are children
+  of the player or of the held models, so they follow swings, teleports and region changes.
+- **Weapon** (`EnhancementGlow`, under the held model, along its longest axis from grip to
+  tip, in `Enhancement.level_color`): a soft sheen that brightens per level, plus +1 two
+  sparkles (silver), +2 three (green), +3 an aura (blue), +4 four sparkles and a coloured
+  light (purple), +5 golden: five sparkles, aura, light and a burst at the tip every 1.8 s.
+  An enhanced shield glows the same way; a tool in hand shows nothing.
+- **Armor**: the Binbun StatusFX shatter effect around the body (0.9 m up, scale 0.85),
+  recoloured per level, 16-40 particles and brighter with the level; its light streaks are
+  the +5 crown.
+- Flipbooks are `VfxStrip` (Sprite3D, additive unshaded billboard, 15 fps) on the
+  Gigapack strips in `assets/vfx/enhancement/`.
+- **Toggle**: "Show enhancement effects" (CheckButton in the inventory window footer) sets
+  `UISettings.SHOW_ENHANCEMENT_VFX` (default on, saved in `user://ui_settings.cfg`). Hiding
+  removes every effect node; damage and defense bonuses are unchanged.
+
+### Attack timing
+- Measured before: the axe's hit landed at 0.35 s but its chop pose struck at ~0.72 s; the
+  sword hit ~0.07 s before its reach; bolts and arrows left at the start of a wind-up.
+- `KayKitCharacter.play_once_strike(action, strike_in, speed)` plays a one-shot so its strike
+  (`CLIP_IMPACT`: throw 58%, interact 36%, use-item 41%) lands strike_in seconds later (speed
+  chosen for that, max 5x, else the clip starts part-way). `PlayerAnimator` uses it with
+  `melee_windup` for swings and 0 for bolts/arrows (the pose is at its release as the
+  projectile leaves). The gameplay hit time is unchanged; only the animation moved.
+- `AttackEffects` (GameplayServices): a BattleFX swing arc starts with the swing and sweeps to
+  its fullest at the hit (speed = 0.25 s / windup); a level arc for swords, a vertical chop
+  for the axe, in the weapon's enhancement colour; a cancelled swing removes its arc. An
+  impact flash plays on the attacker's side of the target on `target_hit` for melee and
+  arrows. The Magic Bolt keeps its own projectile and burst.
+
+### Tests and validation (Milestone C)
+- New `tests/phase7_enhancement_tests.gd` (119 checks): armor slot via the inventory window,
+  defense numbers, weapon damage per type and a real +5 swing, Brenna's enhance flow through
+  the real interact key (no ore, 59 gold, +0 -> +1 costs, +1 -> +5 totals 840 g / 14 ore, cap,
+  armor), save/load of armor and levels, weapon effects at each level, shield glow, tool in
+  hand, armor aura at each level and after a teleport, the toggle (hidden effects keep the
+  bonuses, survives reopening), swing pose / arc / hit within one frame for sword and axe,
+  release pose for bow and staff, impact flashes, cancelled swing.
+- Updated: `armory_shop_tests` (nine items, armor prices and slots, enhance flag),
+  `equipment_visual_tests` (armor is worn, not held; it keeps both hands).
+- `tests/capture_phase7_enhancement.gd` renders `docs/validation/phase7/23..39` (1600x900, GPU,
+  real attack key for the swings): weapon +1..+5, armor +1/+3/+5, all +5 at play zoom, the
+  toggle on/off, effects hidden, Brenna's Enhance section, sword and axe at the hit frame and
+  0.1 s later (impact flash).
+- All 36 suites pass (3033 checks); clean headless boot.
+
+### Limitations (Milestone C)
+- The +1 armor aura is subtle (silver on a light scene); +1 weapon sheen is clearer.
+- The "aura" strip is the Gigapack's lightning crackle, so +3 and above read as electric.
+- The FREE animation pack still has no real swing clips; strikes are timed on Interact/Throw.
+- Not playtested by a person; effect brightness was judged from rendered captures only.

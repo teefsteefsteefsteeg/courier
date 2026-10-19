@@ -1,0 +1,26 @@
+{
+ "sparkle": {
+  "frame_width": 96,
+  "frame_height": 96,
+  "frames": 24,
+  "fps": 15
+ },
+ "aura": {
+  "frame_width": 96,
+  "frame_height": 96,
+  "frames": 16,
+  "fps": 15
+ },
+ "burst": {
+  "frame_width": 64,
+  "frame_height": 64,
+  "frames": 14,
+  "fps": 15
+ },
+ "impact": {
+  "frame_width": 96,
+  "frame_height": 96,
+  "frames": 7,
+  "fps": 15
+ }
+}

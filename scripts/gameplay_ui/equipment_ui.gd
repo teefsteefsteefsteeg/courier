@@ -38,6 +38,8 @@ var panel: PanelContainer
 var item_list: VBoxContainer
 var feedback_label: Label
 var close_button: Button
+## "Show enhancement effects" (UISettings.SHOW_ENHANCEMENT_VFX) in the footer.
+var vfx_toggle: CheckButton
 var title_label: Label
 var switch_hint: Label
 var gold_label: Label
@@ -103,6 +105,7 @@ func open() -> void:
 			return
 		_player.input_enabled = false
 	feedback_label.text = ""
+	vfx_toggle.set_pressed_no_signal(UISettings.show_enhancement_vfx())
 	_rebuild()
 	root_control.visible = true
 	add_to_group(QuestJournal.MODAL_GROUP)
@@ -369,6 +372,18 @@ func _build() -> void:
 	close_hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	footer.add_child(close_hint)
 	InputPromptLabel.attach(close_hint)
+	# Cosmetic only: the enhancement bonuses stay when the effects are hidden.
+	vfx_toggle = CheckButton.new()
+	vfx_toggle.name = "EnhancementVfxToggle"
+	vfx_toggle.text = "Show enhancement effects"
+	vfx_toggle.tooltip_text = "Glow and aura of enhanced weapons and armor. Hiding them keeps the bonuses."
+	vfx_toggle.add_theme_color_override(&"font_color", INK)
+	vfx_toggle.add_theme_color_override(&"font_hover_color", INK)
+	vfx_toggle.add_theme_color_override(&"font_pressed_color", INK)
+	vfx_toggle.add_theme_color_override(&"font_hover_pressed_color", INK)
+	vfx_toggle.add_theme_color_override(&"font_focus_color", INK)
+	vfx_toggle.toggled.connect(func(on: bool) -> void: UISettings.set_value(UISettings.SHOW_ENHANCEMENT_VFX, on))
+	footer.add_child(vfx_toggle)
 	close_button = Button.new()
 	close_button.text = "Close"
 	close_button.pressed.connect(close)

@@ -128,6 +128,9 @@ enum AttackStyle { MAGIC_BOLT, FAST_MELEE, HEAVY_MELEE, ARROW, TOOL }
 @export var shield_regen_delay: float = 2.0
 
 @export_group("Package Damage")
+## Damage reduction from armor and shields (EquipmentStats sets it): incoming damage is
+## multiplied by DEFENSE_SCALE / (DEFENSE_SCALE + defense) before the Package Shield.
+@export_range(0.0, 200.0, 0.5) var defense: float = 0.0
 ## Unabsorbed damage taken while carrying applies damage * this as package impact force.
 @export var package_impact_per_damage: float = 0.25
 
@@ -581,10 +584,20 @@ func _break_shield() -> void:
 
 # --- Damage ----------------------------------------------------------------------
 
+const DEFENSE_SCALE := 20.0
+
+
+## Damage left after armor: amount * DEFENSE_SCALE / (DEFENSE_SCALE + defense), at least 1.
+func reduce_by_defense(amount: float) -> float:
+	if amount <= 0.0 or defense <= 0.0:
+		return amount
+	return maxf(amount * DEFENSE_SCALE / (DEFENSE_SCALE + defense), minf(amount, 1.0))
+
 ## CombatHealth.damage_interceptor: returns the damage that reaches health.
 func _intercept_damage(amount: float, _source_position: Vector3) -> float:
 	if dash_invulnerable and is_dashing():
 		return 0.0
+	amount = reduce_by_defense(amount)
 	if _shield_active:
 		if not is_carrying_package():
 			set_package_shield_enabled(false)

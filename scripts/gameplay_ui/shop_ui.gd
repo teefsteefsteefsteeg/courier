@@ -41,6 +41,9 @@ var sell_rows: Dictionary[StringName, Dictionary] = {}
 ## material_id -> {"row", "buy_one", "buy_five", "count", "material"} for goods the merchant
 ## sells by the unit (Phase 7 seeds; read by tests).
 var goods_rows: Dictionary[StringName, Dictionary] = {}
+## item_id -> {"row", "button", "label", "item"} in the Enhance section of a merchant that
+## enhances gear (Phase 7, Brenna; read by tests).
+var enhance_rows: Dictionary[StringName, Dictionary] = {}
 var _sell_header: Control = null
 var merchant: Merchant = null
 var _player: PlayerController = null
@@ -263,10 +266,20 @@ func _rebuild(catalog: ShopCatalog) -> void:
 	rows.clear()
 	sell_rows.clear()
 	goods_rows.clear()
+	enhance_rows.clear()
 	_sell_header = null
 	for item in catalog.items:
 		if item != null:
 			item_list.add_child(_build_row(item))
+	if catalog.enhances_items:
+		var enhance_header := Label.new()
+		enhance_header.name = "EnhanceHeader"
+		enhance_header.theme_type_variation = &"ContractTitle"
+		enhance_header.text = "Enhance your gear (+1 to +5): gold and iron ore"
+		item_list.add_child(enhance_header)
+		for item in inventory.get_all_definitions():
+			if Enhancement.can_enhance(item):
+				item_list.add_child(_build_enhance_row(item))
 	if not catalog.sells_materials.is_empty():
 		var goods_header := Label.new()
 		goods_header.name = "GoodsHeader"
@@ -287,6 +300,46 @@ func _rebuild(catalog: ShopCatalog) -> void:
 			if material.sell_price > 0:
 				item_list.add_child(_build_sell_row(material))
 	_refresh_rows()
+
+
+## Enhances an owned item one level here. Returns the result.
+func enhance_item(item_id: StringName) -> ShopService.EnhanceResult:
+	if not is_open() or merchant == null:
+		return ShopService.EnhanceResult.NO_SERVICES
+	var item := inventory.get_definition(item_id)
+	var level := inventory.get_enhancement(item_id)
+	var result := ShopService.enhance(wallet, inventory, merchant.get_catalog(), item_id)
+	feedback_label.text = ShopService.enhance_text(result, item, inventory.get_enhancement(item_id) if result == ShopService.EnhanceResult.OK else level)
+	_refresh_rows()
+	return result
+
+
+func _build_enhance_row(item: ItemDefinition) -> Control:
+	var row := PanelContainer.new()
+	row.name = "Enhance_" + String(item.item_id)
+	row.theme_type_variation = &"ContractPanel"
+	var line := HBoxContainer.new()
+	line.add_theme_constant_override(&"separation", 14)
+	row.add_child(line)
+	var icon := TextureRect.new()
+	icon.texture = item.icon
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_SCALE
+	icon.custom_minimum_size = Vector2(32, 32) * ICON_SCALE
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	line.add_child(icon)
+	var label := Label.new()
+	label.theme_type_variation = &"ContractTitle"
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	line.add_child(label)
+	var button := Button.new()
+	button.custom_minimum_size.x = 170
+	button.pressed.connect(func() -> void: enhance_item(item.item_id))
+	line.add_child(button)
+	enhance_rows[item.item_id] = {"row": row, "button": button, "label": label, "item": item}
+	return row
 
 
 ## Buys amount of a material this merchant sells. Returns the gold spent.
@@ -486,6 +539,24 @@ func _refresh_rows() -> void:
 			status.text = "Need %d more gold" % (item.price - wallet.gold) if check == ShopService.PurchaseResult.NOT_ENOUGH_GOLD else ""
 			if button.disabled:
 				button.tooltip_text = ShopService.result_text(check, item, wallet)
+	for item_id in enhance_rows:
+		var enhance := enhance_rows[item_id]
+		var item: ItemDefinition = enhance["item"]
+		var level := inventory.get_enhancement(item_id)
+		(enhance["row"] as Control).visible = inventory.has_item(item_id)
+		var label := enhance["label"] as Label
+		var button := enhance["button"] as Button
+		if level >= Enhancement.MAX_LEVEL:
+			label.text = "%s +%d · fully enhanced" % [item.display_name, level]
+			button.text = "Max"
+			button.disabled = true
+		else:
+			label.text = "%s %s → +%d · %d g, %d iron ore" % [item.display_name, Enhancement.level_text(level) if level > 0 else "+0", level + 1, Enhancement.gold_cost(level), Enhancement.ore_cost(level)]
+			label.add_theme_color_override(&"font_color", Enhancement.level_color(level + 1).darkened(0.45))
+			var check := ShopService.can_enhance(wallet, inventory, merchant.get_catalog() if merchant != null else null, item_id)
+			button.text = "Enhance"
+			button.disabled = check != ShopService.EnhanceResult.OK
+			button.tooltip_text = ShopService.enhance_text(check, item, level) if button.disabled else ""
 	for material_id in goods_rows:
 		var goods := goods_rows[material_id]
 		var material: MaterialItem = goods["material"]

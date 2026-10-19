@@ -1,9 +1,10 @@
 extends SceneTree
-## Equipped weapons are visible: every Armory item has a held model, equipping puts it
+## Equipped weapons are visible: every hand-held Armory item has a held model, equipping puts it
 ## in the right bone slot (weapons: right hand, shield: left hand), switching replaces
 ## it, unequipping removes it, and a save round trip, attacks and the combat stats keep
 ## working. Regression for "purchased weapon not visible in the hand": the Battle Axe and
-## the Wooden Shield had no held_model, so equipping the axe emptied the hand.
+## the Wooden Shield had no held_model, so equipping the axe emptied the hand. Body armor
+## (Phase 7, Slot.ARMOR) is worn, not held: it has no held model and leaves both hands alone.
 ## Run headless from the project root:
 ##   godot --headless --path . --script res://tests/equipment_visual_tests.gd
 ## Exit code = number of failed checks.
@@ -67,9 +68,15 @@ func _frames(count: int) -> void:
 # --- tests -------------------------------------------------------------------
 
 func _test_data() -> void:
-	print("[Every Armory item has a held model]")
+	print("[Every hand-held Armory item has a held model]")
+	var armors := 0
 	for item in catalog.items:
-		_check(item.held_model != null, "%s has a held_model" % item.display_name)
+		if item.slot == ItemDefinition.Slot.ARMOR:
+			armors += 1
+			_check(item.held_model == null, "%s is worn, not held (no held_model)" % item.display_name)
+		else:
+			_check(item.held_model != null, "%s has a held_model" % item.display_name)
+	_check(armors == 2, "the Armory sells two armors (%d)" % armors)
 	var models := {}
 	for item_id in [&"wooden_sword", &"iron_sword", &"steel_sword", &"battle_axe"]:
 		var item := catalog.get_item(item_id)
@@ -87,6 +94,10 @@ func _test_each_item() -> void:
 		await _frames(1)
 		inventory.equip(item.item_id)
 		await _frames(2)
+		if item.slot == ItemDefinition.Slot.ARMOR:
+			_check(inventory.get_equipped(ItemDefinition.Slot.ARMOR) == item and character.get_held_item_node() == null and character.get_off_hand_item_node() == null,
+					"%s is equipped as armor and puts nothing in either hand" % item.display_name)
+			continue
 		var main := item.slot == ItemDefinition.Slot.MAIN_HAND
 		var held := character.get_held_item_node() if main else character.get_off_hand_item_node()
 		var other := character.get_off_hand_item_node() if main else character.get_held_item_node()
@@ -117,6 +128,16 @@ func _test_switch_and_unequip() -> void:
 	inventory.unequip(ItemDefinition.Slot.OFF_HAND)
 	await _frames(2)
 	_check(character.get_off_hand_item_node() == null, "unequipping the shield removes it")
+	inventory.equip(&"iron_sword")
+	inventory.equip(&"wooden_shield")
+	inventory.equip(&"iron_mail")
+	await _frames(2)
+	_check(_shows(character.get_held_item_node(), catalog.get_item(&"iron_sword"), "handslot.r") and _shows(character.get_off_hand_item_node(), catalog.get_item(&"wooden_shield"), "handslot.l"),
+			"putting on armor keeps the sword and shield in hand")
+	inventory.unequip(ItemDefinition.Slot.ARMOR)
+	await _frames(2)
+	_check(inventory.get_equipped(ItemDefinition.Slot.ARMOR) == null and character.get_held_item_node() != null and character.get_off_hand_item_node() != null,
+			"taking armor off keeps both hands")
 
 
 func _test_save_round_trip() -> void:
@@ -156,7 +177,7 @@ func _test_npc_props() -> void:
 # --- helpers -------------------------------------------------------------------
 
 func _unequip_all() -> void:
-	for slot in [ItemDefinition.Slot.MAIN_HAND, ItemDefinition.Slot.OFF_HAND]:
+	for slot in [ItemDefinition.Slot.MAIN_HAND, ItemDefinition.Slot.OFF_HAND, ItemDefinition.Slot.ARMOR]:
 		inventory.unequip(slot)
 
 

@@ -66,11 +66,12 @@ Services are per-level nodes in `scenes/gameplay/gameplay_services.tscn`, found 
 |---|---|---|
 | `QuestManager` | `scripts/quests/quest_manager.gd` | All quest state; one active delivery at a time; idempotent `grant_reward`; `retry_quest`; `restore_finished_quests` |
 | `CourierWallet` | `scripts/quests/courier_wallet.gd` | Gold, reputation, courier rank (Novice to Renowned); `spend_gold`, `restore` |
-| `CourierInventory` | `scripts/inventory/courier_inventory.gd` | Owned items (unique), MAIN_HAND / OFF_HAND equipment, five quick slots (owned weapons and tools), stackable materials (`MaterialItem` counts, cap 999) |
+| `CourierInventory` | `scripts/inventory/courier_inventory.gd` | Owned items (unique), MAIN_HAND / OFF_HAND / ARMOR equipment, enhancement levels, five quick slots (owned weapons and tools), stackable materials (`MaterialItem` counts, cap 999) |
 | `EquipmentStats` | `scripts/inventory/equipment_stats.gd` | Applies equipped items to the player's `CombatController` (stats and attack style by weapon type; TOOL for a tool) and the held models |
 | `ExplorationService` / `FastTravel` | `scripts/world/` | Phase 5G: location registry (`WorldLocation`), discovery, fog of war, portals |
 | `GatheringService` | `scripts/tools/gathering_service.gd` | Phase 5H: depleted harvest nodes (real-time respawn), repaired structures (paid once), tallies |
 | `FarmService` | `scripts/farming/farm_service.gd` | Garden beds, crops and their play-time growth clock (Phase 7) |
+| `EnhancementVisuals` / `AttackEffects` | `scripts/vfx/` | Phase 7 C: enhancement glow/aura (toggle `UISettings.SHOW_ENHANCEMENT_VFX`), swing arc and impact flash timed to the hit |
 | `SaveGame` | `scripts/core/save_game.gd` | `user://savegame.json`; autosave; **off in headless runs** |
 
 Key gameplay scripts:
@@ -138,7 +139,8 @@ change the generator, not the scene. The terrain splat maps have no generator; e
 plaza, exhibit removed, NPCs face the courier, wider roads, Whisperwood moved to (14, 0, -90)
 inside a generated forest annex north of the village) and Milestone B (two-view inventory
 with [Q] switching views while open, enhancement levels, `FarmService` + `FarmPlot` garden)
-are done; C-D are not started.
+and Milestone C (armor slot and defense, enhancing at Brenna, weapon/armor enhancement VFX
+with a hide toggle, attack poses and swing VFX synced to the hit) are done; D is not started.
 Phases 5G (map, portals) and 5H (village spacing, faster courier, RPG tools) are committed on
 `phase5f-integrated`, and every automated check passes on the committed tree (30 suites, 2614
 checks, clean boot). It has **not been played by a person**. See `docs/DEVELOPMENT_HANDOFF.md` for what is complete,

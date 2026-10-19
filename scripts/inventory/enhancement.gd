@@ -24,6 +24,25 @@ static func level_text(level: int) -> String:
 	return "+%d" % level if level > 0 else ""
 
 
+## Iron ore used by each enhancement step.
+const ORE_ID := &"iron_ore"
+
+
+## True for items that can be enhanced: weapons, shields and armor (not tools).
+static func can_enhance(item: ItemDefinition) -> bool:
+	return item != null and not item.is_tool()
+
+
+## Gold for enhancing from `level` to level + 1.
+static func gold_cost(level: int) -> int:
+	return 60 * (level + 1)
+
+
+## Iron ore for enhancing from `level` to level + 1.
+static func ore_cost(level: int) -> int:
+	return level + 1
+
+
 ## Weapon damage multiplier: +10% per level.
 static func damage_multiplier(level: int) -> float:
 	return 1.0 + 0.1 * clamp_level(level)

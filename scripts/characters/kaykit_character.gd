@@ -52,6 +52,13 @@ const TOOL_IMPACT := {
 	&"tool_chop": 0.58, &"tool_mine": 0.58, &"tool_cast": 0.58,
 	&"tool_hammer": 0.36, &"tool_trowel": 0.36, &"tool_dig": 0.43, &"tool_reel": 0.41,
 }
+## The same strike moments per clip, for attacks (play_once_strike): the axe chop and the
+## bolt cast use the throw, the sword the interact reach, the bow the use-item pull.
+const CLIP_IMPACT := {
+	&"general/Throw": 0.58, &"general/Interact": 0.36, &"general/PickUp": 0.43, &"general/Use_Item": 0.41,
+}
+## Fastest playback play_once_strike uses; a strike due sooner starts the clip part-way.
+const MAX_STRIKE_SPEED := 5.0
 ## Clips that loop (the imported files mark every clip as play-once).
 const LOOPING := [&"general/Idle_A", &"general/Idle_B", &"move/Walking_A", &"move/Running_A", &"move/Running_B", &"move/Jump_Idle"]
 
@@ -85,6 +92,8 @@ var _idle_timer := 0.0
 ## never end and every later play_loop() would be swallowed (e.g. the dash, which falls
 ## back to the looping Running_B clip, kept the courier running in place).
 var _one_shot_left := -1.0
+## Clip time of the playing one-shot's strike (play_once_strike), -1 when none.
+var _strike_at := -1.0
 
 
 func _ready() -> void:
@@ -206,6 +215,7 @@ func play_loop(action: StringName, speed: float = 1.0) -> void:
 ## `hold` keeps the last frame (death) until `release()`.
 func play_once(action: StringName, speed: float = 1.0, hold: bool = false) -> void:
 	if _play(action, speed, 0.1):
+		_strike_at = -1.0
 		_one_shot = true
 		_hold = hold
 		one_shot_action = action
@@ -213,6 +223,35 @@ func play_once(action: StringName, speed: float = 1.0, hold: bool = false) -> vo
 		var animation := animation_player.get_animation(current_clip)
 		_one_shot_left = animation.length / maxf(absf(speed), 0.01) \
 				if animation.loop_mode != Animation.LOOP_NONE and not hold else -1.0
+
+
+## Plays a one-shot so that its strike (CLIP_IMPACT, else mid-clip) lands strike_in seconds
+## from now, the moment gameplay applies the hit: the speed is chosen for that (at most
+## MAX_STRIKE_SPEED, the clip then starts part-way through). strike_in <= 0 (a projectile
+## that has just left) plays at `speed` from the strike pose on. Returns the seconds until
+## the strike, or -1 when the action has no clip.
+func play_once_strike(action: StringName, strike_in: float, speed: float = 1.0) -> float:
+	var clip := resolve(action)
+	if clip == &"":
+		return -1.0
+	var strike: float = animation_player.get_animation(clip).length * float(CLIP_IMPACT.get(clip, 0.5))
+	if strike_in > 0.0:
+		speed = strike / strike_in
+	speed = clampf(speed, 0.1, MAX_STRIKE_SPEED)
+	var start := maxf(strike - maxf(strike_in, 0.0) * speed, 0.0)
+	play_once(action, speed)
+	if start > 0.0:
+		animation_player.seek(start, true)
+	_strike_at = strike
+	return (strike - start) / speed
+
+
+## Seconds until the playing one-shot's strike (see play_once_strike); negative once it
+## has passed or when the one-shot was not started by play_once_strike.
+func get_strike_remaining() -> float:
+	if not _one_shot or _strike_at < 0.0 or animation_player.current_animation != String(current_clip):
+		return -1.0
+	return (_strike_at - animation_player.current_animation_position) / maxf(absf(animation_player.get_playing_speed()), 0.01)
 
 
 ## Ends the one-shot now and returns to the current loop, when the one-shot is `action`

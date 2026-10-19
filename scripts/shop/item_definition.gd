@@ -6,7 +6,8 @@ extends Resource
 ##   item_id       StringName, unique and stable (saved; never rename a shipped id)
 ##   display_name  shown in the shop and HUD
 ##   description   one or two lines of flavour
-##   slot          equipment slot the item goes in (MAIN_HAND weapon, OFF_HAND shield)
+##   slot          equipment slot the item goes in (MAIN_HAND weapon, OFF_HAND shield,
+##                 ARMOR body armor since Phase 7)
 ##   price         gold cost in shops (> 0)
 ##   icon          32x32 pixel-art Texture2D, drawn with nearest filtering
 ##   held_model    optional PackedScene shown in the courier's hand when equipped
@@ -17,7 +18,10 @@ extends Resource
 ##   stat bonuses  applied by EquipmentStats to the courier's existing combat stats:
 ##                 bolt_damage_bonus (+), bolt_cooldown_multiplier (x), bolt_range_bonus (+)
 ##                 for the Magic Bolt (staff), shield_durability_bonus (+) for the Package
-##                 Shield; zero/one means "no change".
+##                 Shield, defense (+, Phase 7: shields and armor; incoming damage is scaled
+##                 by CombatController.DEFENSE_SCALE / (DEFENSE_SCALE + defense)); zero/one
+##                 means "no change". Enhancement (CourierInventory level +1..+5) adds to
+##                 these, see Enhancement.
 ##   attack stats  for SWORD / AXE / BOW: attack_damage, attack_range (m), attack_cooldown
 ##                 (s), and for melee attack_arc_degrees and attack_windup (s until the hit).
 ##   tool_type     (Phase 5H) a tool, not a weapon: it goes in the main hand like a weapon
@@ -26,7 +30,8 @@ extends Resource
 ##                 rocks, dig spots, repairable structures). NONE = not a tool.
 ##   held_transform  pose of held_model in the hand (tools from another pack need one).
 
-enum Slot { MAIN_HAND, OFF_HAND }
+## Append only: saves store the slot names.
+enum Slot { MAIN_HAND, OFF_HAND, ARMOR }
 enum WeaponType { NONE, STAFF, SWORD, AXE, BOW }
 ## Append only: saved data and ToolTarget scenes store these values.
 enum ToolType { NONE, FISHING_ROD, HAMMER, WOOD_AXE, PICKAXE, SHOVEL, TROWEL }
@@ -52,6 +57,8 @@ enum ToolType { NONE, FISHING_ROD, HAMMER, WOOD_AXE, PICKAXE, SHOVEL, TROWEL }
 @export var bolt_range_bonus: float = 0.0
 ## Added to CombatController.shield_max_durability (Package Shield).
 @export var shield_durability_bonus: float = 0.0
+## Damage reduction (shields and armor), see CombatController.defense.
+@export_range(0.0, 100.0, 0.5) var defense: float = 0.0
 
 @export_group("Attack")
 ## Damage per melee hit or arrow (SWORD, AXE, BOW).
@@ -67,7 +74,7 @@ enum ToolType { NONE, FISHING_ROD, HAMMER, WOOD_AXE, PICKAXE, SHOVEL, TROWEL }
 
 
 static func slot_name(value: Slot) -> String:
-	return "Weapon" if value == Slot.MAIN_HAND else "Off-hand"
+	return ["Weapon", "Off-hand", "Armor"][value]
 
 
 static func weapon_type_name(value: WeaponType) -> String:
@@ -122,6 +129,8 @@ func get_stat_lines() -> PackedStringArray:
 		lines.append("%+d m bolt range" % roundi(bolt_range_bonus))
 	if shield_durability_bonus != 0.0:
 		lines.append("%+d package shield" % roundi(shield_durability_bonus))
+	if defense != 0.0:
+		lines.append("%+d defense" % roundi(defense))
 	return lines
 
 

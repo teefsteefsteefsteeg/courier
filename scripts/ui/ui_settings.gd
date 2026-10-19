@@ -9,8 +9,12 @@ const PATH := "user://ui_settings.cfg"
 const SECTION := "hud"
 ## Movement key guide (WASD) in the gameplay HUD.
 const SHOW_MOVEMENT_GUIDE := "show_movement_guide"
+## Glow, sparkles and aura of enhanced weapons and armor (EnhancementVisuals). Cosmetic
+## only: hiding them keeps every enhancement bonus.
+const SHOW_ENHANCEMENT_VFX := "show_enhancement_vfx"
 const DEFAULTS := {
 	SHOW_MOVEMENT_GUIDE: true,
+	SHOW_ENHANCEMENT_VFX: true,
 }
 
 static var _config: ConfigFile = null
@@ -32,6 +36,10 @@ static func set_value(key: String, value: Variant) -> void:
 
 static func show_movement_guide() -> bool:
 	return bool(get_value(SHOW_MOVEMENT_GUIDE))
+
+
+static func show_enhancement_vfx() -> bool:
+	return bool(get_value(SHOW_ENHANCEMENT_VFX))
 
 
 ## Forgets the cached file so the next read reloads it (tests).

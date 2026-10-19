@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/leather_vest.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = &"leather_vest"
+display_name = "Leather Vest"
+description = "Boiled leather over a courier's tunic. Turns aside teeth and claws."
+slot = 2
+price = 120
+icon = ExtResource("2_icon")
+defense = 4.0
