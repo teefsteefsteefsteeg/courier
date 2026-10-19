@@ -176,7 +176,11 @@ func _test_clearances() -> void:
 	_check(overlaps.is_empty(), "no armory collider overlaps another solid (%s)" % [overlaps])
 	# WorldLocation markers are map-icon anchors placed on the building itself, not places
 	# the courier stands, so they are exempt.
-	var spots := level.find_children("*", "Marker3D", true, false).filter(func(m: Node) -> bool: return not armory.is_ancestor_of(m) and not m is WorldLocation)
+	# The Armory's own house door (Phase 8) has its doorstep right at the entrance; the
+	# interiors tests check that doorstep is clear of every wall.
+	var spots := level.find_children("*", "Marker3D", true, false).filter(func(m: Node) -> bool:
+		var own_door := m.get_parent() is HouseDoor and (m.get_parent() as HouseDoor).interior_id == &"interior_armory"
+		return not armory.is_ancestor_of(m) and not m is WorldLocation and not own_door)
 	spots += level.get_node("NPCs").get_children()
 	var near: Array[String] = []
 	for spot in spots:

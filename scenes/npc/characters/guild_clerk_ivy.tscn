@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="2_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Mage.glb" id="3_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="4_anim"]
+[ext_resource type="Script" path="res://scripts/quests/quest_npc_behaviour.gd" id="5_qnpc"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/items/spellbook_open.gltf" id="6_item"]
+
+[node name="GuildClerkIvy" instance=ExtResource("1_npc")]
+npc_name = "Guild Clerk Ivy"
+lines = PackedStringArray("Welcome to the Courier Guild hall. Mind the ink, it never dries.", "Every sealed letter in Willowmere passes over this desk.", "Bram runs the counter outside; the private post goes through me.")
+body_color = Color(0.35, 0.3, 0.6, 1)
+npc_id = &"guild_clerk"
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("2_char")
+model = ExtResource("3_model")
+held_item = ExtResource("6_item")
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("4_anim")
+character = NodePath("../Visual/Character")
+
+[node name="QuestBehaviour" type="Node" parent="."]
+script = ExtResource("5_qnpc")

@@ -117,7 +117,7 @@ func _toasts_contain(text: String) -> bool:
 
 func _test_data_loaded() -> void:
 	print("[Data]")
-	_check(manager.get_quest_ids().size() == 3, "3 quests registered")
+	_check(manager.get_quest_ids().size() == 4, "4 quests registered (Phase 8 added The Sealed Letter)")
 	var expected := {
 		Q1: [50, 5, &"village_merchant", &"pkg_ordinary_parcel"],
 		Q2: [120, 20, &"forest_mage", &"pkg_dragon_egg"],
@@ -136,7 +136,7 @@ func _test_data_loaded() -> void:
 		for o in manager.get_definition(id).objectives:
 			types[o.type] = true
 	_check(types.size() == 4, "all 4 objective types used by the data")
-	_check(manager.get_available_quests().size() == 3, "multiple quests available at once")
+	_check(manager.get_available_quests().size() == 4, "multiple quests available at once")
 
 
 func _test_npc_ids() -> void:
@@ -165,7 +165,7 @@ func _test_board_ui_accept_q1() -> void:
 	await _frames(2)
 	_check(board_ui.is_open(), "E opens quest board UI")
 	_check(not player.input_enabled, "player input frozen while board open")
-	_check(board_ui.accept_buttons.size() == 3, "board lists 3 contracts")
+	_check(board_ui.accept_buttons.size() == 4, "board lists 4 contracts")
 	var all_enabled := true
 	for id in board_ui.accept_buttons:
 		all_enabled = all_enabled and not board_ui.accept_buttons[id].disabled

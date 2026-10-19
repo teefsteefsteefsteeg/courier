@@ -78,6 +78,9 @@
 [ext_resource type="Script" path="res://scripts/phase6/world_router.gd" id="phase6_router"]
 [ext_resource type="PackedScene" path="res://scenes/environment/whisperwood_forest.tscn" id="p7_whisperwood"]
 [ext_resource type="PackedScene" path="res://scenes/world/farm/courier_garden.tscn" id="p7_garden"]
+[ext_resource type="Script" path="res://scripts/world/house_door.gd" id="p8_house_door"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="p8_interactable"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Door_1_Round.gltf" id="p8_door_model"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -190,6 +193,9 @@ size = Vector3(0.5, 4, 80.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_annex_north"]
 size = Vector3(64.5, 4, 0.5)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_p8_door"]
+radius = 0.9
 
 [node name="Village" type="Node3D"]
 
@@ -1069,3 +1075,65 @@ notifier = NodePath("../GameplayHUD/QuestNotification")
 destination_target = NodePath("../ForestEntrance/Markers/ForestClearingSpot")
 recipient_target = NodePath("../NPCs/MageElowen")
 knockout_respawn = NodePath("../Markers/PlayerSpawn")
+
+[node name="HouseDoors" type="Node3D" parent="."]
+
+[node name="ArmoryDoor" type="Node3D" parent="HouseDoors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4, 0, -14.35)
+script = ExtResource("p8_house_door")
+interior_id = &"interior_armory"
+place_name = "Brenna's Forge"
+
+[node name="Interactable" type="Area3D" parent="HouseDoors/ArmoryDoor"]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("p8_interactable")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HouseDoors/ArmoryDoor/Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_p8_door")
+
+[node name="Exit" type="Marker3D" parent="HouseDoors/ArmoryDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 1.1)
+
+[node name="GuildHallDoor" type="Node3D" parent="HouseDoors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.5, 0, -10.55)
+script = ExtResource("p8_house_door")
+interior_id = &"interior_guild_hall"
+place_name = "the Courier Guild Hall"
+
+[node name="DoorModel" parent="HouseDoors/GuildHallDoor" instance=ExtResource("p8_door_model")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.52, 0, -0.2)
+
+[node name="Interactable" type="Area3D" parent="HouseDoors/GuildHallDoor"]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("p8_interactable")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HouseDoors/GuildHallDoor/Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.2)
+shape = SubResource("SphereShape3D_p8_door")
+
+[node name="Exit" type="Marker3D" parent="HouseDoors/GuildHallDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0.9)
+
+[node name="RoseCottageDoor" type="Node3D" parent="HouseDoors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.53, 0, 16.2)
+script = ExtResource("p8_house_door")
+interior_id = &"interior_rose_cottage"
+place_name = "Rose Cottage"
+
+[node name="Interactable" type="Area3D" parent="HouseDoors/RoseCottageDoor"]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("p8_interactable")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HouseDoors/RoseCottageDoor/Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_p8_door")
+
+[node name="Exit" type="Marker3D" parent="HouseDoors/RoseCottageDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 1.0)

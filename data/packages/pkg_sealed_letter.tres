@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PackageDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/packages/package_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/packages/visuals/parcel_visual.tscn" id="2_vis"]
+
+[resource]
+script = ExtResource("1_def")
+package_id = &"pkg_sealed_letter"
+package_name = "Sealed Letter"
+package_description = "A thick letter under the Guild's wax seal, addressed in a careful hand to Granny Hollis."
+recipient_id = &"granny_hollis"
+quest_id = &"q004_sealed_letter"
+package_scene = ExtResource("2_vis")
+integrity = 100.0
+behavior = 0
+impact_sensitivity = 0.6

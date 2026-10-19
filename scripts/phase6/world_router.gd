@@ -6,6 +6,14 @@ const OUTDOOR := "res://scenes/phase6/runewood_outdoors.tscn"
 const DUNGEON := "res://scenes/phase6/sentinel_dungeon.tscn"
 const MapModel := preload("res://scripts/phase4_integration_visual/minimap_model.gd")
 const REGION_TOOL_SITES := {"runewood": "res://scenes/world/tools/runewood_tool_sites.tscn"}
+## Phase 8 interiors: enterable buildings of the village (HouseDoor -> region id). Each is a
+## region of its own (the village is paused while the courier is inside), and leaving puts
+## the courier back at the door it came in by.
+const INTERIORS := {
+	"interior_armory": "res://scenes/interiors/armory_forge.tscn",
+	"interior_guild_hall": "res://scenes/interiors/guild_hall.tscn",
+	"interior_rose_cottage": "res://scenes/interiors/rose_cottage.tscn",
+}
 var region_id: StringName = &"village"
 var active_level: Node3D
 var crossing := false
@@ -16,6 +24,8 @@ var _map_states: Array[Dictionary] = []
 var _map_model := MapModel.new()
 var _player: PlayerController
 var _village_spawn := Vector3(33,.1,-30.5)
+## Where the courier comes back out (the door of the building it entered); INF = the gateway.
+var _village_return := Vector3.INF
 var _recovering := false
 var _village_respawn_enabled := true
 
@@ -47,17 +57,22 @@ func _process(_delta: float) -> void:
 		_map_model.update_player_heading()
 
 
-func travel(next: StringName, spawn: StringName, interactor: Node = null) -> bool:
+## Goes to region next at its spawn marker. return_point (Phase 8 house doors) is where the
+## courier reappears when it later comes back to the village.
+func travel(next: StringName, spawn: StringName, interactor: Node = null, return_point: Vector3 = Vector3.INF) -> bool:
 	if crossing or (interactor != null and interactor != _player) or not _player.input_enabled:
 		return false
-	if next not in [&"village",&"runewood",&"sentinel_vault"]:
+	if next not in [&"village",&"runewood",&"sentinel_vault"] and not INTERIORS.has(String(next)):
 		return false
+	if region_id == &"village" and next != &"village":
+		_village_return = return_point
 	crossing = true
 	_cross.call_deferred(next,spawn)
 	return true
 
 
 func _cross(next: StringName, spawn: StringName) -> void:
+	var previous_interior := is_interior(region_id)
 	_player.input_enabled = false
 	var combat := CombatController.find_on(_player)
 	combat.cancel_dash()
@@ -74,11 +89,14 @@ func _cross(next: StringName, spawn: StringName) -> void:
 		active_level = null
 	region_id = next
 	var exploration := ExplorationService.find(get_tree())
-	exploration.set_region(next)
+	# Interiors keep the village's fog of war and map (they are part of the village).
+	if not is_interior(next):
+		exploration.set_region(next)
 	if next == &"village":
 		_resume_village()
 		get_parent().get_node("WorldEnvironment").environment=_outside_env
-		_player.teleport_to(_village_spawn)
+		_player.teleport_to(_village_return if _village_return.is_finite() else _village_spawn)
+		_village_return = Vector3.INF
 		camera.environment = _outside_env
 		_restore_map()
 	else:
@@ -86,7 +104,7 @@ func _cross(next: StringName, spawn: StringName) -> void:
 			active_level = _level_cache[String(next)]
 			_level_cache.erase(String(next))
 		else:
-			active_level = (load(OUTDOOR if next == &"runewood" else DUNGEON) as PackedScene).instantiate() as Node3D
+			active_level = (load(_scene_for(next)) as PackedScene).instantiate() as Node3D
 			# Phase 8: tool sites (trees, ore, soil, fishing water) of a generated region come
 			# from their own scene and snap onto its terrain (GroundSnap).
 			if REGION_TOOL_SITES.has(String(next)):
@@ -106,7 +124,18 @@ func _cross(next: StringName, spawn: StringName) -> void:
 	region_changed.emit(region_id)
 	var notice := get_parent().get_node_or_null("GameplayHUD/QuestNotification") as QuestNotification
 	if notice != null:
-		notice.push_message("Runewood Highlands — follow the ochre road to the northern crypt." if next==&"runewood" else ("The Sentinel Vault — the stairs behind you lead out." if next==&"sentinel_vault" else "Returned to Willowmere."),QuestNotification.KIND_INFO)
+		var text := "Returned to Willowmere."
+		if next == &"runewood":
+			text = "Runewood Highlands — follow the ochre road to the northern crypt."
+		elif next == &"sentinel_vault":
+			text = "The Sentinel Vault — the stairs behind you lead out."
+		elif is_interior(next):
+			var place := String(active_level.get(&"display_name"))
+			text = "%s — the door behind you leads out." % (place.left(1).to_upper() + place.substr(1))
+		elif previous_interior:
+			text = ""
+		if not text.is_empty():
+			notice.push_message(text,QuestNotification.KIND_INFO)
 
 
 func _pause_village() -> void:
@@ -148,8 +177,23 @@ func _resume_village() -> void:
 	get_parent().get_node("Phase4DeliveryIntegration").respawn_on_knockout = _village_respawn_enabled
 
 
+func is_interior(id: StringName) -> bool:
+	return INTERIORS.has(String(id))
+
+
+func _scene_for(id: StringName) -> String:
+	if INTERIORS.has(String(id)):
+		return INTERIORS[String(id)]
+	return OUTDOOR if id == &"runewood" else DUNGEON
+
+
 func _setup_map() -> void:
 	var controller := get_parent().get_node("GameplayHUD/Minimap")
+	if is_interior(region_id):
+		# Indoors: no minimap and no world map (the village map stays as it was).
+		controller.compact.visible = false
+		controller.set_process_input(false)
+		return
 	if _map_states.is_empty():
 		for view: Control in [controller.compact,controller.expanded]:
 			var state := {"view":view}
@@ -174,6 +218,8 @@ func _setup_map() -> void:
 
 func _restore_map() -> void:
 	var controller := get_parent().get_node("GameplayHUD/Minimap")
+	controller.compact.visible = true
+	controller.set_process_input(true)
 	for state in _map_states:
 		var view: Control = state["view"]
 		view.set_model(controller.model)
@@ -205,7 +251,11 @@ func _on_knockout() -> void:
 	var health := CombatHealth.find_on(_player)
 	health.reset()
 	_player.input_enabled = true
-	travel(&"runewood",&"Arrival",_player)
+	# Knocked out indoors: back out of the door; elsewhere: the Runewood arrival.
+	if is_interior(region_id):
+		travel(&"village",&"",_player)
+	else:
+		travel(&"runewood",&"Arrival",_player)
 	_recovering = false
 
 

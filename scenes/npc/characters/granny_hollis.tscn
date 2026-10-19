@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="2_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Rogue_Hooded.glb" id="3_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="4_anim"]
+[ext_resource type="Script" path="res://scripts/quests/quest_npc_behaviour.gd" id="5_qnpc"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/items/mug_full.gltf" id="6_item"]
+
+[node name="GrannyHollis" instance=ExtResource("1_npc")]
+npc_name = "Granny Hollis"
+lines = PackedStringArray("Come in, come in, wipe your boots. The kettle's always on.", "You look worn thin, dear. Have a lie-down on the bed before you go.", "My grandson writes from the city. Letters are the only thing that crosses that road on time.")
+body_color = Color(0.7, 0.5, 0.55, 1)
+npc_id = &"granny_hollis"
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("2_char")
+model = ExtResource("3_model")
+held_item = ExtResource("6_item")
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("4_anim")
+character = NodePath("../Visual/Character")
+
+[node name="QuestBehaviour" type="Node" parent="."]
+script = ExtResource("5_qnpc")

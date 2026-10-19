@@ -1,0 +1,447 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/interior_room.gd" id="1_jbshg"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Floor_WoodDark.gltf" id="2_3seyk"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_Straight.gltf" id="3_mplif"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_Door_Round.gltf" id="4_wr827"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_Window_Wide_Round.gltf" id="5_ai6lj"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Window_Wide_Round1.gltf" id="6_svhlr"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Door_1_Round.gltf" id="7_okjwv"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="8_7lyfa"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Table_Large.gltf" id="9_l7qd7"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Scroll_1.gltf" id="10_fbw4s"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Book_Stack_1.gltf" id="11_sd4ac"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/CandleStick_Triple.gltf" id="12_qa6si"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Chair_1.gltf" id="13_n2ape"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Bookcase_2.gltf" id="14_mpy18"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Cabinet.gltf" id="15_abpee"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Crate_Wooden.gltf" id="16_wd64l"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Bag.gltf" id="17_ll8ok"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Bench.gltf" id="18_xbhwj"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Banner_1.gltf" id="19_3deiq"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Chandelier.gltf" id="20_mmea2"]
+[ext_resource type="PackedScene" path="res://scenes/npc/characters/guild_clerk_ivy.tscn" id="21_qguhx"]
+[ext_resource type="Script" path="res://scripts/npc/npc.gd" id="22_flytj"]
+[ext_resource type="PackedScene" path="res://scenes/gameplay/packages/package_pickup.tscn" id="23_rvcbw"]
+[ext_resource type="Script" path="res://scripts/packages/package_pickup.gd" id="24_mrp26"]
+[ext_resource type="Resource" path="res://data/packages/pkg_sealed_letter.tres" id="25_pri4q"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ycyd6"]
+shading_mode = 0
+albedo_color = Color(0.78, 0.88, 1, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_0s1s3"]
+material = SubResource("StandardMaterial3D_ycyd6")
+size = Vector2(1.3, 1.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yjpli"]
+shading_mode = 0
+albedo_color = Color(0.78, 0.88, 1, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_l8m7c"]
+material = SubResource("StandardMaterial3D_yjpli")
+size = Vector2(1.3, 1.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ujro4"]
+shading_mode = 0
+albedo_color = Color(0.78, 0.88, 1, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_vk0f0"]
+material = SubResource("StandardMaterial3D_ujro4")
+size = Vector2(1.3, 1.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_no4m1"]
+albedo_color = Color(0.62, 0.5, 0.36, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_yi2xo"]
+material = SubResource("StandardMaterial3D_no4m1")
+size = Vector3(10, 0.75, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n1gfq"]
+albedo_color = Color(0.62, 0.5, 0.36, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_veboc"]
+material = SubResource("StandardMaterial3D_n1gfq")
+size = Vector3(0.2, 0.75, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_edisl"]
+albedo_color = Color(0.403, 0.325, 0.234, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_bmtus"]
+material = SubResource("StandardMaterial3D_edisl")
+size = Vector3(10.1, 0.08, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vq0x7"]
+albedo_color = Color(0.403, 0.325, 0.234, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_rh4lv"]
+material = SubResource("StandardMaterial3D_vq0x7")
+size = Vector3(0.3, 0.08, 8.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7wcxk"]
+size = Vector3(10, 0.2, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gdpdf"]
+size = Vector3(10, 3.1, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8s8jr"]
+size = Vector3(10, 3.1, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_x1886"]
+size = Vector3(0.4, 3.1, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wgt0y"]
+size = Vector3(0.4, 3.1, 8)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_p2wpq"]
+radius = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_61j8o"]
+albedo_color = Color(0.55, 0.22, 0.2, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_tm303"]
+material = SubResource("StandardMaterial3D_61j8o")
+size = Vector3(1.4, 0.02, 1)
+
+[sub_resource type="Environment" id="Environment_mdd6f"]
+background_mode = 1
+background_color = Color(0.06, 0.045, 0.035, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.92, 0.82, 0.68, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
+ssao_enabled = true
+glow_enabled = true
+glow_intensity = 0.35
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8l25f"]
+size = Vector3(2.9, 0.84, 1.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_87gvo"]
+size = Vector3(1.5, 2.6, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_eoe8v"]
+size = Vector3(1.5, 2.6, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0jyln"]
+size = Vector3(0.4, 1, 1.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sne4d"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nwwvt"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7l4tv"]
+size = Vector3(0.6, 0.6, 2)
+
+[node name="GuildHall" type="Node3D" unique_id=167152619]
+script = ExtResource("1_jbshg")
+display_name = "the Courier Guild Hall"
+exit_interactable = NodePath("Exit/Interactable")
+
+[node name="Floor" type="Node3D" parent="." unique_id=26646761]
+
+[node name="Floor_WoodDark" type="Node3D" parent="Floor" unique_id=1068152744 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -3)
+
+[node name="Floor_WoodDark2" type="Node3D" parent="Floor" unique_id=2065336118 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -1)
+
+[node name="Floor_WoodDark3" type="Node3D" parent="Floor" unique_id=434224852 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 1)
+
+[node name="Floor_WoodDark4" type="Node3D" parent="Floor" unique_id=381238247 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 3)
+
+[node name="Floor_WoodDark5" type="Node3D" parent="Floor" unique_id=3311794 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -3)
+
+[node name="Floor_WoodDark6" type="Node3D" parent="Floor" unique_id=1714037615 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -1)
+
+[node name="Floor_WoodDark7" type="Node3D" parent="Floor" unique_id=707844251 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+
+[node name="Floor_WoodDark8" type="Node3D" parent="Floor" unique_id=1555822644 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 3)
+
+[node name="Floor_WoodDark9" type="Node3D" parent="Floor" unique_id=1491871316 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
+
+[node name="Floor_WoodDark10" type="Node3D" parent="Floor" unique_id=974364850 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+
+[node name="Floor_WoodDark11" type="Node3D" parent="Floor" unique_id=1259196659 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+
+[node name="Floor_WoodDark12" type="Node3D" parent="Floor" unique_id=113933415 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+
+[node name="Floor_WoodDark13" type="Node3D" parent="Floor" unique_id=2024066747 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -3)
+
+[node name="Floor_WoodDark14" type="Node3D" parent="Floor" unique_id=247809317 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -1)
+
+[node name="Floor_WoodDark15" type="Node3D" parent="Floor" unique_id=1675023480 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
+
+[node name="Floor_WoodDark16" type="Node3D" parent="Floor" unique_id=526452685 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 3)
+
+[node name="Floor_WoodDark17" type="Node3D" parent="Floor" unique_id=1110601517 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -3)
+
+[node name="Floor_WoodDark18" type="Node3D" parent="Floor" unique_id=1409337365 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -1)
+
+[node name="Floor_WoodDark19" type="Node3D" parent="Floor" unique_id=254413955 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 1)
+
+[node name="Floor_WoodDark20" type="Node3D" parent="Floor" unique_id=459570983 instance=ExtResource("2_3seyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 3)
+
+[node name="Walls" type="Node3D" parent="." unique_id=2029358507]
+
+[node name="Wall_Plaster_Straight" type="Node3D" parent="Walls" unique_id=1009423158 instance=ExtResource("3_mplif")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -3.7)
+
+[node name="Wall_Plaster_Door_Round" type="Node3D" parent="Walls" unique_id=2010188462 instance=ExtResource("4_wr827")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -3.7)
+
+[node name="Wall_Plaster_Straight2" type="Node3D" parent="Walls" unique_id=1182468541 instance=ExtResource("3_mplif")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.7)
+
+[node name="Wall_Plaster_Window_Wide_Round" type="Node3D" parent="Walls" unique_id=646763526 instance=ExtResource("5_ai6lj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -3.7)
+
+[node name="Window_Wide_Round1" type="Node3D" parent="Walls/Wall_Plaster_Window_Wide_Round" unique_id=1985876714 instance=ExtResource("6_svhlr")]
+
+[node name="Daylight" type="MeshInstance3D" parent="Walls/Wall_Plaster_Window_Wide_Round" unique_id=1117056911]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.88, -0.36)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_0s1s3")
+
+[node name="Wall_Plaster_Straight3" type="Node3D" parent="Walls" unique_id=1605962471 instance=ExtResource("3_mplif")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -3.7)
+
+[node name="Wall_Plaster_Straight4" type="Node3D" parent="Walls" unique_id=1641433319 instance=ExtResource("3_mplif")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.7, 0, -3)
+
+[node name="Wall_Plaster_Window_Wide_Round2" type="Node3D" parent="Walls" unique_id=1540785842 instance=ExtResource("5_ai6lj")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.7, 0, -1)
+
+[node name="Window_Wide_Round1" type="Node3D" parent="Walls/Wall_Plaster_Window_Wide_Round2" unique_id=1213553570 instance=ExtResource("6_svhlr")]
+
+[node name="Daylight" type="MeshInstance3D" parent="Walls/Wall_Plaster_Window_Wide_Round2" unique_id=1976627018]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.88, -0.36)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_l8m7c")
+
+[node name="Wall_Plaster_Straight5" type="Node3D" parent="Walls" unique_id=1331571861 instance=ExtResource("3_mplif")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.7, 0, 1)
+
+[node name="Wall_Plaster_Window_Wide_Round3" type="Node3D" parent="Walls" unique_id=1606944970 instance=ExtResource("5_ai6lj")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.7, 0, 3)
+
+[node name="Window_Wide_Round1" type="Node3D" parent="Walls/Wall_Plaster_Window_Wide_Round3" unique_id=598295282 instance=ExtResource("6_svhlr")]
+
+[node name="Daylight" type="MeshInstance3D" parent="Walls/Wall_Plaster_Window_Wide_Round3" unique_id=1819318510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.88, -0.36)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_vk0f0")
+
+[node name="ExitDoor" type="Node3D" parent="Walls" unique_id=377894135 instance=ExtResource("7_okjwv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.52, 0, -3.88)
+
+[node name="LowWallSouth" type="MeshInstance3D" parent="." unique_id=859470383]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 3.9)
+mesh = SubResource("BoxMesh_yi2xo")
+
+[node name="LowWallEast" type="MeshInstance3D" parent="." unique_id=198875354]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 0.375, 0)
+mesh = SubResource("BoxMesh_veboc")
+
+[node name="CapSouth" type="MeshInstance3D" parent="." unique_id=797657804]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.79, 3.9)
+mesh = SubResource("BoxMesh_bmtus")
+
+[node name="CapEast" type="MeshInstance3D" parent="." unique_id=362052943]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 0.79, 0)
+mesh = SubResource("BoxMesh_rh4lv")
+
+[node name="RoomCollision" type="StaticBody3D" parent="." unique_id=388100234]
+
+[node name="Floor" type="CollisionShape3D" parent="RoomCollision" unique_id=524480840]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("BoxShape3D_7wcxk")
+
+[node name="North" type="CollisionShape3D" parent="RoomCollision" unique_id=852707568]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, -3.9)
+shape = SubResource("BoxShape3D_gdpdf")
+
+[node name="South" type="CollisionShape3D" parent="RoomCollision" unique_id=2101957313]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 4)
+shape = SubResource("BoxShape3D_8s8jr")
+
+[node name="West" type="CollisionShape3D" parent="RoomCollision" unique_id=1291010066]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.9, 1.55, 0)
+shape = SubResource("BoxShape3D_x1886")
+
+[node name="East" type="CollisionShape3D" parent="RoomCollision" unique_id=1367881793]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.55, 0)
+shape = SubResource("BoxShape3D_wgt0y")
+
+[node name="Exit" type="Node3D" parent="." unique_id=278503067]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -3.3)
+
+[node name="Interactable" type="Area3D" parent="Exit" unique_id=754385667]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("8_7lyfa")
+
+[node name="@CollisionShape3D@4" type="CollisionShape3D" parent="Exit/Interactable" unique_id=1960510127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_p2wpq")
+
+[node name="DoorRug" type="MeshInstance3D" parent="." unique_id=17965327]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.012, -2.7)
+mesh = SubResource("BoxMesh_tm303")
+
+[node name="Spawns" type="Node3D" parent="." unique_id=1643621380]
+
+[node name="Entry" type="Marker3D" parent="Spawns" unique_id=351223235]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.05, -2.4)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1665974157]
+environment = SubResource("Environment_mdd6f")
+
+[node name="WindowLight" type="DirectionalLight3D" parent="." unique_id=2030624073]
+transform = Transform3D(0.81915206, 0.43938506, -0.36868784, 0, 0.64278764, 0.76604444, 0.57357645, -0.62750685, 0.5265408, 0, 0, 0)
+light_color = Color(1, 0.9, 0.75, 1)
+light_energy = 0.55
+shadow_enabled = true
+
+[node name="Props" type="Node3D" parent="." unique_id=395282245]
+
+[node name="Table_Large" type="Node3D" parent="Props" unique_id=1188658387 instance=ExtResource("9_l7qd7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -1.4)
+
+[node name="Table_LargeCollider" type="StaticBody3D" parent="Props" unique_id=1344724335]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -1.4)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/Table_LargeCollider" unique_id=222011284]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
+shape = SubResource("BoxShape3D_8l25f")
+
+[node name="Scroll_1" type="Node3D" parent="Props" unique_id=522782728 instance=ExtResource("10_fbw4s")]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, -0.4, 0.82, -1.5)
+
+[node name="Book_Stack_1" type="Node3D" parent="Props" unique_id=102296708 instance=ExtResource("11_sd4ac")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.82, -1.6)
+
+[node name="CandleStick_Triple" type="Node3D" parent="Props" unique_id=1283795470 instance=ExtResource("12_qa6si")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.82, -1.7)
+
+[node name="Chair_1" type="Node3D" parent="Props" unique_id=2009504567 instance=ExtResource("13_n2ape")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -2.4)
+
+[node name="Bookcase_2" type="Node3D" parent="Props" unique_id=1303558667 instance=ExtResource("14_mpy18")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -3.65)
+
+[node name="Bookcase_2Collider" type="StaticBody3D" parent="Props" unique_id=109000568]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -3.65)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/Bookcase_2Collider" unique_id=755930230]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+shape = SubResource("BoxShape3D_87gvo")
+
+[node name="Bookcase_3" type="Node3D" parent="Props" unique_id=1416654645 instance=ExtResource("14_mpy18")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -3.65)
+
+[node name="@StaticBody3D@5" type="StaticBody3D" parent="Props" unique_id=456432131]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -3.65)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/@StaticBody3D@5" unique_id=2004560552]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+shape = SubResource("BoxShape3D_eoe8v")
+
+[node name="Cabinet" type="Node3D" parent="Props" unique_id=1568312991 instance=ExtResource("15_abpee")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.65, 0, 0.5)
+
+[node name="CabinetCollider" type="StaticBody3D" parent="Props" unique_id=904605777]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.65, 0, 0.5)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/CabinetCollider" unique_id=119175164]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_0jyln")
+
+[node name="Crate_Wooden" type="Node3D" parent="Props" unique_id=1216490835 instance=ExtResource("16_wd64l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 2.6)
+
+[node name="Crate_WoodenCollider" type="StaticBody3D" parent="Props" unique_id=264665528]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 2.6)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/Crate_WoodenCollider" unique_id=941417179]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("BoxShape3D_sne4d")
+
+[node name="Crate_Wooden2" type="Node3D" parent="Props" unique_id=2131755709 instance=ExtResource("16_wd64l")]
+transform = Transform3D(0.90630776, 0, 0.42261827, 0, 1, 0, -0.42261827, 0, 0.90630776, -3.4, 0, 3.1)
+
+[node name="@StaticBody3D@6" type="StaticBody3D" parent="Props" unique_id=659013214]
+transform = Transform3D(0.90630776, 0, 0.42261827, 0, 1, 0, -0.42261827, 0, 0.90630776, -3.4, 0, 3.1)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/@StaticBody3D@6" unique_id=306537319]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("BoxShape3D_nwwvt")
+
+[node name="Bag" type="Node3D" parent="Props" unique_id=1634317114 instance=ExtResource("17_ll8ok")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.8, 2.6)
+
+[node name="Bench" type="Node3D" parent="Props" unique_id=1641656605 instance=ExtResource("18_xbhwj")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 3.6, 0, 1.6)
+
+[node name="BenchCollider" type="StaticBody3D" parent="Props" unique_id=1488852568]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 3.6, 0, 1.6)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/BenchCollider" unique_id=745193478]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("BoxShape3D_7l4tv")
+
+[node name="Banner_1" type="Node3D" parent="Props" unique_id=1513712614 instance=ExtResource("19_3deiq")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.8, 1.9, -2)
+
+[node name="Chandelier" type="Node3D" parent="Props" unique_id=1259302825 instance=ExtResource("20_mmea2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 3.9, 0.6)
+
+[node name="RoomLight" type="OmniLight3D" parent="." unique_id=562076787]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 2.6, 0.6)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 1.6
+shadow_enabled = true
+omni_range = 8.0
+
+[node name="NPCs" type="Node3D" parent="." unique_id=1960819642]
+
+[node name="GuildClerkIvy" type="StaticBody3D" parent="NPCs" unique_id=694393071 instance=ExtResource("21_qguhx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -2.4)
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("22_flytj")
+npc_id = &"guild_clerk"
+npc_name = "Guild Clerk Ivy"
+lines = PackedStringArray("Welcome to the Courier Guild hall. Mind the ink, it never dries.", "Every sealed letter in Willowmere passes over this desk.", "Bram runs the counter outside; the private post goes through me.")
+body_color = Color(0.35, 0.3, 0.6, 1)
+
+[node name="SealedLetterPickup" type="Node3D" parent="." unique_id=1712490226 instance=ExtResource("23_rvcbw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0, -0.5)
+script = ExtResource("24_mrp26")
+package_definition = ExtResource("25_pri4q")

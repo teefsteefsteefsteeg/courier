@@ -166,7 +166,7 @@ func _deliver_to(npc: NPC, stand_toward: Vector3, quest_id: StringName) -> void:
 func _test_services() -> void:
 	print("[Gameplay services]")
 	_check(get_nodes_in_group(QuestManager.GROUP).size() == 1, "exactly one QuestManager in the village")
-	_check(manager != null and manager.get_quest_ids().size() == 3, "quest data loaded (%d quests)" % (manager.get_quest_ids().size() if manager else 0))
+	_check(manager != null and manager.get_quest_ids().size() == 4, "quest data loaded (%d quests: three in the village, The Sealed Letter indoors)" % (manager.get_quest_ids().size() if manager else 0))
 	_check(wallet != null and wallet.gold == 0, "courier wallet present and empty")
 	_check(level.get_child(0).name == &"GameplayServices", "services are the first child, ready before pickups query them")
 
@@ -202,17 +202,27 @@ func _test_quest_data_resolves() -> void:
 	var npc_ids := {}
 	for npc in level.get_node("NPCs").get_children():
 		npc_ids[(npc as NPC).npc_id] = true
+	# Phase 8: NPCs and pickups also live in the enterable houses (WorldRouter.INTERIORS).
+	var interior_pickups := {}
+	var router_script := load("res://scripts/phase6/world_router.gd") as GDScript
+	for path: String in (router_script.get_script_constant_map()["INTERIORS"] as Dictionary).values():
+		var room := (load(path) as PackedScene).instantiate()
+		for npc in room.find_children("*", "NPC", true, false):
+			npc_ids[(npc as NPC).npc_id] = true
+		for pickup in room.find_children("*", "PackagePickup", true, false):
+			interior_pickups[(pickup as PackagePickup).package_definition.package_id] = true
+		room.free()
 	var destinations := {}
 	for area in level.find_children("*", "DestinationArea", true, false):
 		destinations[(area as DestinationArea).destination_id] = true
 	for quest_id in manager.get_quest_ids():
 		var definition := manager.get_definition(quest_id)
-		_check(npc_ids.has(definition.giver_id), "%s giver '%s' is in the village" % [quest_id, definition.giver_id])
-		_check(_pickup_for(definition.package.package_id) != null, "%s package '%s' has a pickup" % [quest_id, definition.package.package_id])
+		_check(npc_ids.has(definition.giver_id), "%s giver '%s' is in the village or a house" % [quest_id, definition.giver_id])
+		_check(_pickup_for(definition.package.package_id) != null or interior_pickups.has(definition.package.package_id), "%s package '%s' has a pickup" % [quest_id, definition.package.package_id])
 		for objective in definition.objectives:
 			match objective.type:
 				QuestObjective.Type.TALK_TO_NPC, QuestObjective.Type.DELIVER_PACKAGE:
-					_check(npc_ids.has(objective.target_id), "%s NPC target '%s' is in the village" % [quest_id, objective.target_id])
+					_check(npc_ids.has(objective.target_id), "%s NPC target '%s' is in the village or a house" % [quest_id, objective.target_id])
 				QuestObjective.Type.REACH_DESTINATION:
 					_check(destinations.has(objective.target_id), "%s destination '%s' is in the village" % [quest_id, objective.target_id])
 
@@ -241,7 +251,7 @@ func _test_board_window_is_modal() -> void:
 	_check(board_ui.is_in_group(QuestJournal.MODAL_GROUP), "open board window is modal")
 	_check(not prompt.panel.visible, "interaction prompt hidden under the board window")
 	_check(not player.input_enabled, "player input paused")
-	_check(board_ui.accept_buttons.size() == 3, "board lists the three contracts")
+	_check(board_ui.accept_buttons.size() == 4, "board lists the four contracts")
 
 	_press(&"toggle_journal")
 	await _frames(2)

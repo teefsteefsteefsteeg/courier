@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="2_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Barbarian.glb" id="3_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="4_anim"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/items/sword_1handed.gltf" id="6_item"]
+
+[node name="ForgemasterTorvin" instance=ExtResource("1_npc")]
+npc_name = "Forgemaster Torvin"
+lines = PackedStringArray("The forge never sleeps, and neither does iron ore.", "Bring me ore and coin and I'll fold another edge into that blade.", "Brenna sells the steel out front. I make it sing back here.")
+body_color = Color(0.55, 0.35, 0.25, 1)
+npc_id = &"forgemaster_torvin"
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("2_char")
+model = ExtResource("3_model")
+held_item = ExtResource("6_item")
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("4_anim")
+character = NodePath("../Visual/Character")

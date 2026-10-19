@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="QuestDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/quests/quest_definition.gd" id="1_def"]
+[ext_resource type="Script" path="res://scripts/quests/quest_objective.gd" id="2_obj"]
+[ext_resource type="Script" path="res://scripts/quests/quest_reward.gd" id="3_rew"]
+[ext_resource type="Resource" path="res://data/packages/pkg_sealed_letter.tres" id="4_pkg"]
+
+[sub_resource type="Resource" id="Objective_talk"]
+script = ExtResource("2_obj")
+target_id = &"guild_clerk"
+description = "Talk to Guild Clerk Ivy in the Courier Guild hall (the door at the back of the post office)"
+completion_line = "A private letter for Granny Hollis at Rose Cottage. It's on my desk; mind the seal."
+
+[sub_resource type="Resource" id="Objective_pickup"]
+script = ExtResource("2_obj")
+type = 1
+target_id = &"pkg_sealed_letter"
+description = "Pick up the Sealed Letter from Ivy's desk"
+
+[sub_resource type="Resource" id="Objective_deliver"]
+script = ExtResource("2_obj")
+type = 3
+target_id = &"granny_hollis"
+description = "Deliver the letter to Granny Hollis inside Rose Cottage"
+completion_line = "From my grandson! Oh, sit down, dear. The bed's yours whenever the road wears you out."
+
+[sub_resource type="Resource" id="Reward"]
+script = ExtResource("3_rew")
+gold = 70
+reputation = 6
+
+[resource]
+script = ExtResource("1_def")
+quest_id = &"q004_sealed_letter"
+title = "The Sealed Letter"
+description = "The Guild's private post: a sealed letter for Granny Hollis at Rose Cottage."
+giver_id = &"guild_clerk"
+package = ExtResource("4_pkg")
+recipient_name = "Granny Hollis"
+destination_name = "Rose Cottage"
+objectives = Array[ExtResource("2_obj")]([SubResource("Objective_talk"), SubResource("Objective_pickup"), SubResource("Objective_deliver")])
+reward = SubResource("Reward")
+recipient_waiting_line = "A letter for me? The Guild clerk does take her time."
+recipient_after_line = "I read it twice already. Rest a while if you need to, dear."

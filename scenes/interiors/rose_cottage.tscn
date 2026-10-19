@@ -1,0 +1,386 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/interior_room.gd" id="1_rpbeb"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Floor_WoodDark.gltf" id="2_t5fgy"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_Straight.gltf" id="3_qygs7"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_Door_Round.gltf" id="4_iy0xk"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Wall_Plaster_Window_Wide_Round.gltf" id="5_dtsln"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Window_Wide_Round1.gltf" id="6_558ak"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Door_1_Round.gltf" id="7_gvjl7"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="8_22v5d"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Bed_Twin1.gltf" id="9_qqi8o"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Nightstand_Shelf.gltf" id="10_3kb8u"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Candle_1.gltf" id="11_44wrc"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Table_Large.gltf" id="12_3jl57"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Chair_1.gltf" id="13_bpvv3"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Mug.gltf" id="14_ryniw"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Table_Plate.gltf" id="15_3mw1u"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Pot_1.gltf" id="16_5soam"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Cauldron.gltf" id="17_tlfdk"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Shelf_Small_Bottles.gltf" id="18_ucss5"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Bookcase_2.gltf" id="19_q7aeg"]
+[ext_resource type="PackedScene" path="res://assets/models/fantasy_props/Vase_2.gltf" id="20_5dbej"]
+[ext_resource type="Script" path="res://scripts/world/hearth_fire.gd" id="21_3nxy8"]
+[ext_resource type="PackedScene" path="res://scenes/npc/characters/granny_hollis.tscn" id="22_3j1df"]
+[ext_resource type="Script" path="res://scripts/npc/npc.gd" id="23_l23a1"]
+[ext_resource type="Script" path="res://scripts/world/rest_bed.gd" id="24_twyk7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vedyq"]
+shading_mode = 0
+albedo_color = Color(0.78, 0.88, 1, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_hume4"]
+material = SubResource("StandardMaterial3D_vedyq")
+size = Vector2(1.3, 1.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bhafg"]
+shading_mode = 0
+albedo_color = Color(0.78, 0.88, 1, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_jn7rv"]
+material = SubResource("StandardMaterial3D_bhafg")
+size = Vector2(1.3, 1.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_piruh"]
+albedo_color = Color(0.7, 0.42, 0.36, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_ymuod"]
+material = SubResource("StandardMaterial3D_piruh")
+size = Vector3(8, 0.75, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_txsn5"]
+albedo_color = Color(0.7, 0.42, 0.36, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_5wc6p"]
+material = SubResource("StandardMaterial3D_txsn5")
+size = Vector3(0.2, 0.75, 6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rp8pg"]
+albedo_color = Color(0.45499998, 0.27299997, 0.234, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_io241"]
+material = SubResource("StandardMaterial3D_rp8pg")
+size = Vector3(8.1, 0.08, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b1rx2"]
+albedo_color = Color(0.45499998, 0.27299997, 0.234, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_s0bup"]
+material = SubResource("StandardMaterial3D_b1rx2")
+size = Vector3(0.3, 0.08, 6.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_afbd6"]
+size = Vector3(8, 0.2, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sygea"]
+size = Vector3(8, 3.1, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tbk02"]
+size = Vector3(8, 3.1, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7c85y"]
+size = Vector3(0.4, 3.1, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ts1dw"]
+size = Vector3(0.4, 3.1, 6)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_exnt7"]
+radius = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_54ws0"]
+albedo_color = Color(0.55, 0.22, 0.2, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_imh0q"]
+material = SubResource("StandardMaterial3D_54ws0")
+size = Vector3(1.4, 0.02, 1)
+
+[sub_resource type="Environment" id="Environment_3p5nx"]
+background_mode = 1
+background_color = Color(0.06, 0.045, 0.035, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 0.86, 0.72, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
+ssao_enabled = true
+glow_enabled = true
+glow_intensity = 0.35
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_baue6"]
+size = Vector3(1.9, 0.8, 2.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p7l5c"]
+size = Vector3(1.1, 0.84, 2.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_a3was"]
+size = Vector3(1, 0.9, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_b02i6"]
+size = Vector3(0.5, 2.6, 1.5)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_5l4v5"]
+radius = 0.9
+
+[node name="RoseCottage" type="Node3D" unique_id=1599156996]
+script = ExtResource("1_rpbeb")
+display_name = "Rose Cottage"
+exit_interactable = NodePath("Exit/Interactable")
+
+[node name="Floor" type="Node3D" parent="." unique_id=1548266036]
+
+[node name="Floor_WoodDark" type="Node3D" parent="Floor" unique_id=1068152744 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -2)
+
+[node name="Floor_WoodDark2" type="Node3D" parent="Floor" unique_id=1081032509 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 0)
+
+[node name="Floor_WoodDark3" type="Node3D" parent="Floor" unique_id=478949715 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 2)
+
+[node name="Floor_WoodDark4" type="Node3D" parent="Floor" unique_id=2095857526 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -2)
+
+[node name="Floor_WoodDark5" type="Node3D" parent="Floor" unique_id=359919035 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
+
+[node name="Floor_WoodDark6" type="Node3D" parent="Floor" unique_id=1619256571 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 2)
+
+[node name="Floor_WoodDark7" type="Node3D" parent="Floor" unique_id=1569598317 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -2)
+
+[node name="Floor_WoodDark8" type="Node3D" parent="Floor" unique_id=1621002734 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+
+[node name="Floor_WoodDark9" type="Node3D" parent="Floor" unique_id=24809984 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
+
+[node name="Floor_WoodDark10" type="Node3D" parent="Floor" unique_id=806169907 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -2)
+
+[node name="Floor_WoodDark11" type="Node3D" parent="Floor" unique_id=1100192805 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0)
+
+[node name="Floor_WoodDark12" type="Node3D" parent="Floor" unique_id=921080738 instance=ExtResource("2_t5fgy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 2)
+
+[node name="Walls" type="Node3D" parent="." unique_id=980172875]
+
+[node name="Wall_Plaster_Straight" type="Node3D" parent="Walls" unique_id=1009423158 instance=ExtResource("3_qygs7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, -2.7)
+
+[node name="Wall_Plaster_Door_Round" type="Node3D" parent="Walls" unique_id=2010188462 instance=ExtResource("4_iy0xk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -2.7)
+
+[node name="Wall_Plaster_Straight2" type="Node3D" parent="Walls" unique_id=668011760 instance=ExtResource("3_qygs7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -2.7)
+
+[node name="Wall_Plaster_Window_Wide_Round" type="Node3D" parent="Walls" unique_id=646763526 instance=ExtResource("5_dtsln")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -2.7)
+
+[node name="Window_Wide_Round1" type="Node3D" parent="Walls/Wall_Plaster_Window_Wide_Round" unique_id=1985876714 instance=ExtResource("6_558ak")]
+
+[node name="Daylight" type="MeshInstance3D" parent="Walls/Wall_Plaster_Window_Wide_Round" unique_id=1113291298]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.88, -0.36)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_hume4")
+
+[node name="Wall_Plaster_Straight3" type="Node3D" parent="Walls" unique_id=987546348 instance=ExtResource("3_qygs7")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -3.7, 0, -2)
+
+[node name="Wall_Plaster_Window_Wide_Round2" type="Node3D" parent="Walls" unique_id=406565638 instance=ExtResource("5_dtsln")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -3.7, 0, 0)
+
+[node name="Window_Wide_Round1" type="Node3D" parent="Walls/Wall_Plaster_Window_Wide_Round2" unique_id=705769168 instance=ExtResource("6_558ak")]
+
+[node name="Daylight" type="MeshInstance3D" parent="Walls/Wall_Plaster_Window_Wide_Round2" unique_id=1905735302]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.88, -0.36)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_jn7rv")
+
+[node name="Wall_Plaster_Straight4" type="Node3D" parent="Walls" unique_id=1876960591 instance=ExtResource("3_qygs7")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -3.7, 0, 2)
+
+[node name="ExitDoor" type="Node3D" parent="Walls" unique_id=377894135 instance=ExtResource("7_gvjl7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.52, 0, -2.88)
+
+[node name="LowWallSouth" type="MeshInstance3D" parent="." unique_id=1616761589]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 2.9)
+mesh = SubResource("BoxMesh_ymuod")
+
+[node name="LowWallEast" type="MeshInstance3D" parent="." unique_id=1332510333]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 0.375, 0)
+mesh = SubResource("BoxMesh_5wc6p")
+
+[node name="CapSouth" type="MeshInstance3D" parent="." unique_id=1781259726]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.79, 2.9)
+mesh = SubResource("BoxMesh_io241")
+
+[node name="CapEast" type="MeshInstance3D" parent="." unique_id=531468212]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 0.79, 0)
+mesh = SubResource("BoxMesh_s0bup")
+
+[node name="RoomCollision" type="StaticBody3D" parent="." unique_id=66923264]
+
+[node name="Floor" type="CollisionShape3D" parent="RoomCollision" unique_id=1733599189]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("BoxShape3D_afbd6")
+
+[node name="North" type="CollisionShape3D" parent="RoomCollision" unique_id=910143457]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, -2.9)
+shape = SubResource("BoxShape3D_sygea")
+
+[node name="South" type="CollisionShape3D" parent="RoomCollision" unique_id=104751048]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 3)
+shape = SubResource("BoxShape3D_tbk02")
+
+[node name="West" type="CollisionShape3D" parent="RoomCollision" unique_id=282146276]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.9, 1.55, 0)
+shape = SubResource("BoxShape3D_7c85y")
+
+[node name="East" type="CollisionShape3D" parent="RoomCollision" unique_id=961602265]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.55, 0)
+shape = SubResource("BoxShape3D_ts1dw")
+
+[node name="Exit" type="Node3D" parent="." unique_id=687612914]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -2.3)
+
+[node name="Interactable" type="Area3D" parent="Exit" unique_id=1627909958]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("8_22v5d")
+
+[node name="@CollisionShape3D@7" type="CollisionShape3D" parent="Exit/Interactable" unique_id=246657600]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_exnt7")
+
+[node name="DoorRug" type="MeshInstance3D" parent="." unique_id=122522811]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.012, -1.7)
+mesh = SubResource("BoxMesh_imh0q")
+
+[node name="Spawns" type="Node3D" parent="." unique_id=123994611]
+
+[node name="Entry" type="Marker3D" parent="Spawns" unique_id=2036433439]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.05, -1.4)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=13806522]
+environment = SubResource("Environment_3p5nx")
+
+[node name="WindowLight" type="DirectionalLight3D" parent="." unique_id=211998705]
+transform = Transform3D(0.81915206, 0.43938506, -0.36868784, 0, 0.64278764, 0.76604444, 0.57357645, -0.62750685, 0.5265408, 0, 0, 0)
+light_color = Color(1, 0.9, 0.75, 1)
+light_energy = 0.55
+shadow_enabled = true
+
+[node name="Props" type="Node3D" parent="." unique_id=169874410]
+
+[node name="Bed_Twin1" type="Node3D" parent="Props" unique_id=101541066 instance=ExtResource("9_qqi8o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 0, -1.5)
+
+[node name="Bed_Twin1Collider" type="StaticBody3D" parent="Props" unique_id=1314973896]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 0, -1.5)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/Bed_Twin1Collider" unique_id=865593377]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("BoxShape3D_baue6")
+
+[node name="Nightstand_Shelf" type="Node3D" parent="Props" unique_id=60933687 instance=ExtResource("10_3kb8u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0, -2.5)
+
+[node name="Candle_1" type="Node3D" parent="Props" unique_id=353059702 instance=ExtResource("11_44wrc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.62, -2.5)
+
+[node name="Table_Large" type="Node3D" parent="Props" unique_id=1188658387 instance=ExtResource("12_3jl57")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.4, 0, 0.6)
+
+[node name="Table_LargeCollider" type="StaticBody3D" parent="Props" unique_id=626100468]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.4, 0, 0.6)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/Table_LargeCollider" unique_id=1481068404]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 0)
+shape = SubResource("BoxShape3D_p7l5c")
+
+[node name="Chair_1" type="Node3D" parent="Props" unique_id=2009504567 instance=ExtResource("13_bpvv3")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.6, 0, 0.2)
+
+[node name="Chair_2" type="Node3D" parent="Props" unique_id=1425066758 instance=ExtResource("13_bpvv3")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.2, 0, 1)
+
+[node name="Mug" type="Node3D" parent="Props" unique_id=11005395 instance=ExtResource("14_ryniw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 0.82, 0.3)
+
+[node name="Table_Plate" type="Node3D" parent="Props" unique_id=584356687 instance=ExtResource("15_3mw1u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.82, 1)
+
+[node name="Pot_1" type="Node3D" parent="Props" unique_id=13449613 instance=ExtResource("16_5soam")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.82, -0.1)
+
+[node name="Cauldron" type="Node3D" parent="Props" unique_id=275471606 instance=ExtResource("17_tlfdk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0, -2.1)
+
+[node name="CauldronCollider" type="StaticBody3D" parent="Props" unique_id=238010152]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0, -2.1)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/CauldronCollider" unique_id=1568248559]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("BoxShape3D_a3was")
+
+[node name="Shelf_Small_Bottles" type="Node3D" parent="Props" unique_id=1471681421 instance=ExtResource("18_ucss5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 1.4, -2.75)
+
+[node name="Bookcase_2" type="Node3D" parent="Props" unique_id=1303558667 instance=ExtResource("19_q7aeg")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -3.65, 0, 1.6)
+
+[node name="Bookcase_2Collider" type="StaticBody3D" parent="Props" unique_id=691881989]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -3.65, 0, 1.6)
+
+[node name="Shape" type="CollisionShape3D" parent="Props/Bookcase_2Collider" unique_id=2117718136]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+shape = SubResource("BoxShape3D_b02i6")
+
+[node name="Vase_2" type="Node3D" parent="Props" unique_id=1747455224 instance=ExtResource("20_5dbej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 2.3)
+
+[node name="KitchenFire" type="Node3D" parent="." unique_id=505221835]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.05, -2.1)
+script = ExtResource("21_3nxy8")
+size = 0.45
+light_energy = 1.4
+
+[node name="RoomLight" type="OmniLight3D" parent="." unique_id=1783906530]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+light_color = Color(1, 0.82, 0.62, 1)
+light_energy = 1.2
+shadow_enabled = true
+omni_range = 7.0
+
+[node name="NPCs" type="Node3D" parent="." unique_id=1581547119]
+
+[node name="GrannyHollis" type="StaticBody3D" parent="NPCs" unique_id=960665340 instance=ExtResource("22_3j1df")]
+transform = Transform3D(-0.9396926, 0, 0.3420202, 0, 1, 0, -0.3420202, 0, -0.9396926, 0.6, 0, -0.9)
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("23_l23a1")
+npc_id = &"granny_hollis"
+npc_name = "Granny Hollis"
+lines = PackedStringArray("Come in, come in, wipe your boots. The kettle\'s always on.", "You look worn thin, dear. Have a lie-down on the bed before you go.", "My grandson writes from the city. Letters are the only thing that crosses that road on time.")
+body_color = Color(0.7, 0.5, 0.55, 1)
+
+[node name="RestBed" type="Node3D" parent="." unique_id=2075885211]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -0.9)
+script = ExtResource("24_twyk7")
+
+[node name="Interactable" type="Area3D" parent="RestBed" unique_id=1653389141]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("8_22v5d")
+
+[node name="@CollisionShape3D@8" type="CollisionShape3D" parent="RestBed/Interactable" unique_id=952090002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_5l4v5")

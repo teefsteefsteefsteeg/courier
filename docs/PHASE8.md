@@ -27,7 +27,7 @@ regeneration, dragon companion and flight).
 | 2 | Resource respawn without countdowns; tools in every map | **Done** (below) |
 | 3 | Weapon enhancement VFX rework (+1 silver spark .. +5 legendary elemental) | **Done** (below) |
 | 4 | Animated HUD avatar | **Done** (below) |
-| 5 | Enterable houses (Armory, Post Office, one home) with NPCs | not started |
+| 5 | Enterable houses (Armory, Post Office, one home) with NPCs | **Done** (below) |
 | 6 | Food market, consumables, food slots 6-0, MP and rage, HP regeneration | not started |
 | 7 | Staff spells and weapon ultimates (Z / X / C) | not started |
 | 8 | New region: waterfall, river, bridge, fishing spot, gateway | not started |
@@ -149,3 +149,39 @@ held model by `EnhancementVisuals`; `elements` lists them for tests):
   budget, idle motion, glance, flinch + red, low + sag + pulse, recover, cheer).
 - Rendered: `tests/capture_phase8_avatar.gd` -> `docs/validation/phase8/28..32` (nine
   portrait crops over 2.7 s of idling, all different; idle HUD; hit; low health; cheer).
+
+## 5. Enterable houses and interior NPCs
+- **Doors** (`scripts/world/house_door.gd`, `village.tscn` `HouseDoors/`): "[E] Enter ..." at
+  - the Armory's entrance (4.4, -14.35) -> **Brenna's Forge** (`interior_armory`);
+  - a new door in the Post Office's north wall (-17.5, -10.55) -> **the Courier Guild Hall**
+    (`interior_guild_hall`; the post office itself was already an open walk-in hall);
+  - Rose Cottage's front door (-9.53, 16.2) -> **Rose Cottage** (`interior_rose_cottage`).
+- **Routing:** interiors are `WorldRouter` regions (`INTERIORS`): the village is paused and
+  hidden, the player, services, HUD, inventory and a carried package stay; the router keeps
+  the door's Exit marker and puts the courier back there on leaving ("[E] Leave ...", the
+  room's exit door, `InteriorRoom.leave`). Indoors there is no minimap or world map and the
+  village's fog of war is untouched; a knockout indoors returns the courier outside the door.
+- **Rooms** (generated: `tools/generate_interiors.gd` -> `scenes/interiors/*.tscn`, root
+  script `scripts/world/interior_room.gd`): MegaKit floor and walls, glazed windows with a
+  daylight panel, full-height north/west walls and low south/east walls (the iso camera
+  looks from +X/+Z, so nothing tall stands between it and the courier), full-height
+  invisible colliders, warm lights and an environment of their own. Furniture: Quaternius
+  Fantasy Props MegaKit (CC0), copied by `tools/copy_fantasy_props.py` to
+  `assets/models/fantasy_props/` (textures downscaled to 1024 px).
+- **People and purpose:**
+  - *Forgemaster Torvin* (Brenna's Forge, hearth fire `scripts/world/hearth_fire.gd`): his
+    Merchant (attached at runtime by `InteriorRoom`, catalog `data/shops/forge.tres`) opens
+    the shop with only the Enhance section: weapons, shields and armor for gold and ore.
+  - *Guild Clerk Ivy* (Courier Guild Hall): giver of the new contract **The Sealed Letter**
+    (`data/quests/q004_sealed_letter.tres`, 70 g, 6 rep): talk to Ivy, take the letter from
+    her desk (`pkg_sealed_letter`), deliver it to Granny Hollis.
+  - *Granny Hollis* (Rose Cottage): the letter's recipient, and her spare bed
+    (`scripts/world/rest_bed.gd`) restores full health ("You're not tired." at full).
+  - NPCs face the courier while talking (the existing NPC turn).
+- Tests: new `tests/phase8_interiors_tests.gd` (58: doors and doorsteps, real E in and out,
+  same door on return, things carried along, village paused, no maps, walls hold, nothing
+  tall on the camera side, one NPC and lights per room, the whole Sealed Letter contract,
+  Ivy turns to the courier, Torvin enhances for gold and ore, bed heals, knockout inside).
+- Rendered: `tests/capture_phase8_interiors.gd` -> `docs/validation/phase8/33..45` (each door
+  outside, inside, talking, the letter picked up and delivered, resting, Torvin's forge
+  shop, back outside the same door).

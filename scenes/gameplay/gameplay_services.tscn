@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://data/quests/q001_first_delivery.tres" id="4_q1"]
 [ext_resource type="Resource" path="res://data/quests/q002_dragon_egg.tres" id="5_q2"]
 [ext_resource type="Resource" path="res://data/quests/q003_unstable_potion.tres" id="6_q3"]
+[ext_resource type="Resource" path="res://data/quests/q004_sealed_letter.tres" id="56_q4"]
 [ext_resource type="Script" path="res://scripts/inventory/courier_inventory.gd" id="7_inventory"]
 [ext_resource type="Script" path="res://scripts/inventory/equipment_stats.gd" id="8_equipment"]
 [ext_resource type="Script" path="res://scripts/core/save_game.gd" id="9_save"]
@@ -57,7 +58,7 @@ script = ExtResource("2_wallet")
 
 [node name="QuestManager" type="Node" parent="." node_paths=PackedStringArray("wallet")]
 script = ExtResource("1_qm")
-quest_definitions = Array[ExtResource("3_def")]([ExtResource("4_q1"), ExtResource("5_q2"), ExtResource("6_q3")])
+quest_definitions = Array[ExtResource("3_def")]([ExtResource("4_q1"), ExtResource("5_q2"), ExtResource("6_q3"), ExtResource("56_q4")])
 wallet = NodePath("../CourierWallet")
 
 [node name="CourierInventory" type="Node" parent="."]
