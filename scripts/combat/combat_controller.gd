@@ -39,6 +39,9 @@ signal melee_resolved(hits: int)
 ## A swing was cut short before landing (weapon switched, knocked out).
 signal melee_cancelled
 signal arrow_fired(origin: Vector3, direction: Vector3)
+## An arrow or a Magic Bolt left the courier (kind &"arrow" / &"magic_bolt"); effects
+## dress it (AttackEffects) without touching its damage.
+signal projectile_launched(projectile: CombatProjectile, kind: StringName)
 signal dash_started
 ## The primary action was used with a tool in hand (AttackStyle.TOOL).
 signal tool_use_requested
@@ -369,6 +372,7 @@ func try_arrow(direction := Vector3.ZERO) -> bool:
 	_bolt_cooldown_left = arrow_cooldown
 	_attack_cooldown_total = arrow_cooldown
 	arrow_fired.emit(origin, aim)
+	projectile_launched.emit(arrow, &"arrow")
 	return true
 
 
@@ -401,6 +405,7 @@ func try_magic_bolt(direction := Vector3.ZERO) -> bool:
 	_bolt_cooldown_left = bolt_cooldown
 	_attack_cooldown_total = bolt_cooldown
 	magic_bolt_fired.emit(origin, aim)
+	projectile_launched.emit(bolt, &"magic_bolt")
 	return true
 
 

@@ -71,7 +71,8 @@ Services are per-level nodes in `scenes/gameplay/gameplay_services.tscn`, found 
 | `ExplorationService` / `FastTravel` | `scripts/world/` | Phase 5G: location registry (`WorldLocation`), discovery, fog of war, portals |
 | `GatheringService` | `scripts/tools/gathering_service.gd` | Phase 5H: depleted harvest nodes (real-time respawn), repaired structures (paid once), tallies |
 | `FarmService` | `scripts/farming/farm_service.gd` | Garden beds, crops and their play-time growth clock (Phase 7) |
-| `EnhancementVisuals` / `AttackEffects` | `scripts/vfx/` | Phase 7 C: enhancement glow/aura (toggle `UISettings.SHOW_ENHANCEMENT_VFX`), swing arc and impact flash timed to the hit |
+| `EnhancementVisuals` / `AttackEffects` | `scripts/vfx/` | Enhancement glow/aura (toggle `UISettings.SHOW_ENHANCEMENT_VFX`), per-weapon elemental passive and attack effects (`docs/WEAPON_ELEMENTAL_VFX.md`), swing arc and impact timed to the hit |
+| `WeaponUltimates` | `scripts/combat/weapon_ultimates.gd` | Phase 8: the +5 ultimates on C (Flame Slash, Earthquake, Thunder Arrow, Arcane Storm), cooldowns, MP hook |
 | `SaveGame` | `scripts/core/save_game.gd` | `user://savegame.json`; autosave; **off in headless runs** |
 
 Key gameplay scripts:
@@ -113,7 +114,7 @@ Key gameplay scripts:
 - **Dev mode:** `scripts/core/dev_mode.gd`: debug build with a window. Override with `-- --dev` / `-- --no-dev`.
 
 Bindings (from `project.godot`): WASD move, Shift run **and** dash, E interact, G drop package,
-Space attack (bolt / melee / arrow by weapon; with a tool in hand: use the tool), Ctrl jump, 1-5 weapon/tool quick slots, Q tool/weapon quick switch (switches inventory views while the inventory is open), Tab inventory, M world map, R package shield, J journal, T free (Phase 8 revised layout, `docs/PHASE8.md` section 1b), mouse wheel or `=` `-` zoom, F3 debug HUD,
+Space attack (bolt / melee / arrow by weapon; with a tool in hand: use the tool), Ctrl jump, 1-5 weapon/tool quick slots, Q tool/weapon quick switch (switches inventory views while the inventory is open), C +5 weapon ultimate, Tab inventory, M world map, R package shield, J journal, T free (Phase 8 revised layout, `docs/PHASE8.md` section 1b), mouse wheel or `=` `-` zoom, F3 debug HUD,
 Esc close (`ui_cancel`).
 
 ## Assets

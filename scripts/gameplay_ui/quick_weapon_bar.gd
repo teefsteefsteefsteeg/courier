@@ -22,6 +22,9 @@ const GOLD := Color(1, 0.84, 0.3)
 var mode_label: Label
 var info_label: Label
 var stats_label: Label
+## Phase 8: the +5 weapon's ultimate and its cooldown ("[C] Flame Slash · ready");
+## hidden when the weapon in hand has none.
+var ultimate_label: Label
 ## One Button per slot (read by tests).
 var slot_buttons: Array[Button] = []
 var _key_icons: Array[TextureRect] = []
@@ -99,6 +102,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(_delta: float) -> void:
+	_update_ultimate()
 	var blocked := not can_switch()
 	if blocked != _blocked:
 		_blocked = blocked
@@ -179,6 +183,14 @@ func _build() -> void:
 	stats_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	body.add_child(stats_label)
 	InputPromptLabel.attach(stats_label)
+	ultimate_label = Label.new()
+	ultimate_label.name = "Ultimate"
+	ultimate_label.add_theme_font_size_override(&"font_size", 13)
+	ultimate_label.add_theme_color_override(&"font_color", Color(1.0, 0.8, 0.4))
+	ultimate_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ultimate_label.visible = false
+	body.add_child(ultimate_label)
+	InputPromptLabel.attach(ultimate_label)
 	var row := HBoxContainer.new()
 	row.name = "Slots"
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -208,6 +220,20 @@ func _build() -> void:
 		key_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		button.add_child(key_icon)
 		_key_icons.append(key_icon)
+
+
+func _update_ultimate() -> void:
+	if ultimate_label == null:
+		return
+	var ultimates := WeaponUltimates.find(get_tree())
+	var skill := ultimates.current_skill() if ultimates != null else {}
+	ultimate_label.visible = not skill.is_empty()
+	if skill.is_empty():
+		return
+	var left := ultimates.get_cooldown_remaining()
+	var text := "[%s] %s  ·  %s" % [InputHints.key_for(&"weapon_ultimate"), skill["name"], "ready" if left <= 0.0 else "%d s" % ceili(left)]
+	if ultimate_label.text != text:
+		ultimate_label.text = text
 
 
 static func _slot_style(fill: Color, border: Color, width: int) -> StyleBoxFlat:

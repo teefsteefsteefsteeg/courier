@@ -29,13 +29,13 @@ regeneration, dragon companion and flight).
 |---|---|---|
 | 1 | Controls: M map, Tab inventory, R shield, Q tool/weapon switch, Ctrl jump | **Done** (below; revised layout in section 1b) |
 | 2 | Resource respawn without countdowns; tools in every map | **Done** (below) |
-| 3 | Weapon enhancement VFX rework (+1 silver spark .. +5 legendary elemental) | **Done** (below) |
+| 3 | Weapon enhancement VFX rework (+1 silver spark .. +5 legendary elemental) | **Done**, then **reworked per weapon** (`docs/WEAPON_ELEMENTAL_VFX.md`: sword fire, axe earth, bow wind/lightning, staff arcane; +5 ultimates on C) |
 | 4 | Animated HUD avatar | **Done** (below) |
 | 5 | Enterable houses (Armory, Post Office, one home) with NPCs | **Done** (below) |
 | 6 | Food market, consumables, food slots 6-0, MP and rage, HP regeneration | not started |
-| 7 | Staff spells and weapon ultimates (Z / X / C) | not started |
+| 7 | Staff spells and weapon ultimates (Z / X / C) | **partly**: the four +5 ultimates on C are done (`WeaponUltimates`, see `docs/WEAPON_ELEMENTAL_VFX.md`); staff spells and Z / X skills not started; MP is a hook only |
 | 8 | New region: waterfall, river, bridge, fishing spot, gateway | **Done** (below: Wyrmfall Vale) |
-| 9 | Dungeon, Bestiary enemies, dragon boss (bite, breath, AoE), HP bar, rewards | not started |
+| 9 | Dungeon, Bestiary enemies, dragon boss (bite, breath, AoE), HP bar, rewards | **started** (uncommitted: dragon model with authored Bite/Breath/Slam/Hit/Roar/Death, boss VFX vendored; no dungeon or boss script yet) |
 | 10 | Dragon companion: base placement, Earthquake, Fire, summon, mount and flight | not started |
 
 ## 1. Controls
@@ -272,3 +272,8 @@ held model by `EnhancementVisuals`; `elements` lists them for tests):
 - Rendered: `tests/capture_phase8_controls.gd` (now the revised layout) ->
   `docs/validation/phase8/59..69` (key guide, M map, Tab inventory, Q view switch, Q pickaxe,
   bow +4 / +5 from the gameplay camera, running towards the camera, Ctrl jump).
+
+## 3b. Weapon elemental rework and +5 ultimates
+Every weapon class now has its own element and every level its own composition; normal
+attacks get weapon-specific effects; a +5 weapon has an ultimate on [C] with real hit
+detection. Full description, tables, tests and screenshots: `docs/WEAPON_ELEMENTAL_VFX.md`.

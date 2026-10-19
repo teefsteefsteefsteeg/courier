@@ -1,12 +1,16 @@
 extends SceneTree
-## Phase 8 milestone 3: weapon enhancement VFX rework, in the real village.
-## - Each level +1..+5 is a different set of animated elements (sparks / nature / water /
-##   lightning / legendary fire + lightning + water); +0 has none.
-## - Placement follows the weapon: blade (sword), head (axe), both limbs (bow), top (staff).
-## - Swings and hits add tier effects: water trail and splash (+3), lightning flash and
-##   electric impact (+4), a legendary fire arc, blast and strike (+5); +0..+2 keep the
+## Phase 8 milestone 3: weapon enhancement VFX, in the real village (updated for the
+## elemental rework: every weapon class has its own element; tests/weapon_elemental_vfx_tests.gd
+## covers all four classes, the attacks and the ultimates).
+## - The sword's levels +1..+5 (fire / blade energy): silver sparks, blade trails, embers
+##   running up the blade, wrapped flames, inferno blade; +0 has none.
+## - Placement follows the weapon: blade (sword), crescent head (axe), grip and lower limb
+##   (bow, clear of the courier's face), top (staff).
+## - Swings and hits add the sword's effects: icy streaks (+2), ember bursts (+3), a flame at
+##   the front of the cut (+4), a fire arc, heat flash and fire blast (+5); +0..+1 keep the
 ##   plain arc and flash. Damage and swing timing are unchanged by the effects.
-## - Budgets: at most 6 flipbooks and 40 particles per weapon; particles trail in world space.
+## - Budgets: at most 6 flipbooks and 40 particles per weapon; particles trail in world space
+##   except the embers that run along the blade.
 ##   godot --headless --path . --script res://tests/phase8_weapon_vfx_tests.gd
 
 const VILLAGE := "res://scenes/levels/village.tscn"
@@ -87,11 +91,11 @@ func _glow_for(item_id: StringName, lvl: int) -> EnhancementGlow:
 func _test_tiers() -> void:
 	print("[Tiers]")
 	var expected := {
-		1: [&"spark", &"glint", &"motes"],
-		2: [&"nature", &"leaves"],
-		3: [&"swirl", &"bubbles", &"drips"],
-		4: [&"crackle", &"bolt", &"light"],
-		5: [&"flame", &"crackle", &"swirl", &"embers", &"light"],
+		1: [&"sword_sparks", &"sword_glint"],
+		2: [&"sword_trail", &"sword_edge_glow"],
+		3: [&"sword_embers", &"sword_rising_embers", &"light"],
+		4: [&"sword_flames", &"sword_embers", &"light"],
+		5: [&"sword_inferno", &"sword_fire_stream", &"sword_ember_storm", &"light"],
 	}
 	var glow0 := await _glow_for(&"iron_sword", 0)
 	_check(glow0 == null, "+0 NORMAL: no enhancement effect")
@@ -101,19 +105,20 @@ func _test_tiers() -> void:
 			_check(false, "+%d has an effect" % lvl)
 			continue
 		var missing: Array = (expected[lvl] as Array).filter(func(e: StringName) -> bool: return not glow.elements.has(e))
-		_check(missing.is_empty(), "+%d %s has %s (missing %s, has %s)" % [lvl, EnhancementGlow.TIER_NAMES[lvl], expected[lvl], missing, glow.elements])
+		_check(missing.is_empty(), "+%d %s has %s (missing %s, has %s)" % [lvl, EnhancementGlow.tier_name(ItemDefinition.WeaponType.SWORD, lvl), expected[lvl], missing, glow.elements])
 		var amount := 0
 		for p in glow.particles:
 			amount += p.amount
-			_check(not p.local_coords, "+%d %s particles trail in world space" % [lvl, p.name])
+			# The embers run along the blade itself (in its own space); everything else trails.
+			_check(not p.local_coords or p.name == "Particles_sword_embers", "+%d %s particles trail in world space" % [lvl, p.name])
 		_check(glow.strips.size() <= 6 and amount <= 40, "+%d stays light: %d flipbooks, %d particles" % [lvl, glow.strips.size(), amount])
 	# Lower tiers never borrow the elements of higher ones.
 	var g1 := await _glow_for(&"iron_sword", 1)
-	_check(not g1.elements.has(&"flame") and not g1.elements.has(&"crackle") and not g1.elements.has(&"swirl"), "+1 has no fire, lightning or water")
+	_check(not g1.elements.has(&"sword_flames") and not g1.elements.has(&"sword_embers") and not g1.elements.has(&"sword_inferno"), "+1 has no embers or fire")
 	var g3 := await _glow_for(&"iron_sword", 3)
-	_check(not g3.elements.has(&"flame") and not g3.elements.has(&"crackle"), "+3 is water only (no fire, no lightning)")
+	_check(not g3.elements.has(&"sword_flames") and not g3.elements.has(&"sword_inferno"), "+3 is embers only (no flames yet)")
 	var g4 := await _glow_for(&"iron_sword", 4)
-	_check(not g4.elements.has(&"flame") and not g4.elements.has(&"swirl"), "+4 is lightning only (no fire, no water)")
+	_check(not g4.elements.has(&"sword_inferno") and not g4.elements.has(&"sword_fire_stream"), "+4 wraps the blade in flames, not the inferno")
 	# Every flipbook animates.
 	var g5 := await _glow_for(&"iron_sword", 5)
 	var frames_before: Array[int] = []
@@ -135,30 +140,29 @@ func _t_of(glow: EnhancementGlow, point: Vector3) -> float:
 
 func _test_placement() -> void:
 	print("[Placement per weapon]")
-	for case in [[&"iron_sword", 0.25, 1.05, "along the blade"], [&"battle_axe", 0.55, 1.05, "round the axe head"], [&"magic_staff", 0.65, 1.05, "at the top of the staff"]]:
-		var glow := await _glow_for(case[0], 3)
+	for case in [[&"iron_sword", 0.25, 1.05, "along the blade"], [&"battle_axe", 0.1, 0.72, "round the crescent head"], [&"magic_staff", 0.65, 1.05, "at the top of the staff"]]:
+		# +4: each of these has flipbooks to measure (+3 is particles or a ring on some).
+		var glow := await _glow_for(case[0], 4)
 		var ts: Array[float] = []
 		for strip in glow.strips:
 			ts.append(_t_of(glow, strip.position))
 		_check(not ts.is_empty() and ts.min() >= case[1] and ts.max() <= case[2], "%s: effects %s (t %.2f..%.2f)" % [case[0], case[3], ts.min() if not ts.is_empty() else -1.0, ts.max() if not ts.is_empty() else -1.0])
-	var bow := await _glow_for(&"hunting_bow", 1)
-	var low := INF
+	# The bow's effects stay on its grip and lower limb, clear of the courier's face.
+	var bow := await _glow_for(&"hunting_bow", 4)
+	var a := bow._bow_at(0.0)
+	var b := bow._bow_at(1.0)
 	var high := -INF
 	for strip in bow.strips:
-		var t := _t_of(bow, strip.position)
-		low = minf(low, t)
-		high = maxf(high, t)
+		high = maxf(high, (strip.position - a).dot(b - a) / (b - a).length_squared())
 	for p in bow.particles:
 		for point in p.emission_points:
-			var t := _t_of(bow, point)
-			low = minf(low, t)
-			high = maxf(high, t)
-	_check(low < -0.3 and high > 0.3, "hunting bow: effects on both limbs (t %.2f..%.2f)" % [low, high])
+			high = maxf(high, (point - a).dot(b - a) / (b - a).length_squared())
+	_check(high <= EnhancementGlow.BOW_TOP + 0.05, "hunting bow: effects on the grip and lower limb (up to %.2f of the bow)" % high)
 	# Regression: the bow is held across the body, so its effects were hidden behind the
 	# courier from the gameplay camera; they now draw over the body.
 	for level in [1, 4, 5]:
 		var bow_glow := await _glow_for(&"hunting_bow", level)
-		var over := bow_glow.shows_over_body and not bow_glow.strips.is_empty()
+		var over := bow_glow.shows_over_body and bow_glow.strips.size() + bow_glow.particles.size() > 0
 		for strip in bow_glow.strips:
 			over = over and (strip.material_override as StandardMaterial3D).no_depth_test
 		for p in bow_glow.particles:
@@ -202,10 +206,11 @@ func _test_attack_tiers() -> void:
 	print("[Attack trails and impacts by tier]")
 	var aim := Vector3.BACK
 	var expected := {
-		0: [], 1: [], 2: [],
-		3: [&"water_trail", &"water_splash"],
-		4: [&"lightning_flash", &"electric_impact"],
-		5: [&"legendary_trail", &"lightning_flash", &"legendary_blast", &"electric_impact"],
+		0: [], 1: [],
+		2: [&"sword_ice_streaks"],
+		3: [&"sword_ember_burst", &"sword_ember_impact"],
+		4: [&"sword_flame_front", &"sword_ember_burst", &"sword_ember_impact"],
+		5: [&"legendary_trail", &"sword_heat_flash", &"sword_flame_front", &"sword_ember_impact", &"sword_fire_impact"],
 	}
 	var sword := inventory.get_definition(&"iron_sword")
 	await _spawn_target(aim * 1.2)

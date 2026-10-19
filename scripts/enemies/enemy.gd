@@ -28,6 +28,8 @@ enum State { IDLE, CHASE, WINDUP, RECOVER, RETREAT, DEAD }
 @export var free_on_death: bool = true
 ## Seconds the defeated body lingers (for death effects) before it is freed.
 @export_range(0.0, 10.0, 0.05, "suffix:s") var death_free_delay: float = 0.6
+## False for enemies a skill cannot stagger (bosses).
+@export var staggerable: bool = true
 
 var state: State = State.IDLE
 ## Seconds spent in the current state.
@@ -36,6 +38,8 @@ var state_time: float = 0.0
 var provoked: bool = false
 
 var _attack_cooldown_left: float = 0.0
+## Seconds left of a stagger (Phase 8 skills such as the axe Earthquake): no moving or attacking.
+var _stagger_left: float = 0.0
 
 
 func _ready() -> void:
@@ -58,6 +62,10 @@ func advance(delta: float) -> void:
 		return
 	state_time += delta
 	_attack_cooldown_left = maxf(_attack_cooldown_left - delta, 0.0)
+	if _stagger_left > 0.0:
+		_stagger_left = maxf(_stagger_left - delta, 0.0)
+		_move(Vector3.ZERO, delta)
+		return
 	var desired := _update_behaviour(delta, find_target())
 	_move(desired, delta)
 
@@ -81,6 +89,19 @@ func is_target_alive(candidate: Node3D) -> bool:
 		return false
 	var target_health := CombatHealth.find_on(candidate)
 	return target_health == null or not target_health.is_dead()
+
+
+## Stops the enemy for seconds (no movement, attacks or state changes). False when it
+## cannot be staggered or is dead.
+func stagger(seconds: float) -> bool:
+	if not staggerable or state == State.DEAD:
+		return false
+	_stagger_left = maxf(_stagger_left, seconds)
+	return true
+
+
+func is_staggered() -> bool:
+	return _stagger_left > 0.0
 
 
 func is_dead() -> bool:

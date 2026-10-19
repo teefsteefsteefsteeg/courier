@@ -96,5 +96,68 @@
   "frames": 9,
   "fps": 15,
   "tinted": false
+ },
+ "dust_ring": {
+  "frame_width": 64,
+  "frame_height": 64,
+  "frames": 10,
+  "fps": 15,
+  "tinted": false
+ },
+ "dust_puff": {
+  "frame_width": 64,
+  "frame_height": 64,
+  "frames": 21,
+  "fps": 15,
+  "tinted": true
+ },
+ "rubble": {
+  "frame_width": 96,
+  "frame_height": 96,
+  "frames": 15,
+  "fps": 15,
+  "tinted": true
+ },
+ "quake_blast": {
+  "frame_width": 128,
+  "frame_height": 128,
+  "frames": 13,
+  "fps": 15,
+  "tinted": false
+ },
+ "charge": {
+  "frame_width": 96,
+  "frame_height": 96,
+  "frames": 12,
+  "fps": 15,
+  "tinted": true
+ },
+ "warp": {
+  "frame_width": 128,
+  "frame_height": 128,
+  "frames": 10,
+  "fps": 15,
+  "tinted": true
+ },
+ "arc_ring": {
+  "frame_width": 96,
+  "frame_height": 96,
+  "frames": 10,
+  "fps": 15,
+  "tinted": true
+ },
+ "slash_flash": {
+  "frame_width": 64,
+  "frame_height": 64,
+  "frames": 7,
+  "fps": 15,
+  "tinted": true
+ },
+ "light_burst": {
+  "frame_width": 256,
+  "frame_height": 144,
+  "frames": 9,
+  "fps": 15,
+  "tinted": true
  }
 }

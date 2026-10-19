@@ -20,6 +20,16 @@ Phase 8 tier effects (EnhancementGlow, AttackEffects), one look per enhancement 
   flame.png      Fire Looping 003A (+5 flames; own orange colours)
   flame_b.png    Fire Looping 004A (+5 flames, second shape; own colours)
   blast.png      Stylized Explosion 001 (+5 impact burst; own colours)
+Phase 8 weapon elements (sword fire, axe earth, bow wind/lightning, staff arcane):
+  dust_ring.png    Symmetrical Smoke Burst 001 (axe dust ring; own brown colours)
+  dust_puff.png    Directional Smoke Burst 001 (axe dust and stone puffs; whitened)
+  rubble.png       Looping Smoke Burst 001 (axe debris; whitened)
+  quake_blast.png  Epic Explosion 001 (axe +5 Earthquake; own colours)
+  charge.png       Sci-fi Charge Up 001 (staff arcane charge; whitened)
+  warp.png         Sci-fi Warp 001 (staff rune ring, storm strikes; whitened)
+  arc_ring.png     Lightning Burst 003 (bow electric arcs; whitened)
+  slash_flash.png  Directional Impact 001 (sword slash flash; whitened)
+  light_burst.png  Round Light Burst 001 (staff strike flash; whitened)
 Each is re-packed as a single row of frames. Whitened sheets (colour from luminance, alpha
 kept) are tinted per level by VfxStrip; the others keep the pack's colours.
 frames.json lists frame size and count; every animation plays at 15 FPS (the pack's guide).
@@ -47,9 +57,19 @@ SHEETS = {
     "flame": "Fire/fire_looping_003A/fire_looping_003A_large_orange",
     "flame_b": "Fire/fire_looping_004A/fire_looping_004A_large_orange",
     "blast": "Explosions/stylized_explosion_001/stylized_explosion_001_large_yellow",
+    # Phase 8 weapon elements (one identity per weapon class, see EnhancementGlow).
+    "dust_ring": "Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown",
+    "dust_puff": "Smoke Bursts/directional_smoke_burst_001/directional_smoke_burst_001_large_white",
+    "rubble": "Smoke Bursts/looping_smoke_burst_001/looping_smoke_burst_001_large_gray",
+    "quake_blast": "Explosions/epic_explosion_001/epic_explosion_001_large_orange",
+    "charge": "Sci-fi/scifi_charge_up_001/scifi_charge_up_001_large_yellow",
+    "warp": "Sci-fi/scifi_warp_001/scifi_warp_001_large_green",
+    "arc_ring": "Lightning/lightning_burst_003/lightning_burst_003_large_violet",
+    "slash_flash": "Impacts/directional_impact_001/directional_impact_001_large_blue",
+    "light_burst": "Magic Bursts/round_light_burst_001/round_light_burst_001_large_yellow",
 }
 ## Sheets that keep the pack's own colours (not whitened for tinting).
-KEEP_COLOUR = {"nature_burst", "bolt_flash", "strike", "flame", "flame_b", "blast"}
+KEEP_COLOUR = {"nature_burst", "bolt_flash", "strike", "flame", "flame_b", "blast", "dust_ring", "quake_blast"}
 
 
 def frames(folder):

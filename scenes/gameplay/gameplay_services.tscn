@@ -50,6 +50,7 @@
 [ext_resource type="Resource" path="res://data/crops/wheat.tres" id="49_crop_wheat"]
 [ext_resource type="Resource" path="res://data/crops/carrot.tres" id="50_crop_carrot"]
 [ext_resource type="Resource" path="res://data/crops/pumpkin.tres" id="51_crop_pumpkin"]
+[ext_resource type="Script" path="res://scripts/combat/weapon_ultimates.gd" id="p8_weapon_ultimates"]
 
 [node name="GameplayServices" type="Node"]
 
@@ -86,6 +87,10 @@ inventory = NodePath("../CourierInventory")
 
 [node name="AttackEffects" type="Node" parent="." node_paths=PackedStringArray("inventory")]
 script = ExtResource("55_attack_effects")
+inventory = NodePath("../CourierInventory")
+
+[node name="WeaponUltimates" type="Node" parent="." node_paths=PackedStringArray("inventory")]
+script = ExtResource("p8_weapon_ultimates")
 inventory = NodePath("../CourierInventory")
 
 [node name="SaveGame" type="Node" parent="." node_paths=PackedStringArray("wallet", "inventory", "quest_manager")]

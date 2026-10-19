@@ -32,6 +32,28 @@ phase5f_armory 37/0, village_quest 99/0, phase8_interiors 58/0). Boot clean.
   over the bridge, walls hold, tools, knockout); rendered `capture_phase8_wyrmfall.gd`
   -> `docs/validation/phase8/46..58`.
 
+### Controls revision (committed `76f21da`)
+M map, Tab inventory, Q tool/weapon quick switch (and inventory view), T free; bow
+enhancement effects drawn over the body. See `docs/PHASE8.md` section 1b.
+
+### Weapon elemental VFX rework + +5 ultimates (user request, see `docs/WEAPON_ELEMENTAL_VFX.md`)
+Each weapon class has its own element and each level its own passive composition
+(`EnhancementGlow`), weapon-specific attack effects (`AttackEffects`), and a +5 ultimate on C
+(`WeaponUltimates`: Flame Slash, Earthquake, Thunder Arrow, Arcane Storm) with real,
+once-per-target hit rules and cooldowns. MP is a hook (`courier_mana` group) until milestone 6.
+Tests `weapon_elemental_vfx_tests` (94); screenshots `docs/validation/weapon-elemental-vfx/`.
+
+### Dragon boss work in progress (UNCOMMITTED, kept on disk)
+- `tools/build_wyrm_dragon.py` (Blender 5.2.2) -> `assets/blender/phase8/wyrm_dragon.blend`
+  (13.7 MB source) and `assets/generated/phase8/wyrm_dragon.glb` (13.3k faces, actions Idle,
+  Walk, Run, Fly and authored Bite 0.9 s, Breath 2.2 s, Slam 1.6 s, Hit, Roar, Death; 24 fps;
+  the model faces +Z in Godot after the glTF conversion). Not yet imported/previewed in Godot.
+- Design (not built): dungeon "Emberdeep Lair" (region `ember_lair`) entered from a gate at
+  the Ember Cliffs (`WyrmfallLayout.CLIFF_END`); crypt kit rooms; boss `WyrmBoss extends
+  Enemy` (Roar on engage, Bite cone, Breath cone ticks with the Brackeys fire flipbook,
+  Slam ring + quake blast, enrage at 50%, reset on leaving the arena, `staggerable = false`),
+  `boss_health_bar.gd`, persistent defeat + reward + `AnimatedPortrait.celebrate()`.
+
 ### Remaining Phase 8 work, in the agreed order
 1. ~~New region "Wyrmfall Vale"~~ done (milestone 8). The dungeon entrance goes at the
    foot of the Ember Cliffs where the road ends (`WyrmfallLayout.CLIFF_END`, (31, -19)).

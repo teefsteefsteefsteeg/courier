@@ -336,7 +336,7 @@ func _test_weapon_effects() -> void:
 		await _frames(3)
 		var glow := visuals.weapon_glow
 		var ok := glow != null and is_instance_valid(glow) and glow.level == lvl and glow.get_parent() == character.get_held_item_node()
-		_check(ok, "+%d %s: an effect on the held sword (%s)" % [lvl, EnhancementGlow.TIER_NAMES[lvl], glow.elements if ok else []])
+		_check(ok, "+%d %s: an effect on the held sword (%s)" % [lvl, EnhancementGlow.tier_name(ItemDefinition.WeaponType.SWORD, lvl), glow.elements if ok else []])
 		if not ok:
 			continue
 		var sorted := glow.elements.duplicate()
@@ -345,7 +345,7 @@ func _test_weapon_effects() -> void:
 		var tip_distance := glow.tip.length() * EnhancementGlow._world_scale(character.get_held_item_node())
 		_check(tip_distance > 0.4 and tip_distance < 2.0, "+%d: effects run along the blade (tip %.2f m from the grip)" % [lvl, tip_distance])
 		if lvl == 5:
-			_check(glow.elements.has(&"flame") and glow.elements.has(&"crackle") and glow.elements.has(&"swirl"), "+5: flames, lightning and water together")
+			_check(glow.elements.has(&"sword_inferno") and glow.elements.has(&"sword_fire_stream") and glow.elements.has(&"sword_ember_storm"), "+5: the inferno blade (flames, fire stream, ember storm)")
 			var animated := glow.strips[0]
 			var first := animated.frame
 			await create_timer(0.25).timeout
