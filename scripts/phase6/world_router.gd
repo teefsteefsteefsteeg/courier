@@ -4,6 +4,19 @@ extends Node
 signal region_changed(region_id: StringName)
 const OUTDOOR := "res://scenes/phase6/runewood_outdoors.tscn"
 const DUNGEON := "res://scenes/phase6/sentinel_dungeon.tscn"
+## Phase 8: Wyrmfall Vale, through the gate on the village's south edge (RegionGate).
+const WYRMFALL := "res://scenes/regions/wyrmfall_vale.tscn"
+## Outdoor regions and dungeons (not interiors).
+const REGIONS: Array[StringName] = [&"village", &"runewood", &"sentinel_vault", &"wyrmfall"]
+## Map per region: image (covers ExplorationService.WORLD_RECT), expanded view radius and
+## centre, title, legend shown.
+const REGION_MAPS := {
+	"runewood": ["res://assets/generated/phase6/runewood_map.png", 60.0, Vector2.ZERO, "Runewood Highlands", true],
+	"sentinel_vault": ["res://assets/generated/phase6/vault_map.png", 29.0, Vector2(-8, -7), "Sentinel Vault", false],
+	"wyrmfall": ["res://assets/generated/wyrmfall/wyrmfall_map.png", 60.0, Vector2.ZERO, "Wyrmfall Vale", true],
+}
+## Where a knockout outside the village sends the courier back to (region -> recovery region).
+const RECOVERY := {"runewood": &"runewood", "sentinel_vault": &"runewood", "wyrmfall": &"wyrmfall"}
 const MapModel := preload("res://scripts/phase4_integration_visual/minimap_model.gd")
 const REGION_TOOL_SITES := {"runewood": "res://scenes/world/tools/runewood_tool_sites.tscn"}
 ## Phase 8 interiors: enterable buildings of the village (HouseDoor -> region id). Each is a
@@ -62,7 +75,7 @@ func _process(_delta: float) -> void:
 func travel(next: StringName, spawn: StringName, interactor: Node = null, return_point: Vector3 = Vector3.INF) -> bool:
 	if crossing or (interactor != null and interactor != _player) or not _player.input_enabled:
 		return false
-	if next not in [&"village",&"runewood",&"sentinel_vault"] and not INTERIORS.has(String(next)):
+	if next not in REGIONS and not INTERIORS.has(String(next)):
 		return false
 	if region_id == &"village" and next != &"village":
 		_village_return = return_point
@@ -129,6 +142,8 @@ func _cross(next: StringName, spawn: StringName) -> void:
 			text = "Runewood Highlands — follow the ochre road to the northern crypt."
 		elif next == &"sentinel_vault":
 			text = "The Sentinel Vault — the stairs behind you lead out."
+		elif next == &"wyrmfall":
+			text = "Wyrmfall Vale — the road crosses the river to the falls. The gate behind you leads home."
 		elif is_interior(next):
 			var place := String(active_level.get(&"display_name"))
 			text = "%s — the door behind you leads out." % (place.left(1).to_upper() + place.substr(1))
@@ -184,6 +199,8 @@ func is_interior(id: StringName) -> bool:
 func _scene_for(id: StringName) -> String:
 	if INTERIORS.has(String(id)):
 		return INTERIORS[String(id)]
+	if id == &"wyrmfall":
+		return WYRMFALL
 	return OUTDOOR if id == &"runewood" else DUNGEON
 
 
@@ -204,16 +221,17 @@ func _setup_map() -> void:
 	_map_model.set_player(_player)
 	for enemy in active_level.find_children("*","Enemy",true,false):
 		_map_model.set_marker(MapModel.id_for_node(enemy,"enemy"),MapModel.KIND_ENEMY,enemy)
+	var map: Array = REGION_MAPS[String(region_id)]
 	for view: Control in [controller.compact,controller.expanded]:
 		view.set_model(_map_model)
-		view.map_texture = load("res://assets/generated/phase6/"+("runewood_map.png" if region_id==&"runewood" else "vault_map.png"))
+		view.map_texture = load(map[0])
 		view.map_world_rect = ExplorationService.WORLD_RECT
 		view.exploration = ExplorationService.find(get_tree())
 	controller.compact.world_radius = 17.0
-	controller.expanded.world_radius = 60.0 if region_id==&"runewood" else 29.0
-	controller.expanded.fixed_center = Vector2.ZERO if region_id==&"runewood" else Vector2(-8,-7)
-	controller.expanded_hint.text = ("Runewood Highlands" if region_id==&"runewood" else "Sentinel Vault")+"    [%s] / [%s] Close"%[InputHints.key_for(&"toggle_map"),InputHints.key_for(&"ui_cancel")]
-	controller.legend.visible = region_id==&"runewood"
+	controller.expanded.world_radius = map[1]
+	controller.expanded.fixed_center = map[2]
+	controller.expanded_hint.text = String(map[3])+"    [%s] / [%s] Close"%[InputHints.key_for(&"toggle_map"),InputHints.key_for(&"ui_cancel")]
+	controller.legend.visible = map[4]
 
 
 func _restore_map() -> void:
@@ -251,11 +269,12 @@ func _on_knockout() -> void:
 	var health := CombatHealth.find_on(_player)
 	health.reset()
 	_player.input_enabled = true
-	# Knocked out indoors: back out of the door; elsewhere: the Runewood arrival.
+	# Knocked out indoors: back out of the door; elsewhere: the region's arrival (the
+	# Runewood arrival from the vault).
 	if is_interior(region_id):
 		travel(&"village",&"",_player)
 	else:
-		travel(&"runewood",&"Arrival",_player)
+		travel(RECOVERY.get(String(region_id),&"runewood"),&"Arrival",_player)
 	_recovering = false
 
 
@@ -267,6 +286,21 @@ func _clear_gateway_trail() -> void:
 			if not node is Node3D or (path=="Props" and not node.name.begins_with("Rock")): continue
 			var p := Vector2(node.global_position.x,node.global_position.z)
 			if p.distance_to(Geometry2D.get_closest_point_to_segment(p,Vector2(18,-22),Vector2(33,-32))) < 2.5 or Rect2(27,-37,12,8).has_point(p):
+				node.visible = false
+				for s: CollisionShape3D in node.find_children("*","CollisionShape3D",true,false): s.set_deferred(&"disabled",true)
+	# Phase 8: the passage through the Wyrmfall gate on the south edge.
+	var gate := get_parent().get_node_or_null("WyrmfallGate") as Node3D
+	if gate == null:
+		return
+	var through := Vector2(gate.global_position.x,gate.global_position.z)
+	var exit := (gate as RegionGate).get_exit_point()
+	for path in ["VillageDressing/Trees","VillageDressing/Details","Trees","Props"]:
+		var holder := get_parent().get_node_or_null(path)
+		if holder == null: continue
+		for node in holder.get_children():
+			if not node is Node3D: continue
+			var p := Vector2(node.global_position.x,node.global_position.z)
+			if p.distance_to(Geometry2D.get_closest_point_to_segment(p,through,Vector2(exit.x,exit.z)+(Vector2(exit.x,exit.z)-through))) < 3.6:
 				node.visible = false
 				for s: CollisionShape3D in node.find_children("*","CollisionShape3D",true,false): s.set_deferred(&"disabled",true)
 

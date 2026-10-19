@@ -30,7 +30,7 @@ regeneration, dragon companion and flight).
 | 5 | Enterable houses (Armory, Post Office, one home) with NPCs | **Done** (below) |
 | 6 | Food market, consumables, food slots 6-0, MP and rage, HP regeneration | not started |
 | 7 | Staff spells and weapon ultimates (Z / X / C) | not started |
-| 8 | New region: waterfall, river, bridge, fishing spot, gateway | **in progress** (design in DEVELOPMENT_HANDOFF; only the waterfall shader and vendored water kit exist, uncommitted) |
+| 8 | New region: waterfall, river, bridge, fishing spot, gateway | **Done** (below: Wyrmfall Vale) |
 | 9 | Dungeon, Bestiary enemies, dragon boss (bite, breath, AoE), HP bar, rewards | not started |
 | 10 | Dragon companion: base placement, Earthquake, Fire, summon, mount and flight | not started |
 
@@ -185,3 +185,66 @@ held model by `EnhancementVisuals`; `elements` lists them for tests):
 - Rendered: `tests/capture_phase8_interiors.gd` -> `docs/validation/phase8/33..45` (each door
   outside, inside, talking, the letter picked up and delivered, resting, Torvin's forge
   shop, back outside the same door).
+
+## 8. Wyrmfall Vale (new region)
+- **Getting there and back:** a timber gate with a "Wyrmfall Vale" signpost on Willowmere's
+  south edge (`WyrmfallGate` in `village.tscn`, at (3, 0, 41.2)): "[E] Travel to Wyrmfall
+  Vale". In the vale, the gate in the south-west corner ("[E] Travel to Willowmere") puts
+  the courier back at the village gate. Both are `RegionGate`s (`scripts/world/region_gate.gd`,
+  a generic "travel to region" door like `HouseDoor`). The router clears the village trees
+  in the gate's passage at start-up, as it does for the Runewood gateway.
+- **Router:** `WorldRouter` knows region `wyrmfall` (`REGIONS`, `WYRMFALL`), keeps its map
+  per region in `REGION_MAPS` (image, radius, centre, title, legend) and sends a knockout in
+  the vale back to the vale's Arrival (`RECOVERY`). Same session rules as Runewood: the
+  player, services, HUD and inventory stay; the village is paused; the vale is cached
+  while away (a felled tree stays a stump); fog of war is kept per region.
+- **Layout:** `scripts/world/wyrmfall_layout.gd` (`WyrmfallLayout`): one height function
+  and the shared numbers (river and road polylines, pool, cliff, bridge, landmarks) used by
+  the generator, the map image and the tests. 120 x 120 m lowland of rolling grass inside
+  a ring of hills (walls at +-54 m); a 12 m plateau north of a cliff; its stream falls
+  over the lip into the Falls Pool; the Wyrm River leaves the pool to the south-east; the
+  road from the gate crosses the river on the Old Stone Bridge and ends at the foot of the
+  Ember Cliffs in the east (the planned dungeon site).
+- **Generator:** `tools/generate_wyrmfall.gd` builds `scenes/regions/wyrmfall_vale.tscn`
+  (root script `scripts/world/wyrmfall_vale.gd`), `scenes/world/wyrmfall_gate.tscn` and
+  `assets/generated/wyrmfall/` (terrain mesh and `HeightMapShape3D` from the same samples,
+  newmap meshes with baked textures, bridge collider, `wyrmfall_map.png`):
+  - Terrain: flat-shaded height field, sRGB vertex colours (grass, meadow, road, wet sand,
+    river stones, banded cliff rock).
+  - Water: pool disc, river ribbon and plateau stream with the vendored water kit lake
+    shader (`assets/vfx/water_kit/`, greener/deeper colours, wind along the flow); the
+    waterfall sheet (`assets/shaders/waterfall.gdshader`, scrolling noise streaks) traced
+    down the cliff face 0.35-0.9 m in front of it, mist and spray particles and a foam disc
+    at the plunge.
+  - Walls (one invisible `ConcavePolygonShape3D`): boundary, cliff foot, pool rim, both river
+    banks, open only where the bridge crosses.
+  - Old Stone Bridge: newmap `Bridge01`; its stepped ends are not walkable, so the collider is
+    a smooth deck traced from the mesh (2.6 m wide, ramps to the ground, railings). The road
+    runs exactly north-east over it, one of the eight keyboard directions: at 12 degrees
+    off, the courier rubbed along a railing and stopped (Godot's 15 degree
+    `wall_min_slide_angle`).
+  - Newmap pack (`assets/newmap/FreeVersion`, Alefran; raw pack not committed): fisher's
+    camp (hut, stall, barrels, crates, bench, brazier with fire light, fence, ladder, wheel),
+    road lamps with lights, the Drakeward Ruins (a broken ring of stone walls round a giant
+    dead trunk), reeds by the river. Meshes are saved per model and their textures baked
+    to 512 px lossy `PortableCompressedTexture2D` resources (normal maps dropped), so the
+    vale needs nothing from the raw pack.
+  - Quaternius Ultimate Nature trees (noise-driven groves, willows by the river, pines on
+    the plateau and hills; trunk colliders and `CameraOccluder` inside the walls), rocks at
+    the cliff foot, undergrowth `ScatterField`s.
+  - Tool sites (region-prefixed ids): two trees, two ore rocks at the cliff foot, soft soil
+    by the camp. Fishing: `RiverWater` for the river and the pool, FishingSpots "the Wyrm
+    River" (bank by the camp) and "the Falls Pool" (more golden carp).
+  - Three forest slimes on the far bank (over 9 m from any tool site).
+  - Places (`WorldLocation`, region `wyrmfall`): Willowmere Gate, Wyrmfall, Old Stone
+    Bridge, Drakeward Ruins, Fisher's Camp, Ember Cliffs; village side: Road to Wyrmfall.
+- Tests: new `tests/phase8_wyrmfall_tests.gd` (53: layout, the real E key in and out at
+  both gates, arrival, village paused and back, exploration region, terrain under every
+  landmark, water and waterfall shaders, map, places and discovery, held-key walking over
+  the bridge, river bank / pool rim / cliff / boundary hold, axe / pickaxe / shovel / rod
+  at the vale's sites, knockout recovery, cached region on a second trip).
+- Rendered: `tests/capture_phase8_wyrmfall.gd` -> `docs/validation/phase8/46..58` (village
+  gate, arrival, falls and pool, bridge, camp, ruins, cliffs, overview, walking over the
+  bridge with real keys, the Tab map, the gate back, back in Willowmere).
+- Not yet: the dungeon entrance at the Ember Cliffs (milestone 9), a portal for fast travel
+  inside the vale, the plateau is scenery only.

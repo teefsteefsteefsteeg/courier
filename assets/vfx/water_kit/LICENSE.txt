@@ -1,0 +1,16 @@
+REEBOO Labs - Godot Water Shader Kit (Free Sample) - License
+
+Copyright (c) REEBOO Labs. All rights reserved except as granted below.
+
+You may:
+ - Use these shaders, scripts, materials, scenes and textures in commercial and non-commercial
+   games and apps, royalty-free, in any number of projects.
+ - Modify them for your own projects.
+Credit is appreciated but not required.
+
+You may not:
+ - Resell or redistribute the files as-is, alone or as part of an asset pack, add-on, template
+   or bundle (modified or not, in source form).
+
+The software is provided "as is", without warranty of any kind.
+Store page: https://reebo0.itch.io/godot-water-kit

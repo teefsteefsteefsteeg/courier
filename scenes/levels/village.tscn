@@ -81,6 +81,7 @@
 [ext_resource type="Script" path="res://scripts/world/house_door.gd" id="p8_house_door"]
 [ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="p8_interactable"]
 [ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Door_1_Round.gltf" id="p8_door_model"]
+[ext_resource type="PackedScene" path="res://scenes/world/wyrmfall_gate.tscn" id="p8_wyrmfall_gate"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -1075,6 +1076,8 @@ notifier = NodePath("../GameplayHUD/QuestNotification")
 destination_target = NodePath("../ForestEntrance/Markers/ForestClearingSpot")
 recipient_target = NodePath("../NPCs/MageElowen")
 knockout_respawn = NodePath("../Markers/PlayerSpawn")
+
+[node name="WyrmfallGate" parent="." instance=ExtResource("p8_wyrmfall_gate")]
 
 [node name="HouseDoors" type="Node3D" parent="."]
 

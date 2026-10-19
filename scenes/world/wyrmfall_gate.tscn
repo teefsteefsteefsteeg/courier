@@ -1,0 +1,45 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/region_gate.gd" id="1_il2mf"]
+[ext_resource type="PackedScene" path="res://scenes/generated/wayfarer_open_gate.tscn" id="2_vu6rc"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="3_8nut6"]
+[ext_resource type="PackedScene" path="res://scenes/props/signpost.tscn" id="4_bi2be"]
+[ext_resource type="Script" path="res://scripts/world/signpost.gd" id="5_ne1lq"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="6_yd01x"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vua1b"]
+radius = 0.95
+
+[node name="WyrmfallGate" type="Node3D" unique_id=319872467]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 3, 0, 41.2)
+script = ExtResource("1_il2mf")
+target_region = &"wyrmfall"
+place_name = "Wyrmfall Vale"
+
+[node name="Model" type="Node3D" parent="." unique_id=673753066 instance=ExtResource("2_vu6rc")]
+
+[node name="Interactable" type="Area3D" parent="." unique_id=1338287487]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 1.4)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("3_8nut6")
+
+[node name="Range" type="CollisionShape3D" parent="Interactable" unique_id=1137317915]
+shape = SubResource("SphereShape3D_vua1b")
+
+[node name="Exit" type="Marker3D" parent="." unique_id=1856392552]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 2.6)
+
+[node name="Sign" type="StaticBody3D" parent="." unique_id=1189186796 instance=ExtResource("4_bi2be")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0, 1.8)
+script = ExtResource("5_ne1lq")
+text = "Wyrmfall Vale"
+
+[node name="wyrmfall_road" type="Marker3D" parent="." unique_id=1235157490]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+script = ExtResource("6_yd01x")
+location_id = &"wyrmfall_road"
+display_name = "Road to Wyrmfall"
+kind = 5
+discover_radius = 8.0
