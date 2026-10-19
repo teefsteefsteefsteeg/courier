@@ -46,6 +46,11 @@ func _run() -> void:
 	root.add_child(level)
 	for i in 30:
 		await process_frame
+	var trail := level.get_node_or_null("RunewoodRegion/Exterior")
+	if trail != null:
+		for node in trail.get_children():
+			if node is Node3D and node.name.begins_with("Trail"):
+				_box(node.global_transform,Vector3(4,.1,4),FLAG,FLAG.darkened(.18))
 	_paint_bodies(level)
 	DirAccess.make_dir_recursive_absolute(OUT.get_base_dir())
 	var err := image.save_png(ProjectSettings.globalize_path(OUT))
@@ -85,6 +90,9 @@ func _paint_bodies(level: Node) -> void:
 			continue
 		var path := String(level.get_path_to(body))
 		var xform := shape.global_transform
+		# Underground cutaway rooms share this level but are absent from the surface map.
+		if xform.origin.y < -10.0 or not body.can_process():
+			continue
 		if shape.shape is CylinderShape3D or shape.shape is CapsuleShape3D:
 			var radius := (shape.shape as CylinderShape3D).radius if shape.shape is CylinderShape3D else (shape.shape as CapsuleShape3D).radius
 			if path.contains("Tree") or path.contains("tree"):

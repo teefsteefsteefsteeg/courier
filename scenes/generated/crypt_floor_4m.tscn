@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/generated/blender/crypt_floor_4m.glb" id="1_d37fo"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_w2oes"]
+size = Vector3(4, 0.24, 4)
+
+[node name="CryptFloor4m" type="Node3D" unique_id=261663116]
+
+[node name="Model" type="Node3D" parent="." unique_id=1246004297 instance=ExtResource("1_d37fo")]
+
+[node name="Solid" type="StaticBody3D" parent="." unique_id=992071603]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.12, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="Solid" unique_id=407173401]
+shape = SubResource("BoxShape3D_w2oes")

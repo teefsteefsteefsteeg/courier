@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/generated/blender/runewood_dungeon_entrance.glb" id="1_ivjff"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_c1nsf"]
+size = Vector3(3.1, 2.7, 1.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rhfjj"]
+size = Vector3(3.1, 2.7, 1.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_asl26"]
+size = Vector3(4.3, 1.5, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qdspw"]
+size = Vector3(3, 3, 0.2)
+
+[node name="RunewoodDungeonEntrance" type="Node3D" unique_id=403598138]
+
+[node name="Model" type="Node3D" parent="." unique_id=306546234 instance=ExtResource("1_ivjff")]
+
+[node name="Jamb-1" type="StaticBody3D" parent="." unique_id=1437632667]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.35, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="Jamb-1" unique_id=2112310203]
+shape = SubResource("BoxShape3D_c1nsf")
+
+[node name="Jamb1" type="StaticBody3D" parent="." unique_id=1175501303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.35, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="Jamb1" unique_id=645778568]
+shape = SubResource("BoxShape3D_rhfjj")
+
+[node name="Lintel" type="StaticBody3D" parent="." unique_id=1761997021]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="Lintel" unique_id=107142074]
+shape = SubResource("BoxShape3D_asl26")
+
+[node name="SealedPassage" type="StaticBody3D" parent="." unique_id=917131291]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -0.74)
+
+[node name="Collision" type="CollisionShape3D" parent="SealedPassage" unique_id=159000097]
+shape = SubResource("BoxShape3D_qdspw")

@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/generated/blender/crypt_pillar.glb" id="1_e2xhr"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_08xjx"]
+size = Vector3(1.15, 2.9, 1.15)
+
+[node name="CryptPillar" type="Node3D" unique_id=431154747]
+
+[node name="Model" type="Node3D" parent="." unique_id=205110085 instance=ExtResource("1_e2xhr")]
+
+[node name="Solid" type="StaticBody3D" parent="." unique_id=188085744]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="Solid" unique_id=493497549]
+shape = SubResource("BoxShape3D_08xjx")

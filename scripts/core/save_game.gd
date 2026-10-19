@@ -41,6 +41,8 @@ const DEV_STARTING_GOLD := 500
 @export var gathering: GatheringService
 
 var starting_gold_granted: bool = false
+## One-time world encounter rewards. Additive field; legacy saves start empty.
+var world_progress: Dictionary = {}
 var _save_left: float = -1.0
 var _restoring: bool = false
 
@@ -116,11 +118,14 @@ func to_dict() -> Dictionary:
 		"gathering": gathering.to_dict() if gathering != null else {},
 		"quests": quests,
 		"flags": {"starting_gold_granted": starting_gold_granted},
+		"world_progress": world_progress.duplicate(true),
 	}
 
 
 func from_dict(data: Dictionary) -> void:
 	_restoring = true
+	var saved_world: Variant = data.get("world_progress",{})
+	world_progress = saved_world.duplicate(true) if saved_world is Dictionary else {}
 	var flags: Dictionary = data.get("flags", {})
 	starting_gold_granted = bool(flags.get("starting_gold_granted", false))
 	var saved_wallet: Dictionary = data.get("wallet", {})

@@ -1,0 +1,58 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/generated/runewood_dungeon_entrance.tscn" id="1_8utye"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="2_c6egs"]
+[ext_resource type="PackedScene" path="res://scenes/generated/runewood_path_flags.tscn" id="3_r7tk0"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="4_bbiqr"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_2d3pg"]
+radius = 0.85
+
+[node name="Phase6Gateway" type="Node3D" unique_id=956324952]
+
+[node name="Entrance" type="Node3D" parent="." unique_id=403598138 instance=ExtResource("1_8utye")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 0, -34)
+
+[node name="Interactable" type="Area3D" parent="Entrance" unique_id=1625370820]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.8)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("2_c6egs")
+prompt_verb = "Travel to"
+display_name = "Runewood Highlands"
+
+[node name="Range" type="CollisionShape3D" parent="Entrance/Interactable" unique_id=186805546]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("SphereShape3D_2d3pg")
+
+[node name="Trail00" type="Node3D" parent="." unique_id=507154076 instance=ExtResource("3_r7tk0")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 18, 0.025, -22)
+
+[node name="Trail01" type="Node3D" parent="." unique_id=118000587 instance=ExtResource("3_r7tk0")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 20.05, 0.025, -23.4)
+
+[node name="Trail02" type="Node3D" parent="." unique_id=452455573 instance=ExtResource("3_r7tk0")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 22.1, 0.025, -24.8)
+
+[node name="Trail03" type="Node3D" parent="." unique_id=1237631672 instance=ExtResource("3_r7tk0")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 24.15, 0.025, -26.2)
+
+[node name="Trail04" type="Node3D" parent="." unique_id=182188262 instance=ExtResource("3_r7tk0")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 26.2, 0.025, -27.6)
+
+[node name="Trail05" type="Node3D" parent="." unique_id=1336206735 instance=ExtResource("3_r7tk0")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 28.25, 0.025, -29)
+
+[node name="Trail06" type="Node3D" parent="." unique_id=1371154490 instance=ExtResource("3_r7tk0")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 30.3, 0.025, -30.4)
+
+[node name="Trail07" type="Node3D" parent="." unique_id=1329399086 instance=ExtResource("3_r7tk0")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 32.35, 0.025, -31.8)
+
+[node name="runewood_gateway" type="Marker3D" parent="." unique_id=1205063025]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 0, -31)
+script = ExtResource("4_bbiqr")
+location_id = &"runewood_gateway"
+display_name = "Road to Runewood"
+kind = 4
+discover_radius = 8.0

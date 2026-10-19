@@ -1,5 +1,16 @@
 # Asset Manifest
 
+### Phase 6 continuation (2026-10-19): original fishing rod
+
+`assets/generated/tools/fishing_rod.tscn` is an original Mystic Courier procedural prop,
+extended from the existing authored rod in `scenes/props/tools/fishing_rod.tscn`.
+It uses Godot cylinders, a box and three low-resolution torus line guides (540 triangles),
+four shared materials, a grip-centred pivot, a `Tip` attachment marker and optional capsule
+collision (disabled while held). It is equipped by `data/items/fishing_rod.tres` in the playable
+village. No vendor models were modified. Source: authored in this repository; no external asset
+licence applies. Scale and placement instructions: `assets/generated/tools/README.md`.
+Rendered verification and continuation status: `docs/PHASE6_CONTINUATION.md`.
+
 Phase 5A imported the first external models (Quaternius, CC0) for village houses and nature props;
 see **External assets** below. Everything else is still a **PLACEHOLDER** made from Godot built-in
 primitive meshes and flat-colour materials authored in this repo.
@@ -146,6 +157,36 @@ Each `.gltf.import` maps the pack's `weapons` material to `assets/materials/armo
 
 When adding an external asset, record: name, path, author, source URL, license (with a link), date
 imported, and any modifications.
+
+### Phase 6 new region (2026-10-19): Runewood Highlands and Sentinel Vault
+
+- Original terrain: `assets/blender/phase6/runewood_terrain.blend`, exported with
+  Blender 5.2.2 LTS to `assets/generated/phase6/runewood_terrain.glb`.
+- Composed environment: `assets/blender/phase6/runewood_newmap_dressing.blend`,
+  exported to `assets/generated/phase6/runewood_newmap_dressing.glb`.
+  Reuses the owner-supplied Alefran pack in `assets/newmap/FreeVersion/`:
+  Bridge01, Stylized Hut01, Streetlamp01, Bench01, Barrel03, Box01, Wall_Stone01,
+  Trunk02, Trunk04, Foliage01 and RockMedium. The pack's included license permits
+  modification and use in games, but prohibits redistribution as standalone assets.
+  Models are arranged/scaled and texture copies packed; original pack files remain unchanged.
+- Leafy trees: existing Quaternius Ultimate Nature `CommonTree_1.fbx`, CC0.
+  Blender export-copy materials corrected to opaque colors, without changing the source.
+- Reliquary props: Quaternius Fantasy Props MegaKit, CC0, supplied under
+  `assets/newmap/fantasy/`: `Chest_Wood.gltf`, `Vase_Rubble_Medium.gltf`.
+- Monsters: Quaternius **Bestiary - Dungeon Monsters Kit [Standard]**, **QAL v1.0**,
+  from the owner-supplied `assets/Bestiary - Dungeon Monsters Kit[Standard]/`.
+  Actual `Exports/GLB (Godot-Unreal)/Imp.glb` and `Puglin.glb` are used, including
+  the scaled Puglin boss. Original files and rigs remain unchanged. Supplied GLBs
+  contain **no animation clips**; runtime posing is authored in
+  `scripts/phase6/bestiary_visual.gd`. This pack is not CC0; retain its included license.
+- Original Blender modular dungeon sources under `assets/blender/`, with matching
+  exports under `assets/generated/blender/`: `runewood_dungeon_entrance`,
+  `crypt_stairway`, `crypt_wall_4m`, `crypt_floor_4m`, `crypt_pillar`,
+  `sentinel_rune_stone`, `amethyst_cluster`, `boss_heart_altar`,
+  `sentinel_boss_arena`, `crypt_brazier`, `ironbound_treasure_chest`.
+
+See `docs/PHASE6_NEWMAP.md` for provenance, reproduction commands, integration and
+actual rendered validation. No external asset was downloaded for this work.
 
 ### Phase 5F (2026-10-18): input prompt icons
 `assets/ui/input_prompts/input_prompts.png` (1774x887) is an AI-generated pixel-art input prompt

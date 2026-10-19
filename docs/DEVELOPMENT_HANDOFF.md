@@ -1,5 +1,49 @@
 # Development handoff: Phase 5F integrated
 
+## Current continuation: Phase 6 new map and dungeon (2026-10-19)
+
+The user's current Phase 6 scope is **a new outdoor map, separate dungeon and functional
+Bestiary boss**, excluding tools, fishing, village remodeling and gear/inventory work.
+See `docs/PHASE6_NEWMAP.md` for the complete asset inventory, architecture, routes,
+validation commands, screenshots and limitations. Earlier same-level Blender prototypes
+remain on disk; the active game now uses these separate scene files:
+
+- `scenes/phase6/runewood_outdoors.tscn` — Runewood Highlands terrain/forest/roads/bridge/ruins.
+- `scenes/phase6/sentinel_dungeon.tscn` — stairs, guard hall, side reliquary and boss sanctuary.
+- `scenes/phase6/village_gateway.tscn` — northeast passage at (33, 0, -34), interaction near (33, 0, -31.5).
+
+`scripts/phase6/world_router.gd` is instanced in the village session root and switches
+level PackedScenes while retaining the same player, camera, health, inventory, quests
+and services. Existing village visibility/processing/collision state is restored on
+return. Maps have separate saved fog grids; existing portal activation persists.
+
+Blender actually executed: `C:\Program Files\Blender Foundation\Blender 5.2\blender.exe`,
+version **5.2.2 LTS**. New source scenes are in `assets/blender/phase6/`; exports are in
+`assets/generated/phase6/`. Terrain is original; much of the dressing comes from the
+actual `assets/newmap` packs. The dungeon uses the existing Blender-authored modular kit.
+
+Bestiary Imp and Puglin contain skeletons but **no animation clips**. Procedural poses
+are supplied by `scripts/phase6/bestiary_visual.gd`. Gorvath uses the Puglin model,
+260 HP, telegraphed close and ranged attacks, actual combat damage, death, a real
+boss HP bar and a saved one-time 300 gold/25 reputation victory reward.
+
+Validate with `tests/phase6_newmap_tests.gd` (headless or GPU) and
+`tests/phase6_world_state_tests.gd`. Actual gameplay captures are in
+`docs/validation/phase6-newmap/`, with logs in `validation/phase6-newmap/`. Use the
+documented process-local APPDATA override for isolated validation saves. Main and other
+worktrees are untouched; no push or merge is performed. Git metadata write permissions
+remain a limitation for committing from this session.
+
+Final validation: **76/0** in the real rendered game round trip (twelve screenshots,
+all opened and inspected), **12/0** region/save checks, and **33 test scripts** passing
+after targeted reruns. Existing World/UI previews omit GameplayServices; the router
+now guards that case. Nested persistent HUDs keep processing while village geometry
+is paused. Native normal-game startup also exited 0 after 180 frames. Bestiary posing
+remains procedural because the supplied rigged GLBs have no authored animation clips;
+encounter balance has scripted coverage but no human playtest.
+
+The historical Phase 5F handoff below remains for reference.
+
 Written 2026-10-18 at the end of Phase 5F integration, so either Claude Code account can continue
 in a fresh session. Everything below was checked against the code and test runs in
 `D:\courier-phase5f-integrated` on branch `phase5f-integrated`.

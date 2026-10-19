@@ -155,7 +155,7 @@ func _test_data() -> void:
 		_check(item != null and item.is_tool() and not item.is_weapon() and item.is_quick_slottable() and item.slot == ItemDefinition.Slot.MAIN_HAND
 				and item.held_model != null and item.icon != null and item.price > 0, "%s is a registered main-hand tool with icon and held model" % id)
 	var models := TOOLS.map(func(id: StringName) -> String: return inventory.get_definition(id).held_model.resource_path)
-	_check(models.filter(func(p: String) -> bool: return p.begins_with("res://assets/models/kaykit_rpg_tools/")).size() == 5 and models.has("res://scenes/props/tools/fishing_rod.tscn"),
+	_check(models.filter(func(p: String) -> bool: return p.begins_with("res://assets/models/kaykit_rpg_tools/")).size() == 5 and models.has("res://assets/generated/tools/fishing_rod.tscn"),
 			"five tools hold KayKit RPG Tools models; the rod (not in the pack) is built from primitives")
 	for id in MATERIALS:
 		var material := inventory.get_material_definition(id)

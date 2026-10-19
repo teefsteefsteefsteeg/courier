@@ -1,0 +1,466 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/runewood_region.gd" id="1_gpfsg"]
+[ext_resource type="PackedScene" path="res://scenes/generated/runewood_dungeon_entrance.tscn" id="2_j8ay2"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="3_huk8c"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="4_lxce1"]
+[ext_resource type="Script" path="res://scripts/world/location_zone.gd" id="5_k1aso"]
+[ext_resource type="PackedScene" path="res://scenes/generated/sentinel_rune_stone.tscn" id="6_3uhud"]
+[ext_resource type="PackedScene" path="res://scenes/generated/crypt_brazier.tscn" id="7_w2ubm"]
+[ext_resource type="PackedScene" path="res://scenes/generated/amethyst_cluster.tscn" id="8_dt34u"]
+[ext_resource type="PackedScene" path="res://scenes/generated/courier_waypost.tscn" id="9_kfgvk"]
+[ext_resource type="PackedScene" path="res://scenes/generated/runewood_path_flags.tscn" id="10_ave1q"]
+[ext_resource type="PackedScene" path="res://scenes/generated/crypt_floor_4m.tscn" id="11_gw11w"]
+[ext_resource type="PackedScene" path="res://scenes/generated/crypt_wall_4m.tscn" id="12_vojkm"]
+[ext_resource type="PackedScene" path="res://scenes/generated/crypt_pillar.tscn" id="13_vnb2b"]
+[ext_resource type="PackedScene" path="res://scenes/generated/crypt_stairway.tscn" id="14_5n6ai"]
+[ext_resource type="PackedScene" path="res://scenes/generated/sentinel_boss_arena.tscn" id="15_q45iq"]
+[ext_resource type="PackedScene" path="res://scenes/generated/boss_heart_altar.tscn" id="16_s64vf"]
+[ext_resource type="PackedScene" path="res://scenes/generated/ironbound_treasure_chest.tscn" id="17_ujd63"]
+[ext_resource type="PackedScene" path="res://scenes/generated/wayfarer_open_gate.tscn" id="18_grc5j"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_8ss8w"]
+radius = 0.85
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gkfk3"]
+size = Vector3(19, 5, 18)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_bgyud"]
+radius = 0.85
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nxbkr"]
+size = Vector3(16, 0.2, 16)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_fc22w"]
+radius = 0.85
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_xr7ow"]
+size = Vector3(20, 9, 53)
+
+[node name="RunewoodRegion" type="Node3D" unique_id=810780439]
+script = ExtResource("1_gpfsg")
+
+[node name="Exterior" type="Node3D" parent="." unique_id=1183847691]
+
+[node name="Entrance" type="Node3D" parent="Exterior" unique_id=403598138 instance=ExtResource("2_j8ay2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 0, -34)
+
+[node name="Interactable" type="Area3D" parent="Exterior/Entrance" unique_id=560257428]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.4)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("3_huk8c")
+prompt_verb = "Descend into"
+display_name = "Runewood Crypt"
+
+[node name="Range" type="CollisionShape3D" parent="Exterior/Entrance/Interactable" unique_id=534906250]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("SphereShape3D_8ss8w")
+
+[node name="MapLocation" type="Marker3D" parent="Exterior" unique_id=1549249999]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 0, -32)
+script = ExtResource("4_lxce1")
+location_id = &"runewood_crypt"
+display_name = "Runewood Crypt"
+subtitle = "Ancient stairs beneath the northeast ruins"
+kind = 4
+discover_radius = 10.0
+
+[node name="RuinsZone" type="Area3D" parent="Exterior" unique_id=1492156988]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 1, -31)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_k1aso")
+display_name = "Runewood Crypt"
+subtitle = "Runewood Escarpment"
+zone_priority = 12
+location_id = &"runewood_crypt"
+
+[node name="Bounds" type="CollisionShape3D" parent="Exterior/RuinsZone" unique_id=183113047]
+shape = SubResource("BoxShape3D_gkfk3")
+
+[node name="RuneStone3" type="Node3D" parent="Exterior" unique_id=490615846 instance=ExtResource("6_3uhud")]
+transform = Transform3D(0.921061, 0, 0.38941833, 0, 1, 0, -0.38941833, 0, 0.921061, 28, 0, -31)
+
+[node name="RuneStone4" type="Node3D" parent="Exterior" unique_id=1491486153 instance=ExtResource("6_3uhud")]
+transform = Transform3D(0.87758255, 0, -0.47942555, 0, 1, 0, 0.47942555, 0, 0.87758255, 38, 0, -31)
+
+[node name="GateFlame5" type="Node3D" parent="Exterior" unique_id=1013134120 instance=ExtResource("7_w2ubm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, -32)
+
+[node name="GateFlame6" type="Node3D" parent="Exterior" unique_id=2038389021 instance=ExtResource("7_w2ubm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, 0, -32)
+
+[node name="ExteriorCrystals" type="Node3D" parent="Exterior" unique_id=694068995 instance=ExtResource("8_dt34u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.5, 0, -35)
+
+[node name="RuinsWaypost" type="Node3D" parent="Exterior" unique_id=1229454524 instance=ExtResource("9_kfgvk")]
+transform = Transform3D(0.8253356, 0, -0.5646425, 0, 1, 0, 0.5646425, 0, 0.8253356, 24, 0, -24)
+
+[node name="Trail00" type="Node3D" parent="Exterior" unique_id=507154076 instance=ExtResource("10_ave1q")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 18, 0.025, -22)
+
+[node name="Trail01" type="Node3D" parent="Exterior" unique_id=1293193043 instance=ExtResource("10_ave1q")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 20.05, 0.025, -23.4)
+
+[node name="Trail02" type="Node3D" parent="Exterior" unique_id=1108552968 instance=ExtResource("10_ave1q")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 22.1, 0.025, -24.8)
+
+[node name="Trail03" type="Node3D" parent="Exterior" unique_id=541800096 instance=ExtResource("10_ave1q")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 24.15, 0.025, -26.2)
+
+[node name="Trail04" type="Node3D" parent="Exterior" unique_id=1690698521 instance=ExtResource("10_ave1q")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 26.2, 0.025, -27.6)
+
+[node name="Trail05" type="Node3D" parent="Exterior" unique_id=309719590 instance=ExtResource("10_ave1q")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 28.25, 0.025, -29)
+
+[node name="Trail06" type="Node3D" parent="Exterior" unique_id=311698039 instance=ExtResource("10_ave1q")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 30.3, 0.025, -30.4)
+
+[node name="Trail07" type="Node3D" parent="Exterior" unique_id=1802490168 instance=ExtResource("10_ave1q")]
+transform = Transform3D(0.5117081, 0, -0.35007834, 0, 0.12, 0, 0.35007834, 0, 0.5117081, 32.35, 0.025, -31.8)
+
+[node name="Dungeon" type="Node3D" parent="." unique_id=1769515207]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -40, 0)
+
+[node name="HallFloor-6_-6" type="Node3D" parent="Dungeon" unique_id=261663116 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -6)
+
+[node name="HallFloor-6_-2" type="Node3D" parent="Dungeon" unique_id=952604694 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -2)
+
+[node name="HallFloor-6_2" type="Node3D" parent="Dungeon" unique_id=73074269 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 2)
+
+[node name="HallFloor-6_6" type="Node3D" parent="Dungeon" unique_id=368950916 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 6)
+
+[node name="HallFloor-2_-6" type="Node3D" parent="Dungeon" unique_id=1584106979 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -6)
+
+[node name="HallFloor-2_-2" type="Node3D" parent="Dungeon" unique_id=1309574358 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
+
+[node name="HallFloor-2_2" type="Node3D" parent="Dungeon" unique_id=2036496694 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 2)
+
+[node name="HallFloor-2_6" type="Node3D" parent="Dungeon" unique_id=1340056621 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 6)
+
+[node name="HallFloor2_-6" type="Node3D" parent="Dungeon" unique_id=192357793 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -6)
+
+[node name="HallFloor2_-2" type="Node3D" parent="Dungeon" unique_id=1377653525 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2)
+
+[node name="HallFloor2_2" type="Node3D" parent="Dungeon" unique_id=499859031 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
+
+[node name="HallFloor2_6" type="Node3D" parent="Dungeon" unique_id=1080312789 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 6)
+
+[node name="HallFloor6_-6" type="Node3D" parent="Dungeon" unique_id=295863794 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -6)
+
+[node name="HallFloor6_-2" type="Node3D" parent="Dungeon" unique_id=132020078 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
+
+[node name="HallFloor6_2" type="Node3D" parent="Dungeon" unique_id=19663276 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
+
+[node name="HallFloor6_6" type="Node3D" parent="Dungeon" unique_id=1904594699 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 6)
+
+[node name="NorthWall-6" type="Node3D" parent="Dungeon" unique_id=2143474331 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -8)
+
+[node name="SouthParapet-6" type="Node3D" parent="Dungeon" unique_id=502560194 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 0.24, 0, 0, 0, 1, -6, 0, 8)
+
+[node name="NorthWall6" type="Node3D" parent="Dungeon" unique_id=1180795953 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -8)
+
+[node name="SouthParapet6" type="Node3D" parent="Dungeon" unique_id=163876546 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 0.24, 0, 0, 0, 1, 6, 0, 8)
+
+[node name="WestWall-6" type="Node3D" parent="Dungeon" unique_id=1606182163 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8, 0, -6)
+
+[node name="EastParapet-6" type="Node3D" parent="Dungeon" unique_id=94270229 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 8, 0, -6)
+
+[node name="WestWall-2" type="Node3D" parent="Dungeon" unique_id=639230491 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8, 0, -2)
+
+[node name="EastParapet-2" type="Node3D" parent="Dungeon" unique_id=1757583851 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 8, 0, -2)
+
+[node name="WestWall2" type="Node3D" parent="Dungeon" unique_id=1161249761 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8, 0, 2)
+
+[node name="EastParapet2" type="Node3D" parent="Dungeon" unique_id=1976056023 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 8, 0, 2)
+
+[node name="WestWall6" type="Node3D" parent="Dungeon" unique_id=1118550130 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8, 0, 6)
+
+[node name="EastParapet6" type="Node3D" parent="Dungeon" unique_id=330242004 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 8, 0, 6)
+
+[node name="StairOpeningEdge-2_85" type="Node3D" parent="Dungeon" unique_id=984030017 instance=ExtResource("12_vojkm")]
+transform = Transform3D(0.54, 0, 0, 0, 0.24, 0, 0, 0, 1, -2.85, 0, 8)
+
+[node name="StairOpeningEdge2_85" type="Node3D" parent="Dungeon" unique_id=2021249192 instance=ExtResource("12_vojkm")]
+transform = Transform3D(0.54, 0, 0, 0, 0.24, 0, 0, 0, 1, 2.85, 0, 8)
+
+[node name="HallPillar30" type="Node3D" parent="Dungeon" unique_id=431154747 instance=ExtResource("13_vnb2b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 0, -5.5)
+
+[node name="HallPillar31" type="Node3D" parent="Dungeon" unique_id=1235646914 instance=ExtResource("13_vnb2b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, -5.5)
+
+[node name="HallPillar32" type="Node3D" parent="Dungeon" unique_id=658255410 instance=ExtResource("13_vnb2b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 0, 5.5)
+
+[node name="HallPillar33" type="Node3D" parent="Dungeon" unique_id=255709708 instance=ExtResource("13_vnb2b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, 5.5)
+
+[node name="DescentStairs" type="Node3D" parent="Dungeon" unique_id=1959627838 instance=ExtResource("14_5n6ai")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10.8)
+
+[node name="ReturnLanding" type="Node3D" parent="Dungeon" unique_id=477349025 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.16, 15.8)
+
+[node name="Interactable" type="Area3D" parent="Dungeon/ReturnLanding" unique_id=287481829]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.2)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("3_huk8c")
+prompt_verb = "Return to"
+display_name = "Willowmere surface"
+
+[node name="Range" type="CollisionShape3D" parent="Dungeon/ReturnLanding/Interactable" unique_id=1628585939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("SphereShape3D_bgyud")
+
+[node name="ReturnArch" type="Node3D" parent="Dungeon" unique_id=797469798 instance=ExtResource("2_j8ay2")]
+transform = Transform3D(-0.6, 0, -5.2453668e-08, 0, 0.6, 0, 5.2453668e-08, 0, -0.6, 0, 2.16, 17.6)
+
+[node name="LandingRail-2" type="Node3D" parent="Dungeon" unique_id=61579835 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, -2, 2.16, 15.8)
+
+[node name="LandingRail2" type="Node3D" parent="Dungeon" unique_id=700237273 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 2, 2.16, 15.8)
+
+[node name="CorridorFloor-10" type="Node3D" parent="Dungeon" unique_id=1960699096 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
+
+[node name="CorridorWall-2_-10" type="Node3D" parent="Dungeon" unique_id=1861856582 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.5, 0, -10)
+
+[node name="CorridorWall2_-10" type="Node3D" parent="Dungeon" unique_id=406451984 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 2.5, 0, -10)
+
+[node name="CorridorFloor-14" type="Node3D" parent="Dungeon" unique_id=1301748455 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14)
+
+[node name="CorridorWall-2_-14" type="Node3D" parent="Dungeon" unique_id=612679293 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2.5, 0, -14)
+
+[node name="CorridorWall2_-14" type="Node3D" parent="Dungeon" unique_id=29468938 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 2.5, 0, -14)
+
+[node name="BossArena" type="Node3D" parent="Dungeon" unique_id=1431559548 instance=ExtResource("15_q45iq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -23.5)
+
+[node name="BorderFlags-6_-6" type="Node3D" parent="Dungeon/BossArena" unique_id=1704236260 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.035, -6)
+
+[node name="BorderFlags-6_-2" type="Node3D" parent="Dungeon/BossArena" unique_id=756507 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.035, -2)
+
+[node name="BorderFlags-6_2" type="Node3D" parent="Dungeon/BossArena" unique_id=615940240 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.035, 2)
+
+[node name="BorderFlags-6_6" type="Node3D" parent="Dungeon/BossArena" unique_id=1184437855 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -0.035, 6)
+
+[node name="BorderFlags-2_-6" type="Node3D" parent="Dungeon/BossArena" unique_id=1296074308 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.035, -6)
+
+[node name="BorderFlags-2_-2" type="Node3D" parent="Dungeon/BossArena" unique_id=1877918285 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.035, -2)
+
+[node name="BorderFlags-2_2" type="Node3D" parent="Dungeon/BossArena" unique_id=666303840 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.035, 2)
+
+[node name="BorderFlags-2_6" type="Node3D" parent="Dungeon/BossArena" unique_id=884729183 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -0.035, 6)
+
+[node name="BorderFlags2_-6" type="Node3D" parent="Dungeon/BossArena" unique_id=1064043446 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.035, -6)
+
+[node name="BorderFlags2_-2" type="Node3D" parent="Dungeon/BossArena" unique_id=1606356478 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.035, -2)
+
+[node name="BorderFlags2_2" type="Node3D" parent="Dungeon/BossArena" unique_id=1457811633 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.035, 2)
+
+[node name="BorderFlags2_6" type="Node3D" parent="Dungeon/BossArena" unique_id=1301084295 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.035, 6)
+
+[node name="BorderFlags6_-6" type="Node3D" parent="Dungeon/BossArena" unique_id=1236720991 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.035, -6)
+
+[node name="BorderFlags6_-2" type="Node3D" parent="Dungeon/BossArena" unique_id=666897387 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.035, -2)
+
+[node name="BorderFlags6_2" type="Node3D" parent="Dungeon/BossArena" unique_id=580720785 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.035, 2)
+
+[node name="BorderFlags6_6" type="Node3D" parent="Dungeon/BossArena" unique_id=1302774279 instance=ExtResource("11_gw11w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.035, 6)
+
+[node name="ArenaSubfloor" type="StaticBody3D" parent="Dungeon/BossArena" unique_id=1986606210]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.22, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="Dungeon/BossArena/ArenaSubfloor" unique_id=1369867171]
+shape = SubResource("BoxShape3D_nxbkr")
+
+[node name="HeartAltar" type="Node3D" parent="Dungeon" unique_id=2092700236 instance=ExtResource("16_s64vf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -26)
+
+[node name="ArenaNorth-6" type="Node3D" parent="Dungeon" unique_id=1606083606 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -31.5)
+
+[node name="ArenaNorth-2" type="Node3D" parent="Dungeon" unique_id=1716382539 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -31.5)
+
+[node name="ArenaNorth2" type="Node3D" parent="Dungeon" unique_id=730398301 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -31.5)
+
+[node name="ArenaNorth6" type="Node3D" parent="Dungeon" unique_id=1168211040 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -31.5)
+
+[node name="ArenaWest-29" type="Node3D" parent="Dungeon" unique_id=1588346109 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8, 0, -29.5)
+
+[node name="ArenaEast-29" type="Node3D" parent="Dungeon" unique_id=1595302527 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 8, 0, -29.5)
+
+[node name="ArenaWest-25" type="Node3D" parent="Dungeon" unique_id=738145948 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8, 0, -25.5)
+
+[node name="ArenaEast-25" type="Node3D" parent="Dungeon" unique_id=996681821 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 8, 0, -25.5)
+
+[node name="ArenaWest-21" type="Node3D" parent="Dungeon" unique_id=1007498905 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8, 0, -21.5)
+
+[node name="ArenaEast-21" type="Node3D" parent="Dungeon" unique_id=1559600442 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 8, 0, -21.5)
+
+[node name="ArenaWest-17" type="Node3D" parent="Dungeon" unique_id=1221801700 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -8, 0, -17.5)
+
+[node name="ArenaEast-17" type="Node3D" parent="Dungeon" unique_id=236887067 instance=ExtResource("12_vojkm")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.24, 0, -1, 0, -4.371139e-08, 8, 0, -17.5)
+
+[node name="ArenaSouth-6" type="Node3D" parent="Dungeon" unique_id=1048233987 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 0.24, 0, 0, 0, 1, -6, 0, -15.5)
+
+[node name="ArenaSouth6" type="Node3D" parent="Dungeon" unique_id=492402003 instance=ExtResource("12_vojkm")]
+transform = Transform3D(1, 0, 0, 0, 0.24, 0, 0, 0, 1, 6, 0, -15.5)
+
+[node name="ArenaRune0" type="Node3D" parent="Dungeon" unique_id=797809615 instance=ExtResource("6_3uhud")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 6.1, 0, -23.5)
+
+[node name="ArenaRune1" type="Node3D" parent="Dungeon" unique_id=1921030948 instance=ExtResource("6_3uhud")]
+transform = Transform3D(-0.8660254, 0, -0.50000006, 0, 1, 0, 0.50000006, 0, -0.8660254, 3.05, 0, -18.217245)
+
+[node name="ArenaRune2" type="Node3D" parent="Dungeon" unique_id=898612167 instance=ExtResource("6_3uhud")]
+transform = Transform3D(-0.8660254, 0, 0.49999997, 0, 1, 0, -0.49999997, 0, -0.8660254, -3.05, 0, -18.217245)
+
+[node name="ArenaRune3" type="Node3D" parent="Dungeon" unique_id=867878935 instance=ExtResource("6_3uhud")]
+transform = Transform3D(1.1924881e-08, 0, 1, 0, 1, 0, -1, 0, 1.1924881e-08, -6.1, 0, -23.5)
+
+[node name="ArenaRune4" type="Node3D" parent="Dungeon" unique_id=229133883 instance=ExtResource("6_3uhud")]
+transform = Transform3D(0.8660253, 0, 0.5000002, 0, 1, 0, -0.5000002, 0, 0.8660253, -3.05, 0, -28.782755)
+
+[node name="ArenaRune5" type="Node3D" parent="Dungeon" unique_id=1123836723 instance=ExtResource("6_3uhud")]
+transform = Transform3D(0.8660254, 0, -0.50000006, 0, 1, 0, 0.50000006, 0, 0.8660254, 3.05, 0, -28.782755)
+
+[node name="CryptCrystal67" type="Node3D" parent="Dungeon" unique_id=1456683983 instance=ExtResource("8_dt34u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 0, -28)
+
+[node name="CryptCrystal68" type="Node3D" parent="Dungeon" unique_id=1365729335 instance=ExtResource("8_dt34u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0, -28)
+
+[node name="CryptCrystal69" type="Node3D" parent="Dungeon" unique_id=666169913 instance=ExtResource("8_dt34u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 0, -19)
+
+[node name="CryptFlame70" type="Node3D" parent="Dungeon" unique_id=439664996 instance=ExtResource("7_w2ubm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 3)
+
+[node name="CryptFlame71" type="Node3D" parent="Dungeon" unique_id=1237342269 instance=ExtResource("7_w2ubm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 3)
+
+[node name="CryptFlame72" type="Node3D" parent="Dungeon" unique_id=494801907 instance=ExtResource("7_w2ubm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -3)
+
+[node name="CryptFlame73" type="Node3D" parent="Dungeon" unique_id=1133202104 instance=ExtResource("7_w2ubm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -3)
+
+[node name="CryptFlame74" type="Node3D" parent="Dungeon" unique_id=756762135 instance=ExtResource("7_w2ubm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45, 0, -12)
+
+[node name="CryptFlame75" type="Node3D" parent="Dungeon" unique_id=700876147 instance=ExtResource("7_w2ubm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -18)
+
+[node name="CryptFlame76" type="Node3D" parent="Dungeon" unique_id=1048790463 instance=ExtResource("7_w2ubm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -18)
+
+[node name="TreasureChest" type="Node3D" parent="Dungeon" unique_id=2011453898 instance=ExtResource("17_ujd63")]
+transform = Transform3D(0.921061, 0, 0.38941833, 0, 1, 0, -0.38941833, 0, 0.921061, -5, 0, -1)
+
+[node name="Interactable" type="Area3D" parent="Dungeon/TreasureChest" unique_id=70984043]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6)
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("3_huk8c")
+prompt_verb = "Inspect"
+display_name = "ironbound chest"
+
+[node name="Range" type="CollisionShape3D" parent="Dungeon/TreasureChest/Interactable" unique_id=614075286]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("SphereShape3D_fc22w")
+
+[node name="CryptZone" type="Area3D" parent="Dungeon" unique_id=1798701501]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -7)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("5_k1aso")
+display_name = "The Sentinel Vault"
+subtitle = "The Sentinel's sealed sanctuary"
+zone_priority = 20
+location_id = &"runewood_crypt"
+
+[node name="Bounds" type="CollisionShape3D" parent="Dungeon/CryptZone" unique_id=679584382]
+shape = SubResource("BoxShape3D_xr7ow")
+
+[node name="Markers" type="Node3D" parent="." unique_id=1937626478]
+
+[node name="SurfaceArrival" type="Marker3D" parent="Markers" unique_id=1910432219]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 0.1, -30.5)
+
+[node name="CryptArrival" type="Marker3D" parent="Markers" unique_id=781095207]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -37.6, 15.5)
+
+[node name="VillageDetails" type="Node3D" parent="." unique_id=90493324]
+
+[node name="FarmLaneGate" type="Node3D" parent="VillageDetails" unique_id=673753066 instance=ExtResource("18_grc5j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 0, 8)
+
+[node name="VillageWaypost" type="Node3D" parent="VillageDetails" unique_id=174450833 instance=ExtResource("9_kfgvk")]
+transform = Transform3D(0.87758255, 0, 0.47942555, 0, 1, 0, -0.47942555, 0, 0.87758255, 9.5, 0, -7)

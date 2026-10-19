@@ -1,0 +1,25 @@
+﻿[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/generated/blender/courier_fishing_rod.glb" id="1_model"]
+
+[sub_resource type="CapsuleShape3D" id="Shape_rod"]
+radius = 0.075
+height = 2.02
+
+[node name="FishingRod" type="Node3D"]
+metadata/asset_author = "Mystic Courier - modelled and exported in Blender 5.2.2 LTS"
+metadata/pivot = "Grip centre; +Y shaft; metres. Source assets/blender/courier_fishing_rod.blend"
+
+[node name="BlenderModel" parent="." instance=ExtResource("1_model")]
+
+[node name="Tip" type="Marker3D" parent="."]
+position = Vector3(0.24, 1.78, -0.038)
+
+[node name="WorldCollision" type="StaticBody3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+
+[node name="Shape" type="CollisionShape3D" parent="WorldCollision"]
+position = Vector3(0.09, 0.8, 0)
+shape = SubResource("Shape_rod")
+disabled = true

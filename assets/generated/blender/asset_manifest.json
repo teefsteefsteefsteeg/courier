@@ -1,0 +1,285 @@
+{
+  "blender_version": "5.2.2 LTS",
+  "assets": [
+    {
+      "name": "runewood_dungeon_entrance",
+      "triangles": 2128,
+      "blender_xyz_bounds": [
+        [
+          -4.7583,
+          4.885
+        ],
+        [
+          -1.3,
+          1.9929
+        ],
+        [
+          0.0,
+          4.47
+        ]
+      ],
+      "blend": "assets/blender/runewood_dungeon_entrance.blend",
+      "glb": "assets/generated/blender/runewood_dungeon_entrance.glb"
+    },
+    {
+      "name": "crypt_stairway",
+      "triangles": 1584,
+      "blender_xyz_bounds": [
+        [
+          -2.01,
+          2.01
+        ],
+        [
+          -3.005,
+          3.005
+        ],
+        [
+          0.0,
+          2.6
+        ]
+      ],
+      "blend": "assets/blender/crypt_stairway.blend",
+      "glb": "assets/generated/blender/crypt_stairway.glb"
+    },
+    {
+      "name": "crypt_wall_4m",
+      "triangles": 1100,
+      "blender_xyz_bounds": [
+        [
+          -2.06,
+          2.06
+        ],
+        [
+          -0.41,
+          0.41
+        ],
+        [
+          0.0,
+          3.04
+        ]
+      ],
+      "blend": "assets/blender/crypt_wall_4m.blend",
+      "glb": "assets/generated/blender/crypt_wall_4m.glb"
+    },
+    {
+      "name": "crypt_floor_4m",
+      "triangles": 704,
+      "blender_xyz_bounds": [
+        [
+          -1.988,
+          1.988
+        ],
+        [
+          -1.988,
+          1.988
+        ],
+        [
+          -0.2445,
+          0.005
+        ]
+      ],
+      "blend": "assets/blender/crypt_floor_4m.blend",
+      "glb": "assets/generated/blender/crypt_floor_4m.glb"
+    },
+    {
+      "name": "crypt_pillar",
+      "triangles": 276,
+      "blender_xyz_bounds": [
+        [
+          -0.73,
+          0.73
+        ],
+        [
+          -0.73,
+          0.73
+        ],
+        [
+          0.0,
+          2.88
+        ]
+      ],
+      "blend": "assets/blender/crypt_pillar.blend",
+      "glb": "assets/generated/blender/crypt_pillar.glb"
+    },
+    {
+      "name": "sentinel_rune_stone",
+      "triangles": 272,
+      "blender_xyz_bounds": [
+        [
+          -0.75,
+          0.75
+        ],
+        [
+          -0.6815,
+          0.5993
+        ],
+        [
+          0.0,
+          2.35
+        ]
+      ],
+      "blend": "assets/blender/sentinel_rune_stone.blend",
+      "glb": "assets/generated/blender/sentinel_rune_stone.glb"
+    },
+    {
+      "name": "amethyst_cluster",
+      "triangles": 244,
+      "blender_xyz_bounds": [
+        [
+          -0.7096,
+          0.7846
+        ],
+        [
+          -0.6901,
+          0.6893
+        ],
+        [
+          0.0,
+          2.0554
+        ]
+      ],
+      "blend": "assets/blender/amethyst_cluster.blend",
+      "glb": "assets/generated/blender/amethyst_cluster.glb"
+    },
+    {
+      "name": "boss_heart_altar",
+      "triangles": 528,
+      "blender_xyz_bounds": [
+        [
+          -1.55,
+          1.55
+        ],
+        [
+          -1.55,
+          1.55
+        ],
+        [
+          0.0,
+          3.03
+        ]
+      ],
+      "blend": "assets/blender/boss_heart_altar.blend",
+      "glb": "assets/generated/blender/boss_heart_altar.glb"
+    },
+    {
+      "name": "sentinel_boss_arena",
+      "triangles": 5496,
+      "blender_xyz_bounds": [
+        [
+          -7.7,
+          7.7
+        ],
+        [
+          -7.7,
+          7.7
+        ],
+        [
+          -0.28,
+          0.04
+        ]
+      ],
+      "blend": "assets/blender/sentinel_boss_arena.blend",
+      "glb": "assets/generated/blender/sentinel_boss_arena.glb"
+    },
+    {
+      "name": "crypt_brazier",
+      "triangles": 332,
+      "blender_xyz_bounds": [
+        [
+          -0.444,
+          0.444
+        ],
+        [
+          -0.444,
+          0.444
+        ],
+        [
+          0.0,
+          2.1128
+        ]
+      ],
+      "blend": "assets/blender/crypt_brazier.blend",
+      "glb": "assets/generated/blender/crypt_brazier.glb"
+    },
+    {
+      "name": "ironbound_treasure_chest",
+      "triangles": 1308,
+      "blender_xyz_bounds": [
+        [
+          -0.875,
+          0.875
+        ],
+        [
+          -0.5386,
+          0.5386
+        ],
+        [
+          0.0,
+          1.2083
+        ]
+      ],
+      "blend": "assets/blender/ironbound_treasure_chest.blend",
+      "glb": "assets/generated/blender/ironbound_treasure_chest.glb"
+    },
+    {
+      "name": "wayfarer_open_gate",
+      "triangles": 1140,
+      "blender_xyz_bounds": [
+        [
+          -3.3,
+          3.3
+        ],
+        [
+          -0.2,
+          0.2
+        ],
+        [
+          0.0,
+          2.15
+        ]
+      ],
+      "blend": "assets/blender/wayfarer_open_gate.blend",
+      "glb": "assets/generated/blender/wayfarer_open_gate.glb"
+    },
+    {
+      "name": "courier_waypost",
+      "triangles": 340,
+      "blender_xyz_bounds": [
+        [
+          -0.95,
+          0.9738
+        ],
+        [
+          -0.275,
+          0.275
+        ],
+        [
+          0.0,
+          2.5
+        ]
+      ],
+      "blend": "assets/blender/courier_waypost.blend",
+      "glb": "assets/generated/blender/courier_waypost.glb"
+    },
+    {
+      "name": "courier_fishing_rod",
+      "triangles": 1264,
+      "blender_xyz_bounds": [
+        [
+          -0.086,
+          0.264
+        ],
+        [
+          -0.039,
+          0.176
+        ],
+        [
+          -0.21,
+          1.81
+        ]
+      ],
+      "blend": "assets/blender/courier_fishing_rod.blend",
+      "glb": "assets/generated/blender/courier_fishing_rod.glb"
+    }
+  ]
+}

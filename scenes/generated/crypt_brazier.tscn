@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/generated/blender/crypt_brazier.glb" id="1_ye13w"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_obgee"]
+size = Vector3(0.75, 1.75, 0.75)
+
+[node name="CryptBrazier" type="Node3D" unique_id=1013134120]
+
+[node name="Model" type="Node3D" parent="." unique_id=279983914 instance=ExtResource("1_ye13w")]
+
+[node name="Solid" type="StaticBody3D" parent="." unique_id=701769788]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.87, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="Solid" unique_id=308509980]
+shape = SubResource("BoxShape3D_obgee")
+
+[node name="Glow" type="OmniLight3D" parent="." unique_id=487161274]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+light_color = Color(1, 0.57, 0.22, 1)
+light_energy = 2.0
+omni_range = 7.0

@@ -1,0 +1,16 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/generated/blender/ironbound_treasure_chest.glb" id="1_vwoly"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3i1vm"]
+size = Vector3(1.75, 1.15, 1)
+
+[node name="IronboundTreasureChest" type="Node3D" unique_id=2011453898]
+
+[node name="Model" type="Node3D" parent="." unique_id=263886745 instance=ExtResource("1_vwoly")]
+
+[node name="Solid" type="StaticBody3D" parent="." unique_id=1668927969]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.57, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="Solid" unique_id=1844535086]
+shape = SubResource("BoxShape3D_3i1vm")

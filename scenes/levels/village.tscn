@@ -74,6 +74,8 @@
 [ext_resource type="PackedScene" path="res://scenes/world/tools/ore_rock.tscn" id="h5_rock"]
 [ext_resource type="PackedScene" path="res://scenes/world/tools/broken_fence.tscn" id="h5_fence"]
 [ext_resource type="PackedScene" path="res://scenes/world/tools/crumbled_wall.tscn" id="h5_wall"]
+[ext_resource type="PackedScene" path="res://scenes/phase6/village_gateway.tscn" id="blender_region"]
+[ext_resource type="Script" path="res://scripts/phase6/world_router.gd" id="phase6_router"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -962,6 +964,11 @@ display_name = "Willowmere Portal"
 subtitle = "Willowmere Village, by the south road"
 
 [node name="Markers" type="Node3D" parent="."]
+
+[node name="Phase6Gateway" parent="." instance=ExtResource("blender_region")]
+
+[node name="Phase6Router" type="Node" parent="."]
+script = ExtResource("phase6_router")
 
 [node name="PlayerSpawn" type="Marker3D" parent="Markers"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -15, 0, -5.6)

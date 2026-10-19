@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/generated/blender/crypt_floor_4m.glb" id="1_bs2om"]
+
+[node name="RunewoodPathFlags" type="Node3D" unique_id=507154076]
+
+[node name="Model" type="Node3D" parent="." unique_id=1246004297 instance=ExtResource("1_bs2om")]

@@ -36,6 +36,8 @@ var _fog_texture: ImageTexture
 var _scan_left := 0.0
 var _last_reveal := Vector2.INF
 var _player: Node3D = null
+var region_id: StringName = &"village"
+var _region_fog: Dictionary = {}
 
 
 func _enter_tree() -> void:
@@ -61,13 +63,16 @@ func _process(delta: float) -> void:
 		_player = get_tree().get_first_node_in_group(CombatController.PLAYER_GROUP) as Node3D
 		if _player == null:
 			return
+	# The surface map must not reveal village cells while walking the underground vault.
+	if _player.global_position.y < -20.0:
+		return
 	var at := Vector2(_player.global_position.x, _player.global_position.z)
 	if _last_reveal.distance_to(at) >= 1.0:
 		_last_reveal = at
 		reveal_around(at)
 	for id in locations:
 		var location := locations[id]
-		if not _discovered.has(id) and is_instance_valid(location) and location.discover_radius > 0.0 \
+		if not _discovered.has(id) and is_instance_valid(location) and location.region_id == region_id and location.discover_radius > 0.0 \
 				and location.get_map_position().distance_to(at) <= location.discover_radius:
 			discover(id)
 
@@ -93,7 +98,7 @@ func get_locations(kind: int = -1) -> Array[WorldLocation]:
 	var out: Array[WorldLocation] = []
 	for id in locations:
 		var location := get_location(id)
-		if location != null and (kind < 0 or location.kind == kind):
+		if location != null and location.region_id == region_id and (kind < 0 or location.kind == kind):
 			out.append(location)
 	return out
 
@@ -198,12 +203,17 @@ func to_dict() -> Dictionary:
 		"explored_size": [_grid.x, _grid.y],
 		"discovered": _discovered.keys().map(func(id: StringName) -> String: return String(id)),
 		"portals": _portals.keys().map(func(id: StringName) -> String: return String(id)),
+		"region_id": String(region_id),
+		"region_fog": _region_fog.duplicate(true),
 	}
 
 
 ## Restores saved exploration. Unknown or malformed data is ignored (a fresh map), so old
 ## saves and saves from before new locations or portals load cleanly.
 func from_dict(data: Dictionary) -> void:
+	region_id = StringName(data.get("region_id","village"))
+	var saved_regions: Variant = data.get("region_fog",{})
+	_region_fog = saved_regions.duplicate(true) if saved_regions is Dictionary else {}
 	_discovered.clear()
 	_portals.clear()
 	_cells.fill(0)
@@ -220,6 +230,27 @@ func from_dict(data: Dictionary) -> void:
 	for y in _grid.y:
 		for x in _grid.x:
 			_fog_image.set_pixel(x, y, FOG_CLEAR if _cells[y * _grid.x + x] != 0 else FOG_HIDDEN)
+	_fog_texture.update(_fog_image)
+	_last_reveal = Vector2.INF
+	explored_changed.emit()
+
+
+## Switch fog grids without replacing discovery, portal activation or the player.
+func set_region(next: StringName) -> void:
+	if region_id == next:
+		return
+	_region_fog[String(region_id)] = Marshalls.raw_to_base64(_cells.compress(FileAccess.COMPRESSION_DEFLATE))
+	region_id = next
+	_cells.fill(0)
+	var encoded: String = _region_fog.get(String(next),"")
+	if not encoded.is_empty():
+		var raw := Marshalls.base64_to_raw(encoded)
+		var restored := raw.decompress(_grid.x*_grid.y,FileAccess.COMPRESSION_DEFLATE) if not raw.is_empty() else PackedByteArray()
+		if restored.size() == _cells.size():
+			_cells = restored
+	for y in _grid.y:
+		for x in _grid.x:
+			_fog_image.set_pixel(x,y,FOG_CLEAR if _cells[y*_grid.x+x] else FOG_HIDDEN)
 	_fog_texture.update(_fog_image)
 	_last_reveal = Vector2.INF
 	explored_changed.emit()

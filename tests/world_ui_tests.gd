@@ -130,7 +130,7 @@ func _test_world_structure() -> void:
 	var zones := get_nodes_in_group(LocationZone.GROUP)
 	# Six from Phase 4, the Armory's zone (Phase 5G location registry), and the pond, quarry and
 	# tool stall zones (Phase 5H).
-	_check(zones.size() == 10, "ten location zones registered (got %d)" % zones.size())
+	_check(zones.size() == 10, "ten village location zones registered (got %d)" % zones.size())
 
 
 ## Albedo of the first roof-tile surface override under a MedievalBuilding.

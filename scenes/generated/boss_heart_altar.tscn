@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/generated/blender/boss_heart_altar.glb" id="1_k1l1v"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_j1t48"]
+size = Vector3(2.7, 1.6, 2.7)
+
+[node name="BossHeartAltar" type="Node3D" unique_id=2092700236]
+
+[node name="Model" type="Node3D" parent="." unique_id=1145543129 instance=ExtResource("1_k1l1v")]
+
+[node name="Solid" type="StaticBody3D" parent="." unique_id=2107968232]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="Solid" unique_id=1430600419]
+shape = SubResource("BoxShape3D_j1t48")
+
+[node name="Glow" type="OmniLight3D" parent="." unique_id=174864290]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+light_color = Color(0.38, 0.48, 1, 1)
+omni_range = 7.0

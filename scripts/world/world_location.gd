@@ -21,6 +21,8 @@ const GROUP := &"world_locations"
 @export_range(0.0, 60.0, 0.5, "suffix:m") var discover_radius: float = 6.0
 ## Shown on the map (and as a banner) only once discovered.
 @export var hidden_until_discovered := true
+## Separate maps share session services, but only show locations for the active region.
+@export var region_id: StringName = &"village"
 
 
 func _enter_tree() -> void:

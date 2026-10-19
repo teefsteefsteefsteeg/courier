@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/generated/blender/wayfarer_open_gate.glb" id="1_dkxuq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nf5g2"]
+size = Vector3(1.8, 2, 0.42)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_npaaw"]
+size = Vector3(1.8, 2, 0.42)
+
+[node name="WayfarerOpenGate" type="Node3D" unique_id=673753066]
+
+[node name="Model" type="Node3D" parent="." unique_id=1894323922 instance=ExtResource("1_dkxuq")]
+
+[node name="SideFence-1" type="StaticBody3D" parent="." unique_id=1766478572]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 1, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="SideFence-1" unique_id=531603999]
+shape = SubResource("BoxShape3D_nf5g2")
+
+[node name="SideFence1" type="StaticBody3D" parent="." unique_id=378389457]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 1, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="SideFence1" unique_id=405826870]
+shape = SubResource("BoxShape3D_npaaw")
