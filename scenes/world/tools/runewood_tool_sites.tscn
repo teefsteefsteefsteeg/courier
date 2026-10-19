@@ -1,0 +1,68 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/ground_snap.gd" id="1_snap"]
+[ext_resource type="PackedScene" path="res://scenes/world/tools/harvest_tree.tscn" id="2_tree"]
+[ext_resource type="PackedScene" path="res://scenes/world/tools/ore_rock.tscn" id="3_rock"]
+[ext_resource type="PackedScene" path="res://scenes/world/tools/dig_spot.tscn" id="4_dig"]
+[ext_resource type="Script" path="res://scripts/world/river_water.gd" id="5_river"]
+[ext_resource type="Script" path="res://scripts/inventory/material_item.gd" id="6_material"]
+[ext_resource type="Resource" path="res://data/materials/pond_perch.tres" id="7_perch"]
+[ext_resource type="Resource" path="res://data/materials/silver_trout.tres" id="8_trout"]
+[ext_resource type="Resource" path="res://data/materials/golden_carp.tres" id="9_carp"]
+[ext_resource type="Script" path="res://scripts/tools/fishing_spot.gd" id="10_spot"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="11_interactable"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_spot"]
+radius = 0.8
+
+[node name="RunewoodToolSites" type="Node3D"]
+script = ExtResource("1_snap")
+
+[node name="RunewoodTree1" parent="." instance=ExtResource("2_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, 1.3, 29)
+target_id = &"runewood_tree_1"
+
+[node name="RunewoodTree2" parent="." instance=ExtResource("2_tree")]
+transform = Transform3D(-0.5, 0, 0.866, 0, 1, 0, -0.866, 0, -0.5, -25, 1.7, 22)
+target_id = &"runewood_tree_2"
+
+[node name="RunewoodRock1" parent="." instance=ExtResource("3_rock")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 3.2, -19)
+target_id = &"runewood_rock_1"
+
+[node name="RunewoodRock2" parent="." instance=ExtResource("3_rock")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16, 3.7, -14)
+target_id = &"runewood_rock_2"
+
+[node name="RunewoodSoil1" parent="." instance=ExtResource("4_dig")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 1.9, 11)
+target_id = &"runewood_soil_1"
+
+[node name="FixedMoonbrook" type="Node3D" parent="."]
+script = ExtResource("5_river")
+points = PackedVector3Array(-45, 0, 1.5, -40, 0, 2.5, -15, 0, 2.5, -10, 0, 3, -5, 0, 4.5, 5, 0, 4.5, 10, 0, 6, 15, 0, 6, 20, 0, 4.5, 35, 0, 4.5, 40, 0, 2.5, 45, 0, 1.5)
+water_height = 0.12
+fish = Array[ExtResource("6_material")]([ExtResource("7_perch"), ExtResource("8_trout"), ExtResource("9_carp")])
+fish_weights = PackedFloat32Array(40, 50, 10)
+
+[node name="MoonbrookBank" type="Node3D" parent="." node_paths=PackedStringArray("pond", "cast_point")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 1, 7)
+script = ExtResource("10_spot")
+pond = NodePath("../FixedMoonbrook")
+cast_point = NodePath("CastPoint")
+catch_bonus = 1.5
+target_id = &"runewood_moonbrook_bank"
+display_name = "the Moonbrook"
+
+[node name="CastPoint" type="Marker3D" parent="MoonbrookBank"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.2)
+
+[node name="Interactable" type="Area3D" parent="MoonbrookBank"]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("11_interactable")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MoonbrookBank/Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_spot")

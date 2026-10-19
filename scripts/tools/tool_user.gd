@@ -237,10 +237,12 @@ func get_bank_cast_point() -> Vector3:
 	return player.global_position + forward * cast_distance
 
 
-## The pond whose open water contains point, or null (dry land).
+## The pond or river whose open water contains point, or null (dry land). Water in a
+## region that is not shown (the paused village while the courier is elsewhere, which
+## shares coordinates with the other regions) never counts.
 func find_water(point: Vector3) -> Pond:
 	for node in get_tree().get_nodes_in_group(Pond.GROUP):
-		if (node as Pond).is_open_water(point):
+		if (node as Pond).is_visible_in_tree() and (node as Pond).is_open_water(point):
 			return node as Pond
 	return null
 
@@ -602,11 +604,11 @@ static func _flat_material(color: Color) -> StandardMaterial3D:
 static func _nothing_here_text(type: ItemDefinition.ToolType) -> String:
 	match type:
 		ItemDefinition.ToolType.WOOD_AXE:
-			return "No marked tree in reach. Look for trees with a white blaze, north-west of the village."
+			return "No marked tree in reach. Look for trees with a white blaze (the Woodcutters' Grove, or along the Runewood road)."
 		ItemDefinition.ToolType.PICKAXE:
-			return "No ore rock in reach. The old quarry is north-west, past the pond."
+			return "No ore rock in reach. Look for grey rocks with ore veins (the old quarry, or the Runewood hillsides)."
 		ItemDefinition.ToolType.SHOVEL:
-			return "No soft soil in reach. Try the muddy patches by the pond."
+			return "No soft soil in reach. Look for dark, muddy patches by water."
 		ItemDefinition.ToolType.HAMMER, ItemDefinition.ToolType.TROWEL:
 			return "Nothing here needs repairing."
 	return "Nothing to use that on here."

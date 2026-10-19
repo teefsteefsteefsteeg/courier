@@ -5,6 +5,7 @@ signal region_changed(region_id: StringName)
 const OUTDOOR := "res://scenes/phase6/runewood_outdoors.tscn"
 const DUNGEON := "res://scenes/phase6/sentinel_dungeon.tscn"
 const MapModel := preload("res://scripts/phase4_integration_visual/minimap_model.gd")
+const REGION_TOOL_SITES := {"runewood": "res://scenes/world/tools/runewood_tool_sites.tscn"}
 var region_id: StringName = &"village"
 var active_level: Node3D
 var crossing := false
@@ -86,6 +87,10 @@ func _cross(next: StringName, spawn: StringName) -> void:
 			_level_cache.erase(String(next))
 		else:
 			active_level = (load(OUTDOOR if next == &"runewood" else DUNGEON) as PackedScene).instantiate() as Node3D
+			# Phase 8: tool sites (trees, ore, soil, fishing water) of a generated region come
+			# from their own scene and snap onto its terrain (GroundSnap).
+			if REGION_TOOL_SITES.has(String(next)):
+				active_level.add_child((load(REGION_TOOL_SITES[String(next)]) as PackedScene).instantiate())
 		get_parent().add_child(active_level)
 		active_level.set_meta(&"router",self)
 		var marker := active_level.get_node("Spawns/"+String(spawn)) as Marker3D

@@ -263,4 +263,4 @@ func _test_gathering_near_spawn() -> void:
 	var rock := level.get_node("ToolSites/OfficeRock") as HarvestNode
 	_check(tree.required_tool == ItemDefinition.ToolType.WOOD_AXE and tree.global_position.distance_to(spawn) < 15.0, "a woodcutting tree beside the post office")
 	_check(rock.required_tool == ItemDefinition.ToolType.PICKAXE and rock.global_position.distance_to(spawn) < 15.0, "an ore rock beside the post office")
-	_check(tree.respawn_seconds > 0.0 and rock.respawn_seconds > 0.0, "both grow back after use")
+	_check(tree.respawn_max_seconds > tree.respawn_min_seconds and rock.respawn_min_seconds > 0.0, "both grow back after use, after a random time")

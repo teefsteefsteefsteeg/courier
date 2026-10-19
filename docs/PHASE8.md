@@ -24,7 +24,7 @@ regeneration, dragon companion and flight).
 | # | Milestone | Status |
 |---|---|---|
 | 1 | Controls: Tab map, Q inventory, R shield, T tool/weapon switch, Ctrl jump | **Done** (below) |
-| 2 | Resource respawn without countdowns; tools in every map | not started |
+| 2 | Resource respawn without countdowns; tools in every map | **Done** (below) |
 | 3 | Weapon enhancement VFX rework (+1 silver spark .. +5 legendary elemental) | not started |
 | 4 | Animated HUD avatar | not started |
 | 5 | Enterable houses (Armory, Post Office, one home) with NPCs | not started |
@@ -64,3 +64,35 @@ regeneration, dragon companion and flight).
 - Rendered: `tests/capture_phase8_controls.gd` -> `docs/validation/phase8/01..06` (weapon
   mode HUD and key guide, Tab map, Q inventory, T inventory view, T pickaxe in hand, Ctrl
   jump in mid-air, 1.14 m measured).
+
+## 2. Natural resource respawn and tools in every map
+- **No countdown:** `HarvestNode` draws a random hidden respawn time between
+  `respawn_min_seconds` and `respawn_max_seconds` (trees 180-300 s, ore rocks 240-360 s, soft
+  soil 120-240 s; set by `tools/generate_tool_sites.gd`) at each depletion. A depleted node
+  shows its depleted look (stump, rubble, dug soil) and its prompt says only "regrowing" /
+  "the ore will return" / "settling" (or "used up" for nodes that never return).
+- **State:** unchanged design: `GatheringService` keeps one unix timestamp per `target_id`,
+  so every node has its own timer, nothing resets on a region change, saves keep it, and a
+  depleted node pays nothing (no duplicate reward).
+- **Fix found by the new test:** a region kept out of the tree by `WorldRouter` refreshed its
+  nodes while away (a save/load emits `changed`), found no service and showed them as
+  available again. `ToolTarget` now refreshes when it re-enters the tree, and `HarvestNode` /
+  `RepairSite` ignore refreshes while outside it.
+- **Tools in every map:** the tool system was already group-based (no village paths); two
+  gaps were closed. `ToolUser.find_water` ignores hidden water (the paused village pond
+  shares coordinates with other regions), and the "nothing here" hints no longer point only
+  at village places. Generated regions get their tool sites from a separate scene that
+  `WorldRouter` adds on first load (`REGION_TOOL_SITES`); its `GroundSnap` root
+  (`scripts/world/ground_snap.gd`) places every child on the terrain after the colliders
+  exist. `scenes/world/tools/runewood_tool_sites.tscn`: two marked trees, two ore rocks,
+  soft soil, and `RiverWater` (`scripts/world/river_water.gd`, a Pond whose open water is a
+  strip along a centreline traced from the Runewood height field; no geometry of its own)
+  with the "Moonbrook" bank FishingSpot. Region-prefixed `target_id`s (`runewood_tree_1`...).
+- Tests: new `tests/phase8_resources_tests.gd` (village rock: no countdown on prompt or HUD,
+  hidden time within range, random times, no second reward, regrows on time; Runewood
+  sites: six unique ids, on the terrain; axe / pickaxe / shovel / rod through the real
+  interact key there; hidden village pond and dry bank are not water; depletion across
+  region changes and save/load). `tool_system_tests` updated (prompt and random time).
+- Rendered: `tests/capture_phase8_resources.gd` -> `docs/validation/phase8/07..12` (village
+  rubble prompt, Runewood marked tree, chopping, stump "regrowing", mining, Moonbrook
+  fishing with the bobber in the river).

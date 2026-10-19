@@ -37,6 +37,10 @@ var _shake_tween: Tween
 
 func _enter_tree() -> void:
 	add_to_group(GROUP)
+	# A region kept out of the tree (WorldRouter's cache) missed every change while away;
+	# re-read the state when it comes back (Phase 8).
+	if is_node_ready():
+		refresh.call_deferred()
 
 
 func _ready() -> void:

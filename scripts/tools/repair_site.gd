@@ -84,6 +84,9 @@ func complete(user: ToolUser) -> String:
 
 
 func refresh() -> void:
+	# Out of the tree there is no GatheringService to ask; _enter_tree refreshes later.
+	if not is_inside_tree():
+		return
 	var done := is_repaired()
 	set_active(damaged_visual, not done)
 	set_active(repaired_visual, done)

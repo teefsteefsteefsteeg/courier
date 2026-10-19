@@ -323,13 +323,22 @@ func _test_chop() -> void:
 	var wood := inventory.get_material_count(&"wood")
 	feedback.clear()
 	await _press(&"interact")
-	_check(not user.is_busy() and inventory.get_material_count(&"wood") == wood and feedback.size() > 0 and feedback[-1].contains("back in 4:00"), "a stump can't be chopped again (%s)" % (feedback[-1] if feedback.size() > 0 else ""))
-	_check(tree.get_interaction_prompt(player).begins_with("Tree Stump · back in"), "the prompt shows the regrow time (%s)" % tree.get_interaction_prompt(player))
-	_now += 239.0
-	_check(not tree.is_available(), "still a stump after 239 s")
+	_check(not user.is_busy() and inventory.get_material_count(&"wood") == wood and feedback.size() > 0 and feedback[-1].contains("regrowing"), "a stump can't be chopped again (%s)" % (feedback[-1] if feedback.size() > 0 else ""))
+	var prompt := tree.get_interaction_prompt(player)
+	_check(prompt == "Tree Stump · regrowing" and not prompt.contains(":"), "Phase 8: the prompt shows no countdown (%s)" % prompt)
+	# The regrow time is hidden and random, between the node's minimum and maximum.
+	var left := service.seconds_until_respawn(tree.target_id)
+	_check(left >= tree.respawn_min_seconds - 0.01 and left <= tree.respawn_max_seconds + 0.01, "the hidden regrow time is %.0f s, within %.0f-%.0f s" % [left, tree.respawn_min_seconds, tree.respawn_max_seconds])
+	_now += left - 1.0
+	await _frames(70)
+	_check(not tree.is_available(), "still a stump one second before its time")
 	_now += 2.0
 	await _frames(70)
-	_check(tree.is_available() and tree.standing_visual.visible and (tree.standing_visual.get_node("Tree") as Node).can_process(), "after 240 s the tree has grown back")
+	_check(tree.is_available() and tree.standing_visual.visible and (tree.standing_visual.get_node("Tree") as Node).can_process(), "then the tree has grown back")
+	var times := {}
+	for i in 12:
+		times[roundi(tree.roll_respawn_seconds())] = true
+	_check(times.size() > 3, "respawn times vary from one felling to the next (%d different)" % times.size())
 
 
 func _test_mine_and_dig() -> void:
