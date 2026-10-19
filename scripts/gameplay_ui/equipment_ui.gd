@@ -1,35 +1,64 @@
 class_name EquipmentUI
 extends CanvasLayer
-## Equipment window (toggle_equipment, Tab): every item the courier could own, grouped as
-## Weapons, Tools and Off-hand and marked Equipped, Owned or Not owned, then the carried
-## Materials (Phase 5H). Owned items can be equipped or unequipped; owned weapons and tools
-## can be put in any of the five quick slots (pressing an item's current slot clears it).
-## Unowned items are dimmed with no actions, so they can never be equipped or slotted.
-## Everything goes through CourierInventory; EquipmentStats does the rest.
+## Inventory window (toggle_equipment, Tab). Phase 7 redesign: a slate frame and parchment
+## page (Humble Pixel inventory pack, assets/ui/inventory/) with two views, switched with
+## the side tabs or [Q] (package_shield; the courier's shield cannot fire while the window
+## is open, so the key is free here):
+##   Weapons & Gear  weapons, then off-hand and armor, as a grid of item cells
+##   Tools & Goods   tools, then seeds, produce and gathered materials with their counts
+## Each cell shows the item's icon, name, enhancement badge (+1..+5 in the level's colour),
+## an E for equipped and its quick-slot number. Selecting a cell shows its details on the
+## right: stats, enhancement stars, status and the actions (Equip / Unequip, quick slots
+## 1-5). Unowned items are dimmed and have their actions disabled. Selecting a seed makes
+## it the one garden beds plant first (FarmService.preferred_seed).
+## Everything goes through CourierInventory (the one inventory); EquipmentStats does the rest.
 ##
 ## Modal like ShopUI: joins "ui_modal", pauses the courier's input, closes on Escape / Tab /
 ## the Close button, and refuses to open over another window or a dialogue line.
 
 signal opened
 signal closed
+signal view_changed(view: int)
+
+enum View { WEAPONS, TOOLS }
 
 const THEME := preload("res://scenes/gameplay/ui/gameplay_ui_theme.tres")
-const ICON_SCALE := 2
+const UI := "res://assets/ui/inventory/"
 const GOLD := Color(1, 0.84, 0.3)
+const INK := Color(0.30, 0.19, 0.11)
+const INK_SOFT := Color(0.45, 0.33, 0.22)
+const VIEW_TITLES := ["Weapons & Gear", "Tools & Goods"]
+const CELL_SIZE := Vector2(104, 112)
 
 @export var inventory: CourierInventory
 
 var root_control: Control
 var panel: PanelContainer
+## The section list of the current view (headers and grids).
 var item_list: VBoxContainer
 var feedback_label: Label
 var close_button: Button
-## item_id -> {"row", "status", "equip", "slots": Array[Button], "item"} (read by tests).
+var title_label: Label
+var switch_hint: Label
+var gold_label: Label
+var tab_buttons: Array[Button] = []
+var view: int = View.WEAPONS
+## item_id -> {"row" (grid cell), "status", "equip", "slots": Array[Button], "item",
+## "badge", "actions"} (read by tests).
 var rows: Dictionary[StringName, Dictionary] = {}
 ## material_id -> {"cell", "label", "material"}: carried materials (read by tests).
 var material_rows: Dictionary[StringName, Dictionary] = {}
+var selected_id: StringName = &""
+var _views: Array[VBoxContainer] = []
+var _detail_icon: TextureRect
+var _detail_name: Label
+var _detail_kind: Label
+var _detail_stats: Label
+var _detail_stars: Label
+var _detail_actions: Control
 var _player: PlayerController = null
 var _slot_assigned_style: StyleBoxFlat
+var _cell_styles: Dictionary = {}
 
 
 func _ready() -> void:
@@ -47,6 +76,7 @@ func _bind() -> void:
 		inventory.equipment_changed.connect(func(_s, _i): _refresh())
 		inventory.quick_slots_changed.connect(_refresh)
 		inventory.materials_changed.connect(func(_m, _c, _d): _refresh())
+		inventory.enhancement_changed.connect(func(_i, _l): _refresh())
 
 
 func is_open() -> bool:
@@ -92,10 +122,39 @@ func close() -> void:
 	closed.emit()
 
 
+## Shows the Weapons & Gear or the Tools & Goods view.
+func set_view(value: int) -> void:
+	view = value
+	for index in _views.size():
+		_views[index].visible = index == view
+	item_list = _views[view]
+	for index in tab_buttons.size():
+		tab_buttons[index].set_pressed_no_signal(index == view)
+		tab_buttons[index].add_theme_stylebox_override(&"normal", _cell_styles["tab_on"] if index == view else _cell_styles["tab_off"])
+	title_label.text = VIEW_TITLES[view]
+	switch_hint.text = "[%s] %s" % [InputHints.key_for(&"package_shield"), "Tools & Goods" if view == View.WEAPONS else "Weapons & Gear"]
+	# Keep the selection in the view on screen.
+	var selected: Dictionary = rows.get(selected_id, {})
+	if selected.is_empty() or _view_of(selected["item"]) != view:
+		_select_first()
+	_refresh()
+	view_changed.emit(view)
+
+
+func toggle_view() -> void:
+	set_view(View.TOOLS if view == View.WEAPONS else View.WEAPONS)
+
+
 ## Closing runs in _input: a focused button would otherwise take Tab for focus navigation.
+## [Q] switches the view while the window is open, before the shield could see it.
 func _input(event: InputEvent) -> void:
-	if is_open() and (event.is_action_pressed(&"toggle_equipment") or event.is_action_pressed(&"ui_cancel")):
+	if not is_open():
+		return
+	if event.is_action_pressed(&"toggle_equipment") or event.is_action_pressed(&"ui_cancel"):
 		close()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(&"package_shield"):
+		toggle_view()
 		get_viewport().set_input_as_handled()
 
 
@@ -122,6 +181,17 @@ func activate_slot(item_id: StringName, index: int) -> void:
 		button.pressed.emit()
 
 
+## Shows item_id's details (switching to its view).
+func select_item(item_id: StringName) -> void:
+	var row: Dictionary = rows.get(item_id, {})
+	if row.is_empty():
+		return
+	selected_id = item_id
+	if _view_of(row["item"]) != view:
+		set_view(_view_of(row["item"]))
+	_refresh()
+
+
 func _on_equip_pressed(item: ItemDefinition) -> void:
 	if inventory.is_equipped(item.item_id):
 		inventory.unequip(item.slot)
@@ -142,7 +212,47 @@ func _on_slot_pressed(item: ItemDefinition, index: int) -> void:
 	_refresh()
 
 
+func _on_material_pressed(material: MaterialItem) -> void:
+	var farm := FarmService.find(get_tree())
+	if material.kind == MaterialItem.Kind.SEED and farm != null:
+		farm.set_preferred_seed(material.material_id)
+		feedback_label.text = "Garden beds will plant %s first." % material.display_name
+	else:
+		feedback_label.text = material.description
+	_refresh()
+
+
+func _view_of(item: ItemDefinition) -> int:
+	return View.TOOLS if item.is_tool() else View.WEAPONS
+
+
 # --- layout ---------------------------------------------------------------------
+
+func _texture_style(file: String, margin: int, content: float) -> StyleBoxTexture:
+	var style := StyleBoxTexture.new()
+	style.texture = load(UI + file)
+	style.set_texture_margin_all(margin)
+	style.set_content_margin_all(content)
+	return style
+
+
+func _flat(bg: Color, border: Color, width: int = 2, radius: int = 6) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg
+	style.border_color = border
+	style.set_border_width_all(width)
+	style.set_corner_radius_all(radius)
+	style.set_content_margin_all(6)
+	return style
+
+
+func _label(text: String, size: int, color: Color) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override(&"font_size", size)
+	label.add_theme_color_override(&"font_color", color)
+	return label
+
 
 func _build() -> void:
 	_slot_assigned_style = StyleBoxFlat.new()
@@ -150,6 +260,13 @@ func _build() -> void:
 	_slot_assigned_style.border_color = Color(1, 0.95, 0.7)
 	_slot_assigned_style.set_border_width_all(2)
 	_slot_assigned_style.set_corner_radius_all(4)
+	_cell_styles = {
+		"cell": _flat(Color(0.93, 0.85, 0.68), Color(0.62, 0.47, 0.30)),
+		"cell_hover": _flat(Color(0.97, 0.9, 0.74), Color(0.80, 0.58, 0.28)),
+		"cell_selected": _flat(Color(1.0, 0.93, 0.72), Color(0.85, 0.55, 0.12), 3),
+		"tab_on": _texture_style("tab_on.png", 0, 12.0),
+		"tab_off": _texture_style("tab_off.png", 0, 12.0),
+	}
 	root_control = Control.new()
 	root_control.name = "EquipmentRoot"
 	root_control.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -162,38 +279,93 @@ func _build() -> void:
 	panel = PanelContainer.new()
 	panel.name = "EquipmentPanel"
 	panel.set_anchors_preset(Control.PRESET_CENTER)
+	# The pack's frame is only a border: slate underneath, the frame drawn over it.
+	var slate := _flat(Color(0.21, 0.31, 0.36), Color(0.21, 0.31, 0.36), 0, 10)
+	slate.set_content_margin_all(0)
+	panel.add_theme_stylebox_override(&"panel", slate)
 	root_control.add_child(panel)
+	var frame := PanelContainer.new()
+	frame.name = "Frame"
+	frame.add_theme_stylebox_override(&"panel", _texture_style("frame.png", 24, 26.0))
+	panel.add_child(frame)
+	var outer := HBoxContainer.new()
+	outer.add_theme_constant_override(&"separation", 10)
+	frame.add_child(outer)
+	# Side tabs, as on the pack's handheld.
+	var tabs := VBoxContainer.new()
+	tabs.name = "Tabs"
+	tabs.add_theme_constant_override(&"separation", 10)
+	outer.add_child(tabs)
+	for index in 2:
+		var tab := Button.new()
+		tab.name = ["WeaponsTab", "ToolsTab"][index]
+		tab.toggle_mode = true
+		tab.custom_minimum_size = Vector2(72, 72)
+		tab.icon = load("res://assets/ui/item_icons/iron_sword.png") if index == 0 else load(UI + "icon_tools.png")
+		tab.expand_icon = true
+		tab.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		tab.tooltip_text = VIEW_TITLES[index]
+		for state in [&"hover", &"pressed", &"hover_pressed", &"focus"]:
+			tab.add_theme_stylebox_override(state, _cell_styles["tab_on"])
+		tab.pressed.connect(set_view.bind(index))
+		tabs.add_child(tab)
+		tab_buttons.append(tab)
+	var tab_hint := _label("[%s]" % InputHints.key_for(&"package_shield"), 16, Color(0.85, 0.82, 0.95))
+	tab_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tabs.add_child(tab_hint)
+	InputPromptLabel.attach(tab_hint)
+	var page := PanelContainer.new()
+	page.name = "Page"
+	page.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	page.add_theme_stylebox_override(&"panel", _texture_style("parchment.png", 14, 20.0))
+	outer.add_child(page)
 	var body := VBoxContainer.new()
-	body.add_theme_constant_override(&"separation", 10)
-	panel.add_child(body)
-	var title := Label.new()
-	title.text = "Equipment"
-	title.add_theme_font_size_override(&"font_size", 28)
-	title.add_theme_color_override(&"font_color", GOLD)
-	body.add_child(title)
-	var hint := Label.new()
-	hint.text = "Equip owned gear, or put a weapon or tool on a quick slot and switch with [%s]-[%s]." % [InputHints.key_for(&"quick_slot_1"), InputHints.key_for(&"quick_slot_5")]
-	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	hint.add_theme_color_override(&"font_color", Color(0.85, 0.82, 0.95))
-	body.add_child(hint)
-	InputPromptLabel.attach(hint)
+	body.add_theme_constant_override(&"separation", 8)
+	page.add_child(body)
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override(&"separation", 16)
+	body.add_child(header)
+	title_label = _label("", 30, INK)
+	title_label.name = "Title"
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(title_label)
+	switch_hint = _label("", 18, INK_SOFT)
+	switch_hint.name = "SwitchHint"
+	header.add_child(switch_hint)
+	InputPromptLabel.attach(switch_hint)
+	gold_label = _label("", 20, Color(0.62, 0.42, 0.06))
+	header.add_child(gold_label)
+	var rule := ColorRect.new()
+	rule.color = Color(0.62, 0.47, 0.30, 0.6)
+	rule.custom_minimum_size.y = 2
+	body.add_child(rule)
+	var content := HBoxContainer.new()
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override(&"separation", 16)
+	body.add_child(content)
 	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	body.add_child(scroll)
-	item_list = VBoxContainer.new()
-	item_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	item_list.add_theme_constant_override(&"separation", 8)
-	scroll.add_child(item_list)
-	feedback_label = Label.new()
+	content.add_child(scroll)
+	var views := VBoxContainer.new()
+	views.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(views)
+	for index in 2:
+		var list := VBoxContainer.new()
+		list.name = ["WeaponsView", "ToolsView"][index]
+		list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		list.add_theme_constant_override(&"separation", 6)
+		views.add_child(list)
+		_views.append(list)
+	item_list = _views[0]
+	content.add_child(_build_detail())
+	feedback_label = _label("", 17, Color(0.18, 0.45, 0.16))
 	feedback_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	feedback_label.add_theme_color_override(&"font_color", Color(0.6, 1.0, 0.6))
 	body.add_child(feedback_label)
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override(&"separation", 16)
 	body.add_child(footer)
-	var close_hint := Label.new()
-	close_hint.text = "[%s] Close" % InputHints.key_for(&"toggle_equipment")
+	var close_hint := _label("[%s] Switch view   [%s] Close" % [InputHints.key_for(&"package_shield"), InputHints.key_for(&"toggle_equipment")], 16, INK_SOFT)
 	close_hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	footer.add_child(close_hint)
 	InputPromptLabel.attach(close_hint)
@@ -203,11 +375,49 @@ func _build() -> void:
 	footer.add_child(close_button)
 
 
+func _build_detail() -> Control:
+	var detail := PanelContainer.new()
+	detail.name = "Detail"
+	detail.custom_minimum_size.x = 300
+	detail.add_theme_stylebox_override(&"panel", _flat(Color(0.95, 0.88, 0.72, 0.85), Color(0.62, 0.47, 0.30), 2, 8))
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override(&"separation", 6)
+	detail.add_child(box)
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override(&"separation", 10)
+	box.add_child(top)
+	_detail_icon = TextureRect.new()
+	_detail_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_detail_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_detail_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_detail_icon.custom_minimum_size = Vector2(80, 80)
+	top.add_child(_detail_icon)
+	var names := VBoxContainer.new()
+	names.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top.add_child(names)
+	_detail_name = _label("", 22, INK)
+	_detail_name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	names.add_child(_detail_name)
+	_detail_kind = _label("", 15, INK_SOFT)
+	_detail_kind.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	names.add_child(_detail_kind)
+	_detail_stars = _label("", 20, GOLD)
+	_detail_stars.name = "Enhancement"
+	box.add_child(_detail_stars)
+	_detail_stats = _label("", 16, INK)
+	_detail_stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(_detail_stats)
+	_detail_actions = VBoxContainer.new()
+	_detail_actions.name = "Actions"
+	box.add_child(_detail_actions)
+	return detail
+
+
 func _process(_delta: float) -> void:
 	if not is_open():
 		return
-	var view := root_control.get_viewport_rect().size
-	var size := Vector2(minf(900.0, view.x - 64.0), minf(720.0, view.y - 64.0))
+	var view_size := root_control.get_viewport_rect().size
+	var size := Vector2(minf(1100.0, view_size.x - 48.0), minf(720.0, view_size.y - 48.0))
 	panel.offset_left = -size.x * 0.5
 	panel.offset_right = size.x * 0.5
 	panel.offset_top = -size.y * 0.5
@@ -215,118 +425,155 @@ func _process(_delta: float) -> void:
 
 
 func _rebuild() -> void:
-	for child in item_list.get_children():
-		item_list.remove_child(child)
+	for list in _views:
+		for child in list.get_children():
+			list.remove_child(child)
+			child.queue_free()
+	for child in _detail_actions.get_children():
+		_detail_actions.remove_child(child)
 		child.queue_free()
 	rows.clear()
 	material_rows.clear()
 	var all := inventory.get_all_definitions()
-	for section in [["Weapons", func(i: ItemDefinition) -> bool: return i.is_weapon()],
-			["Tools", func(i: ItemDefinition) -> bool: return i.is_tool()],
-			["Off-hand", func(i: ItemDefinition) -> bool: return not i.is_weapon() and not i.is_tool()]]:
-		var items := all.filter(section[1])
+	var sections := [
+		[View.WEAPONS, "Weapons", func(i: ItemDefinition) -> bool: return i.is_weapon()],
+		[View.WEAPONS, "Gear", func(i: ItemDefinition) -> bool: return not i.is_weapon() and not i.is_tool()],
+		[View.TOOLS, "Tools", func(i: ItemDefinition) -> bool: return i.is_tool()],
+	]
+	for section in sections:
+		var items := all.filter(section[2])
 		if items.is_empty():
 			continue
-		item_list.add_child(_section_label(section[0]))
+		var list := _views[section[0]]
+		list.add_child(_section_label(section[1]))
+		var grid := _grid(section[1])
+		list.add_child(grid)
 		for item in items:
-			item_list.add_child(_build_row(item))
+			grid.add_child(_build_cell(item))
+			_detail_actions.add_child(_build_actions(item))
 	var materials := inventory.get_all_materials()
-	if not materials.is_empty():
-		item_list.add_child(_section_label("Materials"))
+	for group in [["Seeds", [MaterialItem.Kind.SEED]], ["Produce", [MaterialItem.Kind.PRODUCE]],
+			["Materials", [MaterialItem.Kind.FISH, MaterialItem.Kind.WOOD, MaterialItem.Kind.STONE, MaterialItem.Kind.ORE, MaterialItem.Kind.CLAY]]]:
+		var members := materials.filter(func(m: MaterialItem) -> bool: return (group[1] as Array).has(m.kind))
+		if members.is_empty():
+			continue
+		_views[View.TOOLS].add_child(_section_label(group[0]))
 		var grid := GridContainer.new()
-		grid.name = "Materials"
-		grid.columns = 4
-		grid.add_theme_constant_override(&"h_separation", 18)
+		grid.name = group[0]
+		grid.columns = 3
+		grid.add_theme_constant_override(&"h_separation", 14)
 		grid.add_theme_constant_override(&"v_separation", 6)
-		item_list.add_child(grid)
-		for material in materials:
+		_views[View.TOOLS].add_child(grid)
+		for material in members:
 			grid.add_child(_build_material_cell(material))
+	if not rows.has(selected_id):
+		selected_id = &""
+	set_view(view)
 	_refresh()
 
 
+func _select_first() -> void:
+	var equipped := inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND) if inventory != null else null
+	if equipped != null and _view_of(equipped) == view and rows.has(equipped.item_id):
+		selected_id = equipped.item_id
+		return
+	var first_owned: StringName = &""
+	var first: StringName = &""
+	for item_id in rows:
+		if _view_of(rows[item_id]["item"]) != view:
+			continue
+		if first == &"":
+			first = item_id
+		if first_owned == &"" and inventory.has_item(item_id):
+			first_owned = item_id
+	selected_id = first_owned if first_owned != &"" else first
+
+
 func _section_label(text: String) -> Label:
-	var label := Label.new()
+	var label := _label(text, 20, Color(0.55, 0.22, 0.14))
 	label.name = text.replace("-", "") + "Header"
-	label.text = text
-	label.add_theme_font_size_override(&"font_size", 20)
-	label.add_theme_color_override(&"font_color", GOLD)
 	return label
 
 
-func _build_material_cell(material: MaterialItem) -> Control:
-	var cell := HBoxContainer.new()
-	cell.name = String(material.material_id)
-	cell.add_theme_constant_override(&"separation", 6)
-	cell.tooltip_text = material.description
-	var icon := TextureRect.new()
-	icon.texture = material.icon
-	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_SCALE
-	icon.custom_minimum_size = Vector2(32, 32)
-	cell.add_child(icon)
-	var label := Label.new()
-	label.theme_type_variation = &"ContractDetail"
-	label.custom_minimum_size.x = 130
-	# These cells sit directly on the dark panel, outside the cream item cards.
-	label.add_theme_color_override(&"font_color", Color(0.96, 0.92, 0.80))
-	cell.add_child(label)
-	material_rows[material.material_id] = {"cell": cell, "label": label, "material": material}
-	return cell
+func _grid(section: String) -> GridContainer:
+	var grid := GridContainer.new()
+	grid.name = section + "Grid"
+	grid.columns = 5
+	grid.add_theme_constant_override(&"h_separation", 8)
+	grid.add_theme_constant_override(&"v_separation", 8)
+	return grid
 
 
-func _build_row(item: ItemDefinition) -> Control:
-	var row := PanelContainer.new()
-	row.name = String(item.item_id)
-	row.theme_type_variation = &"ContractPanel"
-	var line := HBoxContainer.new()
-	line.add_theme_constant_override(&"separation", 14)
-	row.add_child(line)
+func _build_cell(item: ItemDefinition) -> Control:
+	var cell := Button.new()
+	cell.name = String(item.item_id)
+	cell.custom_minimum_size = CELL_SIZE
+	cell.tooltip_text = item.display_name
+	cell.add_theme_stylebox_override(&"normal", _cell_styles["cell"])
+	cell.add_theme_stylebox_override(&"hover", _cell_styles["cell_hover"])
+	cell.add_theme_stylebox_override(&"pressed", _cell_styles["cell_selected"])
+	cell.add_theme_stylebox_override(&"focus", StyleBoxEmpty.new())
+	cell.pressed.connect(select_item.bind(item.item_id))
+	var box := VBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	box.offset_top = 8
+	box.offset_bottom = -6
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	cell.add_child(box)
 	var icon := TextureRect.new()
 	icon.texture = item.icon
 	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_SCALE
-	icon.custom_minimum_size = (item.icon.get_size() if item.icon != null else Vector2(32, 32)) * ICON_SCALE
-	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	line.add_child(icon)
-	var text := VBoxContainer.new()
-	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	line.add_child(text)
-	var name_label := Label.new()
-	name_label.theme_type_variation = &"ContractTitle"
-	name_label.text = item.display_name
-	text.add_child(name_label)
-	var stats := Label.new()
-	stats.theme_type_variation = &"ContractDetail"
-	stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	var summary := item.get_attack_summary() if item.is_weapon() or item.is_tool() else ItemDefinition.slot_name(item.slot)
-	if item.two_handed:
-		summary += " · two-handed"
-	stats.text = "%s  ·  %s" % [summary, ", ".join(item.get_stat_lines())]
-	text.add_child(stats)
-	var status := Label.new()
-	status.theme_type_variation = &"ContractDetail"
-	text.add_child(status)
-	var side := VBoxContainer.new()
-	side.alignment = BoxContainer.ALIGNMENT_CENTER
-	side.custom_minimum_size.x = 230
-	line.add_child(side)
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.custom_minimum_size = Vector2(56, 56)
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(icon)
+	var name_label := _label(item.display_name, 13, INK)
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(name_label)
+	var badge := _label("", 16, GOLD)
+	badge.name = "Badge"
+	badge.add_theme_color_override(&"font_outline_color", Color(0.12, 0.08, 0.04))
+	badge.add_theme_constant_override(&"outline_size", 5)
+	badge.position = Vector2(CELL_SIZE.x - 34, 4)
+	cell.add_child(badge)
+	var marker := _label("", 14, Color(0.15, 0.4, 0.12))
+	marker.name = "Marker"
+	marker.position = Vector2(8, 4)
+	cell.add_child(marker)
+	rows[item.item_id] = {"row": cell, "item": item, "badge": badge, "marker": marker}
+	return cell
+
+
+## The selected item's details panel actions, one container per item (only the selected
+## one is visible).
+func _build_actions(item: ItemDefinition) -> Control:
+	var actions := VBoxContainer.new()
+	actions.name = String(item.item_id)
+	actions.add_theme_constant_override(&"separation", 6)
+	var status := _label("", 16, INK_SOFT)
+	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	actions.add_child(status)
 	var equip := Button.new()
 	equip.pressed.connect(_on_equip_pressed.bind(item))
-	side.add_child(equip)
+	actions.add_child(equip)
 	var slots: Array[Button] = []
 	if item.is_quick_slottable():
+		var slot_label := _label("Quick slot", 14, INK_SOFT)
+		actions.add_child(slot_label)
 		var slot_row := HBoxContainer.new()
 		slot_row.add_theme_constant_override(&"separation", 4)
-		side.add_child(slot_row)
+		actions.add_child(slot_row)
 		for index in CourierInventory.QUICK_SLOT_COUNT:
 			var slot_button := Button.new()
 			slot_button.text = InputHints.key_for(StringName("quick_slot_%d" % (index + 1)))
 			slot_button.toggle_mode = true
-			slot_button.custom_minimum_size = Vector2(40, 32)
+			slot_button.custom_minimum_size = Vector2(44, 34)
 			slot_button.pressed.connect(_on_slot_pressed.bind(item, index))
-			# The weapon's current slot: gold, like the equipped slot on the HUD bar.
+			# The item's current slot: gold, like the equipped slot on the HUD bar.
 			for state in [&"pressed", &"hover_pressed"]:
 				slot_button.add_theme_stylebox_override(state, _slot_assigned_style)
 			slot_button.add_theme_color_override(&"font_pressed_color", Color(0.12, 0.08, 0.02))
@@ -334,35 +581,80 @@ func _build_row(item: ItemDefinition) -> Control:
 			slot_row.add_child(slot_button)
 			slots.append(slot_button)
 	else:
-		var note := Label.new()
-		note.theme_type_variation = &"ContractDetail"
-		note.text = "Off-hand: no quick slot"
-		side.add_child(note)
-	rows[item.item_id] = {"row": row, "status": status, "equip": equip, "slots": slots, "item": item}
-	return row
+		actions.add_child(_label("Off-hand and armor have no quick slot", 14, INK_SOFT))
+	var row := rows[item.item_id]
+	row["status"] = status
+	row["equip"] = equip
+	row["slots"] = slots
+	row["actions"] = actions
+	return actions
+
+
+func _build_material_cell(material: MaterialItem) -> Control:
+	var cell := Button.new()
+	cell.name = String(material.material_id)
+	cell.tooltip_text = material.description
+	cell.custom_minimum_size = Vector2(180, 44)
+	cell.add_theme_stylebox_override(&"normal", _cell_styles["cell"])
+	cell.add_theme_stylebox_override(&"hover", _cell_styles["cell_hover"])
+	cell.add_theme_stylebox_override(&"pressed", _cell_styles["cell_selected"])
+	cell.add_theme_stylebox_override(&"focus", StyleBoxEmpty.new())
+	cell.pressed.connect(_on_material_pressed.bind(material))
+	var line := HBoxContainer.new()
+	line.set_anchors_preset(Control.PRESET_FULL_RECT)
+	line.offset_left = 6
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line.add_theme_constant_override(&"separation", 6)
+	cell.add_child(line)
+	var icon := TextureRect.new()
+	icon.texture = material.icon
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.custom_minimum_size = Vector2(32, 32)
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line.add_child(icon)
+	var label := _label("", 15, INK)
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line.add_child(label)
+	material_rows[material.material_id] = {"cell": cell, "label": label, "material": material}
+	return cell
 
 
 func _refresh() -> void:
 	if inventory == null:
 		return
+	var wallet := CourierWallet.find(get_tree())
+	gold_label.text = "%d g" % wallet.gold if wallet != null else ""
 	for item_id in rows:
 		var row := rows[item_id]
+		if not row.has("status"):
+			continue
 		var item: ItemDefinition = row["item"]
 		var status: Label = row["status"]
 		var equip: Button = row["equip"]
 		var owned := inventory.has_item(item_id)
 		var equipped := inventory.is_equipped(item_id)
 		var slot := inventory.find_quick_slot(item_id)
-		(row["row"] as Control).modulate = Color.WHITE if owned else Color(1, 1, 1, 0.5)
+		var level := inventory.get_enhancement(item_id)
+		var cell := row["row"] as Button
+		cell.modulate = Color.WHITE if owned else Color(1, 1, 1, 0.45)
+		cell.add_theme_stylebox_override(&"normal", _cell_styles["cell_selected"] if item_id == selected_id else _cell_styles["cell"])
+		var badge := row["badge"] as Label
+		badge.text = Enhancement.level_text(level)
+		badge.add_theme_color_override(&"font_color", Enhancement.level_color(level))
+		(row["marker"] as Label).text = ("E" if equipped else "") + (" %d" % (slot + 1) if slot >= 0 else "")
 		if equipped:
 			status.text = "Equipped" + (" · quick slot %d" % (slot + 1) if slot >= 0 else "")
-			status.add_theme_color_override(&"font_color", GOLD)
+			status.add_theme_color_override(&"font_color", Color(0.62, 0.42, 0.06))
 		elif owned:
 			status.text = "Owned" + (" · quick slot %d" % (slot + 1) if slot >= 0 else "")
-			status.add_theme_color_override(&"font_color", Color(0.6, 1.0, 0.6))
+			status.add_theme_color_override(&"font_color", Color(0.18, 0.45, 0.16))
 		else:
 			status.text = "Not owned · buy it from the Toolwright" if item.is_tool() else "Not owned · buy it at the Armory"
-			status.add_theme_color_override(&"font_color", Color(0.7, 0.7, 0.75))
+			status.add_theme_color_override(&"font_color", INK_SOFT)
 		equip.text = "Unequip" if equipped else "Equip"
 		equip.disabled = not owned
 		var slot_buttons: Array = row["slots"]
@@ -370,8 +662,40 @@ func _refresh() -> void:
 			var button := slot_buttons[index] as Button
 			button.disabled = not owned
 			button.set_pressed_no_signal(slot == index)
+		(row["actions"] as Control).visible = item_id == selected_id
+	_refresh_detail()
+	var farm := FarmService.find(get_tree())
 	for material_id in material_rows:
 		var cell := material_rows[material_id]
+		var material: MaterialItem = cell["material"]
 		var count := inventory.get_material_count(material_id)
-		(cell["label"] as Label).text = "%s × %d" % [(cell["material"] as MaterialItem).display_name, count]
+		var text := "%s × %d" % [material.display_name, count]
+		if material.kind == MaterialItem.Kind.SEED and farm != null and farm.preferred_seed == material_id:
+			text += "  ★"
+		(cell["label"] as Label).text = text
 		(cell["cell"] as Control).modulate = Color.WHITE if count > 0 else Color(1, 1, 1, 0.45)
+
+
+func _refresh_detail() -> void:
+	var row: Dictionary = rows.get(selected_id, {})
+	if row.is_empty():
+		_detail_icon.texture = null
+		_detail_name.text = "Nothing here yet"
+		_detail_kind.text = ""
+		_detail_stats.text = ""
+		_detail_stars.text = ""
+		return
+	var item: ItemDefinition = row["item"]
+	var level := inventory.get_enhancement(item.item_id)
+	_detail_icon.texture = item.icon
+	_detail_name.text = item.display_name + (" " + Enhancement.level_text(level) if level > 0 else "")
+	var summary := item.get_attack_summary() if item.is_weapon() or item.is_tool() else ItemDefinition.slot_name(item.slot)
+	if item.two_handed:
+		summary += " · two-handed"
+	_detail_kind.text = summary
+	_detail_stats.text = "\n".join(item.get_stat_lines()) + ("\n\n" + item.description if not item.description.is_empty() else "")
+	if item.is_tool():
+		_detail_stars.text = ""
+	else:
+		_detail_stars.text = "Enhancement  " + "★".repeat(level) + "☆".repeat(Enhancement.MAX_LEVEL - level) + ("  " + Enhancement.TIER_NAMES[level] if level > 0 else "")
+		_detail_stars.add_theme_color_override(&"font_color", Enhancement.level_color(level).darkened(0.25) if level > 0 else INK_SOFT)

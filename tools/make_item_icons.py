@@ -250,6 +250,72 @@ def clay():
     return draw([((178, 104, 72, 255), lump), ((214, 146, 108, 255), wet)])
 
 
+def seed_pouch(seed, seed_dark):
+    bag, shade, tie, seeds = set(), set(), set(), set()
+    for y in range(16):
+        for x in range(16):
+            if ((x - 7.5) / 5.5) ** 2 + ((y - 10.0) / 4.8) ** 2 <= 1.0:
+                bag.add((x, y))
+                if x >= 10 or y >= 13:
+                    shade.add((x, y))
+    for y in range(3, 7):
+        for x in range(6, 10):
+            bag.add((x, y))
+    line(tie, 5, 6, 10, 6)
+    seeds.update({(6, 10), (8, 9), (9, 11), (7, 12), (10, 9)})
+    return draw([((206, 176, 124, 255), bag), ((170, 140, 96, 255), shade), (LEATHER, tie), (seed, seeds), (seed_dark, {(8, 10), (7, 11)})])
+
+
+def wheat():
+    stalk, grain, light = set(), set(), set()
+    for x0 in (5, 8, 11):
+        line(stalk, x0, 15, x0 - 1, 7)
+        for y in range(2, 8):
+            grain.add((x0 - 1 + (y % 2), y))
+        light.update({(x0 - 1, 3), (x0, 5)})
+    return draw([((122, 150, 64, 255), stalk), ((214, 172, 74, 255), grain), ((244, 214, 120, 255), light)])
+
+
+def carrot():
+    root, shade, leaf = set(), set(), set()
+    for y in range(6, 16):
+        half = max(0.5, (15 - y) * 0.32)
+        for x in range(16):
+            if abs(x - 7.5) <= half:
+                root.add((x, y))
+                if x > 7.5:
+                    shade.add((x, y))
+    for dx in (-2, 0, 2):
+        line(leaf, 7 + dx // 2, 6, 7 + dx, 1)
+    return draw([((232, 128, 40, 255), root), ((196, 96, 30, 255), shade), ((88, 160, 64, 255), leaf)])
+
+
+def pumpkin():
+    body, rib, stem = set(), set(), set()
+    for y in range(16):
+        for x in range(16):
+            if ((x - 7.5) / 6.8) ** 2 + ((y - 9.5) / 5.5) ** 2 <= 1.0:
+                body.add((x, y))
+                if x in (4, 7, 11):
+                    rib.add((x, y))
+    stem.update({(8, 3), (8, 4), (9, 2)})
+    return draw([((228, 134, 40, 255), body), ((190, 98, 28, 255), rib), ((96, 120, 52, 255), stem)])
+
+
+def vest(cloth, cloth_dark, trim):
+    body, shade, edge = set(), set(), set()
+    for y in range(3, 15):
+        for x in range(3, 13):
+            if y < 6 and 6 <= x <= 9:
+                continue
+            body.add((x, y))
+            if x >= 10:
+                shade.add((x, y))
+    line(edge, 7, 6, 7, 14)
+    line(edge, 8, 6, 8, 14)
+    return draw([(cloth, body), (cloth_dark, shade), (trim, edge)])
+
+
 ICONS = {
     "wooden_sword": lambda: sword((182, 132, 78, 255), WOOD_DARK, WOOD_DARK, LEATHER),
     "iron_sword": lambda: sword((178, 184, 194, 255), (122, 128, 140, 255), GOLD, GOLD_DARK),
@@ -272,6 +338,16 @@ ICONS = {
     "stone": lambda: stone((150, 150, 156, 255), (110, 110, 118, 255)),
     "iron_ore": lambda: stone((120, 104, 98, 255), (90, 76, 72, 255), [(5, 7), (8, 9), (10, 6), (6, 11)]),
     "clay": clay,
+    # Phase 7 farming: seed pouches and produce.
+    "wheat_seeds": lambda: seed_pouch((214, 172, 74, 255), (160, 120, 40, 255)),
+    "carrot_seeds": lambda: seed_pouch((232, 128, 40, 255), (170, 84, 24, 255)),
+    "pumpkin_seeds": lambda: seed_pouch((240, 226, 180, 255), (190, 170, 120, 255)),
+    "wheat": wheat,
+    "carrot": carrot,
+    "pumpkin": pumpkin,
+    # Phase 7 armor.
+    "leather_vest": lambda: vest((150, 96, 56, 255), (112, 68, 40, 255), GOLD_DARK),
+    "iron_mail": lambda: vest((170, 176, 188, 255), (120, 126, 140, 255), GOLD),
 }
 
 

@@ -27,6 +27,9 @@ const TARGETS := {
 	"QuarryRock3": [&"quarry_rock_3", ItemDefinition.ToolType.PICKAXE],
 	"QuarryWall": [&"quarry_wall", ItemDefinition.ToolType.TROWEL],
 	"PumpkinFence": [&"pumpkin_fence", ItemDefinition.ToolType.HAMMER],
+	# Phase 7: a tree and an ore rock beside the post office, near the spawn point.
+	"OfficeTree": [&"office_tree", ItemDefinition.ToolType.WOOD_AXE],
+	"OfficeRock": [&"office_rock", ItemDefinition.ToolType.PICKAXE],
 }
 
 var _failures: int = 0
@@ -253,7 +256,7 @@ func _test_targets() -> void:
 	_check(ids.size() == TARGETS.size() and get_nodes_in_group(ToolTarget.GROUP).size() == TARGETS.size(), "%d tool targets in the village, ids unique" % TARGETS.size())
 	var harvest := get_nodes_in_group(ToolTarget.GROUP).filter(func(t: Node) -> bool: return t is HarvestNode)
 	var trees := level.find_children("*", "StaticBody3D", true, false).filter(func(b: Node) -> bool: return b.scene_file_path.contains("tree"))
-	_check(harvest.size() == 8 and trees.size() > 20, "only 8 designated nodes are harvestable among %d decorative trees" % trees.size())
+	_check(harvest.size() == 10 and trees.size() > 20, "only 10 designated nodes are harvestable among %d decorative trees" % trees.size())
 	_check(level.find_children("*", "Pond", true, false).size() == 1 and get_nodes_in_group(Pond.GROUP).size() == 1, "one pond: the only water")
 
 
@@ -517,7 +520,8 @@ func _test_shop() -> void:
 	await _press(&"interact")
 	var shop := level.get_node("GameplayHUD/ShopUI") as ShopUI
 	_check(shop.is_open() and shop.rows.size() == 6, "talking to Hobb opens his shop with the six tools")
-	_check(shop.sell_rows.size() == 7, "and a sell section for the seven materials")
+	# Phase 7: the three crops sell too (seeds do not; the Toolwright sells those).
+	_check(shop.sell_rows.size() == 10, "and a sell section for the seven materials and three crops")
 	inventory.remove_materials(inventory.get_material_counts())
 	_give(&"silver_trout", 3)
 	_give(&"iron_ore", 2)
@@ -564,8 +568,12 @@ func _test_ui() -> void:
 	await _press(&"toggle_equipment")
 	var equipment := level.get_node("GameplayHUD/EquipmentUI") as EquipmentUI
 	await _frames(2)
+	# Phase 7: two views, switched with [Q]: Weapons & Gear, and Tools & Goods.
+	equipment.set_view(EquipmentUI.View.WEAPONS)
 	var headers := equipment.item_list.get_children().filter(func(c: Node) -> bool: return c is Label).map(func(l: Label) -> String: return l.text)
-	_check(equipment.is_open() and headers == ["Weapons", "Tools", "Off-hand", "Materials"], "the Equipment window has Weapons, Tools, Off-hand and Materials sections %s" % [headers])
+	equipment.set_view(EquipmentUI.View.TOOLS)
+	headers += equipment.item_list.get_children().filter(func(c: Node) -> bool: return c is Label).map(func(l: Label) -> String: return l.text)
+	_check(equipment.is_open() and headers == ["Weapons", "Gear", "Tools", "Seeds", "Produce", "Materials"], "the inventory has Weapons and Gear, then Tools, Seeds, Produce and Materials sections %s" % [headers])
 	_check(equipment.rows.has(&"garden_shovel") and (equipment.rows[&"woodcutter_axe"]["slots"] as Array).size() == 5, "tools can be equipped and quick-slotted there")
 	var wood_label := equipment.material_rows[&"wood"]["label"] as Label
 	_check(wood_label.text == "Wood × %d" % inventory.get_material_count(&"wood"), "materials show their counts (%s)" % wood_label.text)

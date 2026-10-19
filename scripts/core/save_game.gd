@@ -7,7 +7,8 @@ extends Node
 ## slots and gathered materials, every quest that reached REWARDED (so a reward is never
 ## paid twice, even across sessions), the explored map, discovered locations and activated
 ## portals, depleted harvest nodes, repaired structures and gathering tallies (Phase 5H,
-## "gathering"), and the starting-gold flag. Deliveries in progress are not saved (the carried package is not
+## "gathering"), the courier's garden (Phase 7, "farming": plots, crops and the growth
+## clock), and the starting-gold flag. Deliveries in progress are not saved (the carried package is not
 ## persisted); after a reload such a contract is simply on the board again.
 ##
 ## Loading and autosave run when `enabled`, which defaults to off in headless runs so
@@ -39,6 +40,8 @@ const DEV_STARTING_GOLD := 500
 ## Depleted harvest nodes, repaired structures ("gathering" key; saves without it start
 ## with every node standing and nothing repaired).
 @export var gathering: GatheringService
+## Garden plots and their growth clock ("farming" key; saves without it start with empty beds).
+@export var farming: FarmService
 
 var starting_gold_granted: bool = false
 ## One-time world encounter rewards. Additive field; legacy saves start empty.
@@ -66,6 +69,8 @@ func _ready() -> void:
 		exploration = ExplorationService.find(get_tree())
 	if gathering == null:
 		gathering = GatheringService.find(get_tree())
+	if farming == null:
+		farming = FarmService.find(get_tree())
 	if DisplayServer.get_name() == "headless" and not force_enabled_headless:
 		enabled = false
 	_start.call_deferred()
@@ -116,6 +121,7 @@ func to_dict() -> Dictionary:
 		"inventory": inventory.to_dict() if inventory != null else {},
 		"exploration": exploration.to_dict() if exploration != null else {},
 		"gathering": gathering.to_dict() if gathering != null else {},
+		"farming": farming.to_dict() if farming != null else {},
 		"quests": quests,
 		"flags": {"starting_gold_granted": starting_gold_granted},
 		"world_progress": world_progress.duplicate(true),
@@ -137,6 +143,8 @@ func from_dict(data: Dictionary) -> void:
 		exploration.from_dict(data.get("exploration", {}))
 	if gathering != null:
 		gathering.from_dict(data.get("gathering", {}))
+	if farming != null:
+		farming.from_dict(data.get("farming", {}))
 	if quest_manager != null:
 		quest_manager.restore_finished_quests(data.get("quests", {}))
 	_restoring = false
@@ -176,8 +184,13 @@ func _watch() -> void:
 		inventory.equipment_changed.connect(func(_s, _i): request_save())
 		inventory.quick_slots_changed.connect(request_save)
 		inventory.materials_changed.connect(func(_m, _c, _d): request_save())
+		inventory.enhancement_changed.connect(func(_i, _l): request_save())
 	if gathering != null:
 		gathering.changed.connect(request_save)
+	if farming != null:
+		farming.plot_changed.connect(func(_p): request_save())
+		# Growing crops also keep the saved growth clock current.
+		farming.stage_changed.connect(func(_p, _s): request_save())
 	if exploration != null:
 		exploration.location_discovered.connect(func(_l): request_save())
 		exploration.portal_activated.connect(func(_p): request_save())
@@ -187,6 +200,7 @@ func _watch() -> void:
 
 
 func _exit_tree() -> void:
-	# Flush a pending autosave (e.g. quitting right after a purchase).
-	if _save_left >= 0.0:
+	# Flush a pending autosave (e.g. quitting right after a purchase), and keep the garden's
+	# growth clock when quitting with crops in the ground.
+	if _save_left >= 0.0 or (enabled and farming != null and farming.play_time > 0.0):
 		save_game()

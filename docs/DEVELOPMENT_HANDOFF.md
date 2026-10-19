@@ -8,8 +8,12 @@ board stands on the plaza by the post-office gate (no beam or duplicate label), 
 exhibit is gone from the post office, NPCs turn smoothly to the courier they talk to and back,
 the main roads are wider, and the Whisperwood moved 70 m north (`ForestEntrance` at
 (14, 0, -90)) into a dense generated forest (`scenes/environment/whisperwood_forest.tscn`,
-`tools/generate_whisperwood.gd`) reached by a trail through the outskirts. Milestones B
-(inventory and farming), C (enhancement and skill VFX) and D (dragon boss) are not started.
+`tools/generate_whisperwood.gd`) reached by a trail through the outskirts. **Milestone B is
+done**: the inventory window was redesigned with two views ([Q] switches them while it is
+open; Q stays the shield key in play), items carry enhancement levels (data only so far), and
+the courier's garden (four beds south of the post office, seeds from Hobb, `FarmService` on a
+saved play-time clock) plus a tree and ore rock near the spawn. Milestones C (enhancement and
+skill VFX) and D (dragon boss) are not started.
 
 ## Phase 6 new map and dungeon (2026-10-19)
 

@@ -233,7 +233,7 @@ func test_trading(catalog: ShopCatalog) -> void:
 	var stall := level.get_node("ToolSites/ToolStall") as ToolStall
 	var merchant := stall.merchant.get_node("ShopMerchant") as Merchant
 	shop.open(merchant, player)
-	check(shop.is_open() and shop.sell_rows.size() == 7, "Toolwright UI lists material sales")
+	check(shop.is_open() and shop.sell_rows.size() == 10, "Toolwright UI lists material and produce sales")
 	check(shop.sell_all(&"stone") > 0 and inventory.get_material_count(&"stone") == 0, "shop sell button completes transaction")
 	shop.close()
 

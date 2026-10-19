@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CropDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/farming/crop_definition.gd" id="1_crop"]
+[ext_resource type="Resource" path="res://data/materials/pumpkin_seeds.tres" id="2_seed"]
+[ext_resource type="Resource" path="res://data/materials/pumpkin.tres" id="3_produce"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/nature_crops/Pumpkin_Crop.fbx" id="4_model"]
+
+[resource]
+script = ExtResource("1_crop")
+crop_id = &"pumpkin"
+display_name = "Pumpkins"
+seed_item = ExtResource("2_seed")
+produce = ExtResource("3_produce")
+yield_min = 1
+yield_max = 2
+stage_count = 3
+stage_seconds = 90
+model = ExtResource("4_model")
+model_scale = 1.15
+plants_per_bed = 3

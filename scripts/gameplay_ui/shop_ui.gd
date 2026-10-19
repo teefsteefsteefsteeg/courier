@@ -38,6 +38,9 @@ var close_button: Button
 var rows: Dictionary[StringName, Dictionary] = {}
 ## material_id -> {"row", "button", "count", "material"} in the Sell section (read by tests).
 var sell_rows: Dictionary[StringName, Dictionary] = {}
+## material_id -> {"row", "buy_one", "buy_five", "count", "material"} for goods the merchant
+## sells by the unit (Phase 7 seeds; read by tests).
+var goods_rows: Dictionary[StringName, Dictionary] = {}
 var _sell_header: Control = null
 var merchant: Merchant = null
 var _player: PlayerController = null
@@ -259,10 +262,20 @@ func _rebuild(catalog: ShopCatalog) -> void:
 		child.queue_free()
 	rows.clear()
 	sell_rows.clear()
+	goods_rows.clear()
 	_sell_header = null
 	for item in catalog.items:
 		if item != null:
 			item_list.add_child(_build_row(item))
+	if not catalog.sells_materials.is_empty():
+		var goods_header := Label.new()
+		goods_header.name = "GoodsHeader"
+		goods_header.theme_type_variation = &"ContractTitle"
+		goods_header.text = "Seeds for the Courier's Garden"
+		item_list.add_child(goods_header)
+		for material in catalog.sells_materials:
+			if material != null and material.buy_price > 0:
+				item_list.add_child(_build_goods_row(material))
 	if catalog.buys_materials:
 		var header := Label.new()
 		header.name = "SellHeader"
@@ -274,6 +287,62 @@ func _rebuild(catalog: ShopCatalog) -> void:
 			if material.sell_price > 0:
 				item_list.add_child(_build_sell_row(material))
 	_refresh_rows()
+
+
+## Buys amount of a material this merchant sells. Returns the gold spent.
+func buy_goods(material_id: StringName, amount: int) -> int:
+	if not is_open() or inventory == null or wallet == null or merchant == null or not goods_rows.has(material_id):
+		return 0
+	var material: MaterialItem = goods_rows[material_id]["material"]
+	var spent := ShopService.buy_material(wallet, inventory, merchant.get_catalog(), material, amount)
+	if spent > 0:
+		feedback_label.text = "Bought %d %s for %d gold." % [amount, material.display_name, spent]
+	else:
+		feedback_label.text = "Not enough gold: %d %s cost %d." % [amount, material.display_name, material.buy_price * amount]
+	_refresh_rows()
+	return spent
+
+
+func _build_goods_row(material: MaterialItem) -> Control:
+	var row := PanelContainer.new()
+	row.name = "Goods_" + String(material.material_id)
+	row.theme_type_variation = &"ContractPanel"
+	var line := HBoxContainer.new()
+	line.add_theme_constant_override(&"separation", 14)
+	row.add_child(line)
+	var icon := TextureRect.new()
+	icon.texture = material.icon
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_SCALE
+	icon.custom_minimum_size = Vector2(32, 32) * ICON_SCALE
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	line.add_child(icon)
+	var text := VBoxContainer.new()
+	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	line.add_child(text)
+	var name_label := Label.new()
+	name_label.theme_type_variation = &"ContractTitle"
+	name_label.text = "%s · %d g each" % [material.display_name, material.buy_price]
+	text.add_child(name_label)
+	var count := Label.new()
+	count.theme_type_variation = &"ContractDetail"
+	count.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	text.add_child(count)
+	var side := HBoxContainer.new()
+	side.alignment = BoxContainer.ALIGNMENT_CENTER
+	side.add_theme_constant_override(&"separation", 6)
+	line.add_child(side)
+	var buy_one := Button.new()
+	buy_one.text = "Buy 1"
+	buy_one.pressed.connect(func() -> void: buy_goods(material.material_id, 1))
+	side.add_child(buy_one)
+	var buy_five := Button.new()
+	buy_five.text = "Buy 5"
+	buy_five.pressed.connect(func() -> void: buy_goods(material.material_id, 5))
+	side.add_child(buy_five)
+	goods_rows[material.material_id] = {"row": row, "buy_one": buy_one, "buy_five": buy_five, "count": count, "material": material}
+	return row
 
 
 ## Sells every carried unit of material. Returns the gold earned.
@@ -417,6 +486,12 @@ func _refresh_rows() -> void:
 			status.text = "Need %d more gold" % (item.price - wallet.gold) if check == ShopService.PurchaseResult.NOT_ENOUGH_GOLD else ""
 			if button.disabled:
 				button.tooltip_text = ShopService.result_text(check, item, wallet)
+	for material_id in goods_rows:
+		var goods := goods_rows[material_id]
+		var material: MaterialItem = goods["material"]
+		(goods["count"] as Label).text = "You carry %d · %s" % [inventory.get_material_count(material_id), material.description]
+		(goods["buy_one"] as Button).disabled = wallet.gold < material.buy_price
+		(goods["buy_five"] as Button).disabled = wallet.gold < material.buy_price * 5
 	# Materials: only the ones carried are shown.
 	var any_to_sell := false
 	for material_id in sell_rows:
@@ -429,7 +504,7 @@ func _refresh_rows() -> void:
 		(sell["button"] as Button).text = "Sell all (%d g)" % (count * material.sell_price)
 		(sell["button"] as Button).disabled = count <= 0
 	if _sell_header != null:
-		(_sell_header as Label).text = "Sell your goods" if any_to_sell else "Sell your goods: bring fish, wood, stone, ore or clay"
+		(_sell_header as Label).text = "Sell your goods" if any_to_sell else "Sell your goods: bring fish, wood, stone, ore, clay or produce"
 
 
 func _focus_first_button() -> void:

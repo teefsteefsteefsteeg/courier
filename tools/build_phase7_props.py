@@ -10,6 +10,8 @@ exporter turns into Godot +Z.
 
 Props:
   courier_guild_board   the Courier Guild quest notice board (Phase 7, task 1)
+  garden_bed            a raised plank garden bed with furrowed soil (Phase 7 farming)
+  crop_seedling         a two-leaf seedling, a crop's first growth stage (Phase 7 farming)
 """
 import math
 import os
@@ -89,6 +91,9 @@ def join(name):
         bpy.context.view_layer.objects.active = o
         for mod in list(o.modifiers):
             bpy.ops.object.modifier_apply(modifier=mod.name)
+    # Bake every part's transform first, so the joined mesh has its origin at the world
+    # origin (the prop's footprint centre) and no leftover rotation from the first part.
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
     bpy.context.view_layer.objects.active = meshes[0]
     bpy.ops.object.join()
     obj = bpy.context.active_object
@@ -206,7 +211,60 @@ def courier_guild_board():
     export("courier_guild_board")
 
 
-PROPS = {"courier_guild_board": courier_guild_board}
+# --- Garden bed and seedling (farming) ----------------------------------------------------
+
+BED_X, BED_Z = 2.0, 1.6     # outer footprint (Godot X by Z); Blender X by Y
+BED_H = 0.3
+
+
+def garden_bed():
+    reset()
+    rng = random.Random(11)
+    planks = [mat("BedPlank%d" % i, c) for i, c in enumerate([(0.45, 0.29, 0.16), (0.40, 0.25, 0.13), (0.50, 0.33, 0.19)])]
+    post = mat("BedPost", (0.30, 0.19, 0.10))
+    soil = mat("Soil", (0.24, 0.15, 0.09), rough=1.0)
+    ridge = mat("SoilRidge", (0.31, 0.20, 0.12), rough=1.0)
+    straw = mat("Straw", (0.78, 0.66, 0.36))
+    hx, hy, t = BED_X / 2, BED_Z / 2, 0.07
+    board_h = BED_H / 2
+    for level in range(2):
+        z = board_h * (level + 0.5)
+        for sy in (-1, 1):
+            box("PlankX", (BED_X, t, board_h - 0.01), (0, sy * (hy - t / 2), z), planks[rng.randrange(3)], bevel=0.01,
+                rot=(0, rng.uniform(-0.6, 0.6), 0))
+        for sx in (-1, 1):
+            box("PlankY", (t, BED_Z - 2 * t, board_h - 0.01), (sx * (hx - t / 2), 0, z), planks[rng.randrange(3)], bevel=0.01)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            box("Post", (0.1, 0.1, BED_H + 0.1), (sx * (hx - 0.03), sy * (hy - 0.03), (BED_H + 0.1) / 2), post, bevel=0.015)
+            box("PostCap", (0.13, 0.13, 0.03), (sx * (hx - 0.03), sy * (hy - 0.03), BED_H + 0.11), planks[0], bevel=0.008)
+    inner_x, inner_y = BED_X - 2 * t, BED_Z - 2 * t
+    box("Soil", (inner_x, inner_y, 0.05), (0, 0, BED_H - 0.06), soil)
+    # Three furrows along X: the crops stand on the ridges (FarmPlot.CROP_SPOTS).
+    for row in (-1, 0, 1):
+        y = row * inner_y / 3
+        box("Ridge", (inner_x - 0.08, inner_y / 3 * 0.55, 0.05), (0, y, BED_H - 0.02), ridge, bevel=0.02)
+    for i in range(10):
+        x = rng.uniform(-inner_x / 2 + 0.1, inner_x / 2 - 0.1)
+        y = rng.uniform(-inner_y / 2 + 0.05, inner_y / 2 - 0.05)
+        box("Straw", (0.12, 0.012, 0.012), (x, y, BED_H + 0.005), straw, rot=(0, 0, rng.uniform(0, 180)))
+    join("GardenBed")
+    export("garden_bed")
+
+
+def crop_seedling():
+    reset()
+    stem = mat("Stem", (0.33, 0.55, 0.18))
+    leaf = mat("Leaf", (0.42, 0.70, 0.24))
+    cyl("Stem", 0.012, 0.14, (0, 0, 0.07), stem, verts=6)
+    for side in (-1, 1):
+        box("Leaf", (0.09, 0.04, 0.01), (side * 0.045, 0, 0.13), leaf, rot=(0, side * -25, 0), bevel=0.008)
+    box("Bud", (0.03, 0.03, 0.04), (0, 0, 0.16), leaf, bevel=0.01)
+    join("Seedling")
+    export("crop_seedling")
+
+
+PROPS = {"courier_guild_board": courier_guild_board, "garden_bed": garden_bed, "crop_seedling": crop_seedling}
 
 if __name__ == "__main__":
     args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []

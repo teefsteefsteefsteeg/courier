@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/world/farm/farm_plot.tscn" id="1_plot"]
+[ext_resource type="PackedScene" path="res://scenes/props/signpost.tscn" id="2_sign"]
+
+[node name="CourierGarden" type="Node3D"]
+
+[node name="Plot1" parent="." instance=ExtResource("1_plot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 0, -1.2)
+plot_id = &"garden_plot_1"
+display_name = "Garden Bed 1"
+
+[node name="Plot2" parent="." instance=ExtResource("1_plot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0, -1.2)
+plot_id = &"garden_plot_2"
+display_name = "Garden Bed 2"
+
+[node name="Plot3" parent="." instance=ExtResource("1_plot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 0, 1.2)
+plot_id = &"garden_plot_3"
+display_name = "Garden Bed 3"
+
+[node name="Plot4" parent="." instance=ExtResource("1_plot")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0, 1.2)
+plot_id = &"garden_plot_4"
+display_name = "Garden Bed 4"
+
+[node name="Sign" parent="." instance=ExtResource("2_sign")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2.85, 0, 0)
+text = "Courier's Garden"

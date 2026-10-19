@@ -70,6 +70,7 @@ Services are per-level nodes in `scenes/gameplay/gameplay_services.tscn`, found 
 | `EquipmentStats` | `scripts/inventory/equipment_stats.gd` | Applies equipped items to the player's `CombatController` (stats and attack style by weapon type; TOOL for a tool) and the held models |
 | `ExplorationService` / `FastTravel` | `scripts/world/` | Phase 5G: location registry (`WorldLocation`), discovery, fog of war, portals |
 | `GatheringService` | `scripts/tools/gathering_service.gd` | Phase 5H: depleted harvest nodes (real-time respawn), repaired structures (paid once), tallies |
+| `FarmService` | `scripts/farming/farm_service.gd` | Garden beds, crops and their play-time growth clock (Phase 7) |
 | `SaveGame` | `scripts/core/save_game.gd` | `user://savegame.json`; autosave; **off in headless runs** |
 
 Key gameplay scripts:
@@ -93,7 +94,7 @@ Key gameplay scripts:
   Potion 90 g), packages in `data/packages/`. `scripts/quests/quest_waypoint.gd` maps the current
   objective to a world node (minimap objective).
 - **UI:** `scripts/gameplay_ui/` (GameplayHUD layout, tracker, wallet, toasts, board, ShopUI,
-  QuickWeaponBar (bottom-right, keys 1-5), EquipmentUI (Tab), ToolActionHUD (bottom centre, tool
+  QuickWeaponBar (bottom-right, keys 1-5), EquipmentUI (Tab inventory; [Q] switches Weapons & Gear / Tools & Goods while open), ToolActionHUD (bottom centre, tool
   jobs and fishing), MovementGuide), courier status panel `scripts/phase4_visual/combat_hud.gd` (top-left: portrait,
   rank badge, HP, shield energy, reputation; pushed by the combat visual adapter), `scripts/ui/` (interaction prompt, dialogue box, journal, location banner,
   UISettings, `input_prompts/`), minimap `scripts/phase4_integration_visual/minimap_controller.gd`.
@@ -111,7 +112,7 @@ Key gameplay scripts:
 - **Dev mode:** `scripts/core/dev_mode.gd`: debug build with a window. Override with `-- --dev` / `-- --no-dev`.
 
 Bindings (from `project.godot`): WASD move, Shift run **and** dash, E interact, G drop package,
-Space attack (bolt / melee / arrow by weapon; with a tool in hand: use the tool), 1-5 weapon/tool quick slots, Tab equipment, Q package shield, J journal, M map, mouse wheel or `=` `-` zoom, F3 debug HUD,
+Space attack (bolt / melee / arrow by weapon; with a tool in hand: use the tool), 1-5 weapon/tool quick slots, Tab equipment, Q package shield (switches inventory views while the inventory is open), J journal, M map, mouse wheel or `=` `-` zoom, F3 debug HUD,
 Esc close (`ui_cancel`).
 
 ## Assets
@@ -135,7 +136,9 @@ change the generator, not the scene. The terrain splat maps have no generator; e
 ## Status
 **Phase 7 in progress** (`docs/PHASE7_WORLD_AND_SYSTEMS.md`): Milestone A (guild board on the
 plaza, exhibit removed, NPCs face the courier, wider roads, Whisperwood moved to (14, 0, -90)
-inside a generated forest annex north of the village) is done; B-D are not started.
+inside a generated forest annex north of the village) and Milestone B (two-view inventory
+with [Q] switching views while open, enhancement levels, `FarmService` + `FarmPlot` garden)
+are done; C-D are not started.
 Phases 5G (map, portals) and 5H (village spacing, faster courier, RPG tools) are committed on
 `phase5f-integrated`, and every automated check passes on the committed tree (30 suites, 2614
 checks, clean boot). It has **not been played by a person**. See `docs/DEVELOPMENT_HANDOFF.md` for what is complete,

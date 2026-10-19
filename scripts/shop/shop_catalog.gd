@@ -8,6 +8,8 @@ extends Resource
 @export var items: Array[ItemDefinition] = []
 ## The merchant also buys the courier's gathered materials (MaterialItem.sell_price each).
 @export var buys_materials: bool = false
+## Stackable goods the merchant sells for MaterialItem.buy_price each (Phase 7: seeds).
+@export var sells_materials: Array[MaterialItem] = []
 
 
 func get_item(item_id: StringName) -> ItemDefinition:

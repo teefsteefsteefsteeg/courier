@@ -77,6 +77,7 @@
 [ext_resource type="PackedScene" path="res://scenes/phase6/village_gateway.tscn" id="blender_region"]
 [ext_resource type="Script" path="res://scripts/phase6/world_router.gd" id="phase6_router"]
 [ext_resource type="PackedScene" path="res://scenes/environment/whisperwood_forest.tscn" id="p7_whisperwood"]
+[ext_resource type="PackedScene" path="res://scenes/world/farm/courier_garden.tscn" id="p7_garden"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -485,7 +486,7 @@ transform = Transform3D(-0.817854, 0, -0.038238, 0, 0.818748, 0, 0.038238, 0, -0
 transform = Transform3D(-0.763409, 0, 0.338098, 0, 0.834928, 0, -0.338098, 0, -0.763409, -11.5, 0, 15.4)
 
 [node name="Bush03" parent="Props" instance=ExtResource("92_bushberry")]
-transform = Transform3D(0.852241, 0, 0.546219, 0, 1.01226, 0, -0.546219, 0, 0.852241, -13.8, 0, 10.2)
+transform = Transform3D(0.852241, 0, 0.546219, 0, 1.01226, 0, -0.546219, 0, 0.852241, -16.8, 0, 6.9)
 
 [node name="Bush04" parent="Props" instance=ExtResource("90_bush1")]
 transform = Transform3D(0.400205, 0, -0.763354, 0, 0.861901, 0, 0.763354, 0, 0.400205, -17.4, 0, 14)
@@ -906,6 +907,17 @@ target_id = &"grove_tree_2"
 [node name="GroveTree3" parent="ToolSites" instance=ExtResource("h5_tree")]
 transform = Transform3D(-0.173648, 0, 0.984808, 0, 1, 0, -0.984808, 0, -0.173648, -3.6, 0, -30.0)
 target_id = &"grove_tree_3"
+
+[node name="OfficeTree" parent="ToolSites" instance=ExtResource("h5_tree")]
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, -26.9, 0, -9.0)
+target_id = &"office_tree"
+
+[node name="OfficeRock" parent="ToolSites" instance=ExtResource("h5_rock")]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -14.8, 0, -16.6)
+target_id = &"office_rock"
+
+[node name="CourierGarden" parent="ToolSites" instance=ExtResource("p7_garden")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.05, 0, 9)
 
 [node name="QuarryRock1" parent="ToolSites" instance=ExtResource("h5_rock")]
 transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -30.5, 0, -28.5)

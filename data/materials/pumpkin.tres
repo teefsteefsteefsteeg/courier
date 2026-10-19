@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MaterialItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/material_item.gd" id="1_material"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/pumpkin.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_material")
+material_id = &"pumpkin"
+display_name = "Pumpkin"
+description = "A fat orange pumpkin. The Toolwright pays well for these."
+kind = 6
+icon = ExtResource("2_icon")
+sell_price = 14
+buy_price = 0

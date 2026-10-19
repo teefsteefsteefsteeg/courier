@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/farming/farm_plot.gd" id="1_plot"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="2_interact"]
+[ext_resource type="PackedScene" path="res://assets/generated/phase7/garden_bed.glb" id="3_bed"]
+
+[sub_resource type="BoxShape3D" id="Shape_bed"]
+size = Vector3(2.0, 0.4, 1.6)
+
+[sub_resource type="SphereShape3D" id="Shape_interact"]
+radius = 1.3
+
+[node name="FarmPlot" type="Node3D"]
+script = ExtResource("1_plot")
+
+[node name="Model" parent="." instance=ExtResource("3_bed")]
+
+[node name="Body" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("Shape_bed")
+
+[node name="Plants" type="Node3D" parent="."]
+
+[node name="Interactable" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("2_interact")
+prompt_verb = "Tend"
+display_name = "Garden Bed"
+metadata/prompt_anchor_height = 1.1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("Shape_interact")

@@ -8,11 +8,16 @@
 [ext_resource type="Resource" path="res://data/items/miner_pickaxe.tres" id="6_miner_pickaxe"]
 [ext_resource type="Resource" path="res://data/items/garden_shovel.tres" id="7_garden_shovel"]
 [ext_resource type="Resource" path="res://data/items/mason_trowel.tres" id="8_mason_trowel"]
+[ext_resource type="Script" path="res://scripts/inventory/material_item.gd" id="9_material"]
+[ext_resource type="Resource" path="res://data/materials/wheat_seeds.tres" id="10_wheat_seeds"]
+[ext_resource type="Resource" path="res://data/materials/carrot_seeds.tres" id="11_carrot_seeds"]
+[ext_resource type="Resource" path="res://data/materials/pumpkin_seeds.tres" id="12_pumpkin_seeds"]
 
 [resource]
 script = ExtResource("1_catalog")
 shop_id = &"toolwright"
 title = "Hill Smithy Tools"
-greeting = "Rods, axes, picks and hammers, courier. And I'll buy whatever you fish, fell or dig up."
+greeting = "Rods, axes, picks and hammers, courier. Seeds for your garden too. And I'll buy whatever you fish, fell, dig up or grow."
 items = Array[ExtResource("2_item")]([ExtResource("3_fishing_rod"), ExtResource("4_carpenter_hammer"), ExtResource("5_woodcutter_axe"), ExtResource("6_miner_pickaxe"), ExtResource("7_garden_shovel"), ExtResource("8_mason_trowel")])
 buys_materials = true
+sells_materials = Array[ExtResource("9_material")]([ExtResource("10_wheat_seeds"), ExtResource("11_carrot_seeds"), ExtResource("12_pumpkin_seeds")])

@@ -10,8 +10,11 @@ extends Node
 ## sits in at most one quick slot. A newly added weapon or tool fills the first empty slot.
 ## Tools (ItemDefinition.tool_type) go in the main hand like weapons.
 ##
-## Materials (Phase 5H): stackable MaterialItem counts (fish, wood, stone, ore, clay), up to
-## MAX_STACK each, added by gathering and removed by repairs and selling.
+## Materials (Phase 5H): stackable MaterialItem counts (fish, wood, stone, ore, clay, and
+## since Phase 7 seeds and produce), up to MAX_STACK each, added by gathering, buying and
+## harvesting and removed by repairs, planting and selling.
+##
+## Enhancement (Phase 7): each owned item has a level 0..Enhancement.MAX_LEVEL.
 
 signal item_added(item: ItemDefinition)
 ## item is null when the slot was emptied.
@@ -19,6 +22,8 @@ signal equipment_changed(slot: ItemDefinition.Slot, item: ItemDefinition)
 signal quick_slots_changed
 ## A material count changed by delta (positive when gathered).
 signal materials_changed(material: MaterialItem, count: int, delta: int)
+## An owned item's enhancement level changed.
+signal enhancement_changed(item_id: StringName, level: int)
 
 const GROUP := &"courier_inventory"
 const QUICK_SLOT_COUNT := 5
@@ -35,6 +40,7 @@ var _equipped: Dictionary[int, StringName] = {}
 var _quick_slots: Array[StringName] = [&"", &"", &"", &"", &""]
 var _material_definitions: Dictionary[StringName, MaterialItem] = {}
 var _materials: Dictionary[StringName, int] = {}
+var _enhancements: Dictionary[StringName, int] = {}
 
 
 func _enter_tree() -> void:
@@ -202,6 +208,28 @@ func find_owned_tool(type: ItemDefinition.ToolType) -> ItemDefinition:
 	return null
 
 
+# --- enhancement ----------------------------------------------------------------
+
+## Enhancement level of an item (0 when not owned or never enhanced).
+func get_enhancement(item_id: StringName) -> int:
+	return _enhancements.get(item_id, 0) if has_item(item_id) else 0
+
+
+## Sets an owned item's level (clamped to 0..MAX_LEVEL). False when it is not owned.
+func set_enhancement(item_id: StringName, level: int) -> bool:
+	if not has_item(item_id):
+		return false
+	level = Enhancement.clamp_level(level)
+	if get_enhancement(item_id) == level:
+		return true
+	if level == 0:
+		_enhancements.erase(item_id)
+	else:
+		_enhancements[item_id] = level
+	enhancement_changed.emit(item_id, level)
+	return true
+
+
 # --- materials ------------------------------------------------------------------
 
 func register_material(material: MaterialItem) -> void:
@@ -283,11 +311,15 @@ func to_dict() -> Dictionary:
 	var materials := {}
 	for id in _materials:
 		materials[String(id)] = _materials[id]
+	var enhancements := {}
+	for id in _enhancements:
+		enhancements[String(id)] = _enhancements[id]
 	return {
 		"owned": _owned.map(func(id: StringName) -> String: return String(id)),
 		"equipped": equipped,
 		"quick_slots": _quick_slots.map(func(id: StringName) -> String: return String(id)),
 		"materials": materials,
+		"enhancements": enhancements,
 	}
 
 
@@ -297,6 +329,9 @@ func to_dict() -> Dictionary:
 func from_dict(data: Dictionary) -> void:
 	for slot in _equipped.keys():
 		unequip(slot)
+	for id in _enhancements.keys():
+		_enhancements.erase(id)
+		enhancement_changed.emit(id, 0)
 	_owned.clear()
 	_quick_slots.fill(&"")
 	for id in _materials.keys():
@@ -312,6 +347,9 @@ func from_dict(data: Dictionary) -> void:
 		var item := get_definition(StringName(id))
 		if item != null and not has_item(item.item_id):
 			_owned.append(item.item_id)
+	var enhancements: Dictionary = data.get("enhancements", {})
+	for id in enhancements:
+		set_enhancement(StringName(id), int(enhancements[id]))
 	var equipped: Dictionary = data.get("equipped", {})
 	# Main hand first, so a two-handed weapon's rule applies to the saved off-hand item.
 	for slot_name in ItemDefinition.Slot.keys():

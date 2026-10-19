@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MaterialItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/material_item.gd" id="1_material"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/carrot_seeds.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_material")
+material_id = &"carrot_seeds"
+display_name = "Carrot Seeds"
+description = "Carrot seed for a garden plot. Grows in a few minutes."
+kind = 5
+icon = ExtResource("2_icon")
+sell_price = 0
+buy_price = 2
