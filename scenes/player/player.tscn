@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_ctrl"]
 [ext_resource type="Script" path="res://scripts/components/movement_component.gd" id="2_move"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="c5_char"]
 [ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Ranger.glb" id="c5_model"]
 [ext_resource type="Script" path="res://scripts/characters/player_animator.gd" id="c5_anim"]
+[ext_resource type="Script" path="res://scripts/tools/tool_user.gd" id="h5_tools"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.35
@@ -146,3 +147,6 @@ movement = NodePath("../MovementComponent")
 combat = NodePath("../Combat")
 interaction = NodePath("../InteractionDetector")
 carrier = NodePath("../PackageCarrier")
+
+[node name="ToolUser" type="Node" parent="."]
+script = ExtResource("h5_tools")

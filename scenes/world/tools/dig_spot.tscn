@@ -1,0 +1,134 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/tools/harvest_node.gd" id="1_kwpln"]
+[ext_resource type="Resource" path="res://data/materials/clay.tres" id="2_olrr1"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="3_qamt6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ujq4w"]
+albedo_color = Color(0.43, 0.3, 0.2, 1)
+roughness = 0.85
+
+[sub_resource type="SphereMesh" id="SphereMesh_h47sv"]
+material = SubResource("StandardMaterial3D_ujq4w")
+radius = 0.6
+height = 0.36
+radial_segments = 12
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fsd7u"]
+albedo_color = Color(0.72, 0.42, 0.29, 1)
+roughness = 0.85
+
+[sub_resource type="SphereMesh" id="SphereMesh_fjejx"]
+material = SubResource("StandardMaterial3D_fsd7u")
+radius = 0.1
+height = 0.12
+radial_segments = 12
+rings = 6
+
+[sub_resource type="SphereMesh" id="SphereMesh_a8cpr"]
+material = SubResource("StandardMaterial3D_fsd7u")
+radius = 0.1
+height = 0.12
+radial_segments = 12
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_21v6a"]
+albedo_color = Color(0.55, 0.38, 0.22, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_o3wbe"]
+material = SubResource("StandardMaterial3D_21v6a")
+size = Vector3(0.05, 0.6, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q0heb"]
+albedo_color = Color(0.8, 0.2, 0.16, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_jh47j"]
+material = SubResource("StandardMaterial3D_q0heb")
+size = Vector3(0.14, 0.09, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j4cpg"]
+albedo_color = Color(0.16, 0.11, 0.08, 1)
+roughness = 0.85
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_7a1vb"]
+material = SubResource("StandardMaterial3D_j4cpg")
+top_radius = 0.42
+bottom_radius = 0.42
+height = 0.02
+radial_segments = 10
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tvhay"]
+albedo_color = Color(0.4, 0.28, 0.18, 1)
+roughness = 0.85
+
+[sub_resource type="TorusMesh" id="TorusMesh_yhlgj"]
+material = SubResource("StandardMaterial3D_tvhay")
+inner_radius = 0.38
+outer_radius = 0.6
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_jdhl7"]
+radius = 0.9
+
+[node name="DigSpot" type="Node3D" unique_id=834261073 node_paths=PackedStringArray("standing_visual", "depleted_visual", "shake_node")]
+script = ExtResource("1_kwpln")
+yield_material = ExtResource("2_olrr1")
+yield_min = 1
+yield_max = 2
+activity = &"dig"
+standing_visual = NodePath("Standing")
+depleted_visual = NodePath("Depleted")
+depleted_name = "Dug-up Soil"
+display_name = "Soft Soil"
+required_tool = 5
+verb = "Dig"
+action = &"tool_dig"
+stroke_speed = 1.25
+reach = 2.5999999999999996
+chip_color = Color(0.42, 0.3, 0.2, 1)
+shake_node = NodePath("Standing")
+
+[node name="Standing" type="Node3D" parent="." unique_id=1975222170]
+
+[node name="Mound" type="MeshInstance3D" parent="Standing" unique_id=1049653118]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+mesh = SubResource("SphereMesh_h47sv")
+
+[node name="Clay" type="MeshInstance3D" parent="Standing" unique_id=1782470655]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, 0.12, 0.2)
+mesh = SubResource("SphereMesh_fjejx")
+
+[node name="Clay2" type="MeshInstance3D" parent="Standing" unique_id=1519396390]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0.1, 0.3)
+mesh = SubResource("SphereMesh_a8cpr")
+
+[node name="Stake" type="MeshInstance3D" parent="Standing" unique_id=2092039636]
+transform = Transform3D(0.99026805, -0.1391731, 0, 0.1391731, 0.99026805, 0, 0, 0, 1, -0.45, 0.3, -0.2)
+mesh = SubResource("BoxMesh_o3wbe")
+
+[node name="Rag" type="MeshInstance3D" parent="Standing" unique_id=1327228541]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38, 0.52, -0.2)
+mesh = SubResource("BoxMesh_jh47j")
+
+[node name="Depleted" type="Node3D" parent="." unique_id=2020864662]
+
+[node name="Hole" type="MeshInstance3D" parent="Depleted" unique_id=1567554216]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.015, 0)
+mesh = SubResource("CylinderMesh_7a1vb")
+
+[node name="Rim" type="MeshInstance3D" parent="Depleted" unique_id=1189519093]
+transform = Transform3D(1, 0, 0, 0, 0.25, 0, 0, 0, 1, 0, 0.03, 0)
+mesh = SubResource("TorusMesh_yhlgj")
+
+[node name="Interactable" type="Area3D" parent="." unique_id=1161052254]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("3_qamt6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable" unique_id=78650176]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("SphereShape3D_jdhl7")

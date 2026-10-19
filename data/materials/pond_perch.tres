@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/material_item.gd" id="1_material"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/pond_perch.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_material")
+material_id = &"pond_perch"
+display_name = "Pond Perch"
+description = "A green-backed perch, common in Willowmere Pond."
+kind = 0
+icon = ExtResource("2_icon")
+sell_price = 4

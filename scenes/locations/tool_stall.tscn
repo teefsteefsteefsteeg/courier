@@ -1,0 +1,277 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/tool_stall.gd" id="1_v6kae"]
+[ext_resource type="Resource" path="res://data/shops/toolwright.tres" id="2_2hbcg"]
+[ext_resource type="Material" path="res://assets/materials/buildings/timber.tres" id="3_uw0vo"]
+[ext_resource type="Material" path="res://assets/materials/buildings/planks.tres" id="4_k6mew"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/hammer.gltf" id="5_0ubwn"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/saw.gltf" id="6_03y8f"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/wrench_A.gltf" id="7_rh43h"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/chisel.gltf" id="8_5w8vd"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/pencil_A_long.gltf" id="9_e4cof"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/journal_open.gltf" id="10_skao2"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/nail.gltf" id="11_t73wb"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/screw_A.gltf" id="12_c2v3n"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/lantern.gltf" id="13_ao1bb"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/anvil.gltf" id="14_ma2ve"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/tongs.gltf" id="15_mxlp1"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/grindstone.gltf" id="16_mpq5y"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/axe.gltf" id="17_r5j13"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/pickaxe.gltf" id="18_ai32q"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/shovel.gltf" id="19_yaxib"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/trowel.gltf" id="20_dfx4o"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/mallet.gltf" id="21_i8npo"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/blueprint_stacked.gltf" id="22_e3egq"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/rope_bundle_A.gltf" id="23_8sn5m"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/bucket_metal.gltf" id="24_5cvn5"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/torch.gltf" id="25_br286"]
+[ext_resource type="PackedScene" path="res://scenes/npc/characters/toolwright_hobb.tscn" id="26_v5esv"]
+[ext_resource type="Script" path="res://scripts/npc/npc.gd" id="27_bd68l"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="28_o7pa7"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_bk05y"]
+material = ExtResource("3_uw0vo")
+size = Vector3(2.2, 0.08, 0.62)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4ybqt"]
+material = ExtResource("4_k6mew")
+size = Vector3(2.16, 0.92, 0.06)
+
+[sub_resource type="BoxMesh" id="BoxMesh_piaup"]
+material = ExtResource("4_k6mew")
+size = Vector3(0.06, 0.92, 0.58)
+
+[sub_resource type="BoxMesh" id="BoxMesh_36n2g"]
+material = ExtResource("4_k6mew")
+size = Vector3(0.06, 0.92, 0.58)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y2qd3"]
+size = Vector3(2.2, 1, 0.62)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yihmo"]
+material = ExtResource("3_uw0vo")
+size = Vector3(0.1, 2.4, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dmklt"]
+material = ExtResource("3_uw0vo")
+size = Vector3(0.1, 2.1, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0bgh8"]
+material = ExtResource("3_uw0vo")
+size = Vector3(0.1, 2.4, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ac2j6"]
+material = ExtResource("3_uw0vo")
+size = Vector3(0.1, 2.1, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cyav7"]
+material = ExtResource("4_k6mew")
+size = Vector3(2.7, 0.06, 2.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_u4wj1"]
+material = ExtResource("3_uw0vo")
+size = Vector3(0.6, 0.45, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_uk27a"]
+size = Vector3(0.8, 0.9, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_88ja0"]
+size = Vector3(1.05, 0.9, 0.85)
+
+[sub_resource type="BoxMesh" id="BoxMesh_r8fmt"]
+material = ExtResource("3_uw0vo")
+size = Vector3(2, 0.1, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_o0gto"]
+material = ExtResource("3_uw0vo")
+size = Vector3(2, 0.08, 0.08)
+
+[sub_resource type="BoxMesh" id="BoxMesh_g105e"]
+material = ExtResource("4_k6mew")
+size = Vector3(0.08, 1.2, 0.08)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nl0iq"]
+material = ExtResource("4_k6mew")
+size = Vector3(0.08, 1.2, 0.08)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_t5hd1"]
+size = Vector3(2, 1.2, 0.45)
+
+[node name="ToolStall" type="Node3D" unique_id=1872842051 node_paths=PackedStringArray("merchant")]
+script = ExtResource("1_v6kae")
+merchant = NodePath("Merchant")
+catalog = ExtResource("2_2hbcg")
+
+[node name="Counter" type="StaticBody3D" parent="." unique_id=160671845]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6)
+
+[node name="Top" type="MeshInstance3D" parent="Counter" unique_id=1628509380]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.96, 0)
+mesh = SubResource("BoxMesh_bk05y")
+
+[node name="Front" type="MeshInstance3D" parent="Counter" unique_id=1434024652]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.46, 0.27)
+mesh = SubResource("BoxMesh_4ybqt")
+
+[node name="SideL" type="MeshInstance3D" parent="Counter" unique_id=1589610448]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.05, 0.46, 0)
+mesh = SubResource("BoxMesh_piaup")
+
+[node name="SideR" type="MeshInstance3D" parent="Counter" unique_id=1200178669]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.05, 0.46, 0)
+mesh = SubResource("BoxMesh_36n2g")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Counter" unique_id=143309990]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_y2qd3")
+
+[node name="Hammer" type="Node3D" parent="Counter" unique_id=1278513964 instance=ExtResource("5_0ubwn")]
+transform = Transform3D(0.15390901, -0.4228617, 0, -1.8483872e-08, -6.7275767e-09, -0.45, 0.4228617, 0.15390901, -1.9670125e-08, -0.75, 1.04, 0.05)
+
+[node name="Saw" type="Node3D" parent="Counter" unique_id=527235713 instance=ExtResource("6_03y8f")]
+transform = Transform3D(0.44316345, -0.07814168, 0, -3.4156817e-09, -1.937129e-08, -0.45, 0.07814168, 0.44316345, -1.9670125e-08, -0.15, 1.03, -0.05)
+
+[node name="WrenchA" type="Node3D" parent="Counter" unique_id=20037335 instance=ExtResource("7_rh43h")]
+transform = Transform3D(0.34471998, 0.28925443, 0, 1.2643713e-08, -1.506819e-08, -0.45, -0.28925443, 0.34471998, -1.9670125e-08, 0.35, 1.02, 0.12)
+
+[node name="Chisel" type="Node3D" parent="Counter" unique_id=2137195479 instance=ExtResource("8_5w8vd")]
+transform = Transform3D(0.078141645, -0.44316348, 0, -1.9371292e-08, -3.4156797e-09, -0.45, 0.44316348, 0.078141645, -1.9670125e-08, 0.6, 1.03, -0.1)
+
+[node name="PencilALong" type="Node3D" parent="Counter" unique_id=1802004588 instance=ExtResource("9_e4cof")]
+transform = Transform3D(0.42286167, -0.15390907, 0, -6.727579e-09, -1.848387e-08, -0.45, 0.15390907, 0.42286167, -1.9670125e-08, 0.82, 1.02, 0.12)
+
+[node name="JournalOpen" type="Node3D" parent="Counter" unique_id=1375135201 instance=ExtResource("10_skao2")]
+transform = Transform3D(0.4346666, 0, 0.11646856, 0, 0.45, 0, -0.11646856, 0, 0.4346666, -0.42, 1.01, -0.18)
+
+[node name="Nail" type="Node3D" parent="Counter" unique_id=925805646 instance=ExtResource("11_t73wb")]
+transform = Transform3D(0.45, 0, 0, 0, -1.9670125e-08, -0.45, 0, 0.45, -1.9670125e-08, 0.15, 1.02, 0.2)
+
+[node name="ScrewA" type="Node3D" parent="Counter" unique_id=817714799 instance=ExtResource("12_c2v3n")]
+transform = Transform3D(0.31819803, -0.31819803, 0, -1.39088785e-08, -1.39088785e-08, -0.45, 0.31819803, 0.31819803, -1.9670125e-08, 0.22, 1.02, 0.24)
+
+[node name="Awning" type="Node3D" parent="." unique_id=613217988]
+
+[node name="Post" type="MeshInstance3D" parent="Awning" unique_id=291423642]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.2, -0.9)
+mesh = SubResource("BoxMesh_yihmo")
+
+[node name="Post2" type="MeshInstance3D" parent="Awning" unique_id=1796342947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 1.05, 1)
+mesh = SubResource("BoxMesh_dmklt")
+
+[node name="Post3" type="MeshInstance3D" parent="Awning" unique_id=1442828768]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.2, -0.9)
+mesh = SubResource("BoxMesh_0bgh8")
+
+[node name="Post4" type="MeshInstance3D" parent="Awning" unique_id=229074542]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.05, 1)
+mesh = SubResource("BoxMesh_ac2j6")
+
+[node name="Roof" type="MeshInstance3D" parent="Awning" unique_id=684785289]
+transform = Transform3D(1, 0, 0, 0, 0.99026805, -0.1391731, 0, 0.1391731, 0.99026805, 0, 2.28, 0.05)
+mesh = SubResource("BoxMesh_cyav7")
+
+[node name="Lantern" type="Node3D" parent="Awning" unique_id=1263410155 instance=ExtResource("13_ao1bb")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 1.1, 1.62, 1)
+
+[node name="Anvil" type="StaticBody3D" parent="." unique_id=200780008]
+transform = Transform3D(0.9396926, 0, 0.34202012, 0, 1, 0, -0.34202012, 0, 0.9396926, -1.95, 0, 0.9)
+
+[node name="Block" type="MeshInstance3D" parent="Anvil" unique_id=1683329193]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.225, 0)
+mesh = SubResource("BoxMesh_u4wj1")
+
+[node name="Model" type="Node3D" parent="Anvil" unique_id=1983634557 instance=ExtResource("14_ma2ve")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.45, 0)
+
+[node name="Tongs" type="Node3D" parent="Anvil" unique_id=588841764 instance=ExtResource("15_mxlp1")]
+transform = Transform3D(0.38213462, -0.11820809, 0, -5.1670397e-09, -1.6703636e-08, -0.4, 0.11820809, 0.38213462, -1.7484556e-08, 0.05, 0.86, 0.12)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Anvil" unique_id=988766056]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("BoxShape3D_uk27a")
+
+[node name="Grindstone" type="StaticBody3D" parent="." unique_id=628389265]
+transform = Transform3D(0.25881907, 0, -0.9659258, 0, 1, 0, 0.9659258, 0, 0.25881907, 1.95, 0, 0.7)
+
+[node name="Model" type="Node3D" parent="Grindstone" unique_id=1971051816 instance=ExtResource("16_mpq5y")]
+transform = Transform3D(0.55, 0, 0, 0, 0.55, 0, 0, 0, 0.55, 0, 0.41, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Grindstone" unique_id=106826164]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("BoxShape3D_88ja0")
+
+[node name="ToolRack" type="StaticBody3D" parent="." unique_id=1991488254]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.25)
+
+[node name="Base" type="MeshInstance3D" parent="ToolRack" unique_id=691027686]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("BoxMesh_r8fmt")
+
+[node name="Bar" type="MeshInstance3D" parent="ToolRack" unique_id=518210965]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, -0.12)
+mesh = SubResource("BoxMesh_o0gto")
+
+[node name="Upright" type="MeshInstance3D" parent="ToolRack" unique_id=51760373]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.95, 0.6, -0.12)
+mesh = SubResource("BoxMesh_g105e")
+
+[node name="Upright2" type="MeshInstance3D" parent="ToolRack" unique_id=177797537]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.6, -0.12)
+mesh = SubResource("BoxMesh_nl0iq")
+
+[node name="Axe" type="Node3D" parent="ToolRack" unique_id=2134583836 instance=ExtResource("17_r5j13")]
+transform = Transform3D(0.6, 0, 0, 0, 0.59416085, 0.083503865, 0, -0.083503865, 0.59416085, -0.7, 0.32, 0.02)
+
+[node name="Pickaxe" type="Node3D" parent="ToolRack" unique_id=1593552716 instance=ExtResource("18_ai32q")]
+transform = Transform3D(0.6, 0, 0, 0, 0.59416085, 0.083503865, 0, -0.083503865, 0.59416085, -0.35, 0.32, 0.02)
+
+[node name="Shovel" type="Node3D" parent="ToolRack" unique_id=1882520278 instance=ExtResource("19_yaxib")]
+transform = Transform3D(0.6, 0, 0, 0, 0.59416085, 0.083503865, 0, -0.083503865, 0.59416085, 0, 0.32, 0.02)
+
+[node name="Trowel" type="Node3D" parent="ToolRack" unique_id=1508292566 instance=ExtResource("20_dfx4o")]
+transform = Transform3D(0.6, 0, 0, 0, 0.59416085, 0.083503865, 0, -0.083503865, 0.59416085, 0.35, 0.32, 0.02)
+
+[node name="Mallet" type="Node3D" parent="ToolRack" unique_id=275281318 instance=ExtResource("21_i8npo")]
+transform = Transform3D(0.6, 0, 0, 0, 0.59416085, 0.083503865, 0, -0.083503865, 0.59416085, 0.7, 0.32, 0.02)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ToolRack" unique_id=1913168082]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("BoxShape3D_t5hd1")
+
+[node name="Dressing" type="Node3D" parent="." unique_id=1619930175]
+
+[node name="Blueprints" type="Node3D" parent="Dressing" unique_id=1312681481 instance=ExtResource("22_e3egq")]
+transform = Transform3D(0.32237133, 0, 0.13629642, 0, 0.35, 0, -0.13629642, 0, 0.32237133, -1.6, 0, 1.75)
+
+[node name="Rope" type="Node3D" parent="Dressing" unique_id=1686031143 instance=ExtResource("23_8sn5m")]
+transform = Transform3D(0.4126678, 0, -0.28232124, 0, 0.5, 0, 0.28232124, 0, 0.4126678, 1.75, 0, 1.75)
+
+[node name="Bucket" type="Node3D" parent="Dressing" unique_id=1526703703 instance=ExtResource("24_5cvn5")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -2, 0, -0.2)
+
+[node name="Torch" type="Node3D" parent="Dressing" unique_id=304648057 instance=ExtResource("25_br286")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -1.3, 0.15, 1.75)
+
+[node name="Merchant" type="StaticBody3D" parent="." unique_id=684627183 instance=ExtResource("26_v5esv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.25)
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("27_bd68l")
+npc_id = &"toolwright"
+npc_name = "Toolwright Hobb"
+lines = PackedStringArray("A good tool outlives three couriers, if you oil it.", "Marked trees are fair game. The rest belong to the village.", "Bring me ore from the old quarry and I\'ll pay in honest coin.", "The pond jetty\'s been rotting since spring. Someone with a hammer could fix that.")
+body_color = Color(0.45, 0.42, 0.5, 1)
+
+[node name="Markers" type="Node3D" parent="." unique_id=1844787898]
+
+[node name="ShopFront" type="Marker3D" parent="Markers" unique_id=507523503]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.75)
+
+[node name="Location" type="Marker3D" parent="." unique_id=1646220916]
+script = ExtResource("28_o7pa7")
+location_id = &"tool_stall"
+display_name = "Hill Smithy Tools"
+subtitle = "Toolwright Hobb"
+kind = 2
+discover_radius = 7.0

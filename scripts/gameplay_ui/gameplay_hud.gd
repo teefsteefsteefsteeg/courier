@@ -13,6 +13,8 @@ extends CanvasLayer
 
 const MARGIN := 16.0
 const GAP := 12.0
+## Space under the tool HUD for the interaction prompt (bottom centre).
+const TOOL_HUD_BOTTOM := 150.0
 var onboarding: Label
 ## Keyboard guide (actual bindings, keycaps only), bottom-left.
 var movement_guide: MovementGuide
@@ -22,6 +24,8 @@ var quick_weapon_bar: QuickWeaponBar
 var equipment_ui: EquipmentUI
 ## Fast-travel destinations, opened by an active TeleportPortal.
 var teleport_menu: TeleportMenu
+## Tool job / fishing progress (Phase 5H), bottom centre above the interaction prompt.
+var tool_action_hud: ToolActionHUD
 var _combat_panel: Control = null
 var _combat_scan_left: float = 0.0
 
@@ -51,8 +55,14 @@ func _ready() -> void:
 	teleport_menu = TeleportMenu.new()
 	teleport_menu.name = "TeleportMenu"
 	add_child(teleport_menu)
+	tool_action_hud = ToolActionHUD.new()
+	tool_action_hud.name = "ToolActionHUD"
+	tool_action_hud.player = player
+	tool_action_hud.notifier = quest_notification
+	add_child(tool_action_hud)
+	tool_action_hud.add_to_group(QuestJournal.HIDDEN_WHILE_OPEN_GROUP)
 	# World-anchored input prompts stay clear of these panels.
-	for widget: Control in [quest_tracker, wallet_display, package_indicator, quest_notification.panel, package_status_hud.get_node("Panel"), onboarding, movement_guide, quick_weapon_bar]:
+	for widget: Control in [quest_tracker, wallet_display, package_indicator, quest_notification.panel, package_status_hud.get_node("Panel"), onboarding, movement_guide, quick_weapon_bar, tool_action_hud]:
 		widget.add_to_group(InputPrompt.AVOID_GROUP)
 	if player == null:
 		return
@@ -96,6 +106,12 @@ func _process(_delta: float) -> void:
 		map.expanded.custom_minimum_size = Vector2.ZERO
 		_place(map.expanded, Vector2(0.5, 0.5), Vector2.ONE * -extent * 0.5, Vector2.ONE * extent)
 	_place_movement_guide(_delta)
+	var view := get_viewport().get_visible_rect().size
+	var tool_size := tool_action_hud.get_combined_minimum_size()
+	_place(tool_action_hud, Vector2(0.5, 1), Vector2(-tool_size.x * 0.5, -TOOL_HUD_BOTTOM - tool_size.y), tool_size)
+	if view.x < 1100:
+		# Narrow windows: the bottom corners' panels reach the middle; sit above them.
+		_place(tool_action_hud, Vector2(0.5, 0.5), Vector2(-tool_size.x * 0.5, view.y * 0.12), tool_size)
 
 
 ## Bottom-left (stacked above the courier status panel if that is ever at the bottom).

@@ -33,7 +33,10 @@ func _ready() -> void:
 			combat.health.died.connect(_on_died)
 			combat.health.health_changed.connect(_on_health_changed)
 	if interaction != null:
-		interaction.interaction_performed.connect(func(_target: Interactable) -> void: character.play_once(&"interact", 1.4))
+		# Tool targets play their own tool clip (ToolUser), so no generic reach for them.
+		interaction.interaction_performed.connect(func(target: Interactable) -> void:
+			if not target.get_parent() is ToolTarget:
+				character.play_once(&"interact", 1.4))
 	if carrier != null:
 		carrier.package_picked_up.connect(func(_package: PackageInstance) -> void: character.play_once(&"pickup", 1.6))
 

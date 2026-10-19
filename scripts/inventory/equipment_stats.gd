@@ -68,14 +68,18 @@ func apply() -> void:
 		combat.switch_weapon()
 	_last_weapon = weapon_id
 	if _character != null:
-		_character.set_held_item(weapon.held_model if weapon != null else null)
+		_character.set_held_item(weapon.held_model if weapon != null else null, weapon.held_transform if weapon != null else Transform3D.IDENTITY)
 		var off_hand := inventory.get_equipped(ItemDefinition.Slot.OFF_HAND)
 		_character.set_off_hand_item(off_hand.held_model if off_hand != null else null)
 
 
 ## Picks the courier's primary attack from the weapon type: a sword swings fast, an axe
-## swings heavy, a bow shoots arrows, and a staff or bare hands cast the Magic Bolt.
+## swings heavy, a bow shoots arrows, and a staff or bare hands cast the Magic Bolt. A tool
+## in hand has no attack (AttackStyle.TOOL: the primary action uses the tool).
 func _apply_attack(weapon: ItemDefinition) -> void:
+	if weapon != null and weapon.is_tool():
+		combat.set_attack_style(CombatController.AttackStyle.TOOL)
+		return
 	var type := weapon.weapon_type if weapon != null else ItemDefinition.WeaponType.NONE
 	match type:
 		ItemDefinition.WeaponType.SWORD, ItemDefinition.WeaponType.AXE:

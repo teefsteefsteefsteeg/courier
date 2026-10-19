@@ -1,8 +1,9 @@
 class_name EquipmentUI
 extends CanvasLayer
-## Equipment window (toggle_equipment, Tab): every item the courier could own, marked
-## Equipped, Owned or Not owned. Owned items can be equipped or unequipped; owned weapons
-## can be put in any of the five quick slots (pressing a weapon's current slot clears it).
+## Equipment window (toggle_equipment, Tab): every item the courier could own, grouped as
+## Weapons, Tools and Off-hand and marked Equipped, Owned or Not owned, then the carried
+## Materials (Phase 5H). Owned items can be equipped or unequipped; owned weapons and tools
+## can be put in any of the five quick slots (pressing an item's current slot clears it).
 ## Unowned items are dimmed with no actions, so they can never be equipped or slotted.
 ## Everything goes through CourierInventory; EquipmentStats does the rest.
 ##
@@ -25,6 +26,8 @@ var feedback_label: Label
 var close_button: Button
 ## item_id -> {"row", "status", "equip", "slots": Array[Button], "item"} (read by tests).
 var rows: Dictionary[StringName, Dictionary] = {}
+## material_id -> {"cell", "label", "material"}: carried materials (read by tests).
+var material_rows: Dictionary[StringName, Dictionary] = {}
 var _player: PlayerController = null
 var _slot_assigned_style: StyleBoxFlat
 
@@ -43,6 +46,7 @@ func _bind() -> void:
 		inventory.item_added.connect(func(_i): _refresh())
 		inventory.equipment_changed.connect(func(_s, _i): _refresh())
 		inventory.quick_slots_changed.connect(_refresh)
+		inventory.materials_changed.connect(func(_m, _c, _d): _refresh())
 
 
 func is_open() -> bool:
@@ -168,7 +172,7 @@ func _build() -> void:
 	title.add_theme_color_override(&"font_color", GOLD)
 	body.add_child(title)
 	var hint := Label.new()
-	hint.text = "Equip owned gear, or put a weapon on a quick slot and switch with [%s]-[%s]." % [InputHints.key_for(&"quick_slot_1"), InputHints.key_for(&"quick_slot_5")]
+	hint.text = "Equip owned gear, or put a weapon or tool on a quick slot and switch with [%s]-[%s]." % [InputHints.key_for(&"quick_slot_1"), InputHints.key_for(&"quick_slot_5")]
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint.add_theme_color_override(&"font_color", Color(0.85, 0.82, 0.95))
 	body.add_child(hint)
@@ -215,9 +219,60 @@ func _rebuild() -> void:
 		item_list.remove_child(child)
 		child.queue_free()
 	rows.clear()
-	for item in inventory.get_all_definitions():
-		item_list.add_child(_build_row(item))
+	material_rows.clear()
+	var all := inventory.get_all_definitions()
+	for section in [["Weapons", func(i: ItemDefinition) -> bool: return i.is_weapon()],
+			["Tools", func(i: ItemDefinition) -> bool: return i.is_tool()],
+			["Off-hand", func(i: ItemDefinition) -> bool: return not i.is_weapon() and not i.is_tool()]]:
+		var items := all.filter(section[1])
+		if items.is_empty():
+			continue
+		item_list.add_child(_section_label(section[0]))
+		for item in items:
+			item_list.add_child(_build_row(item))
+	var materials := inventory.get_all_materials()
+	if not materials.is_empty():
+		item_list.add_child(_section_label("Materials"))
+		var grid := GridContainer.new()
+		grid.name = "Materials"
+		grid.columns = 4
+		grid.add_theme_constant_override(&"h_separation", 18)
+		grid.add_theme_constant_override(&"v_separation", 6)
+		item_list.add_child(grid)
+		for material in materials:
+			grid.add_child(_build_material_cell(material))
 	_refresh()
+
+
+func _section_label(text: String) -> Label:
+	var label := Label.new()
+	label.name = text.replace("-", "") + "Header"
+	label.text = text
+	label.add_theme_font_size_override(&"font_size", 20)
+	label.add_theme_color_override(&"font_color", GOLD)
+	return label
+
+
+func _build_material_cell(material: MaterialItem) -> Control:
+	var cell := HBoxContainer.new()
+	cell.name = String(material.material_id)
+	cell.add_theme_constant_override(&"separation", 6)
+	cell.tooltip_text = material.description
+	var icon := TextureRect.new()
+	icon.texture = material.icon
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_SCALE
+	icon.custom_minimum_size = Vector2(32, 32)
+	cell.add_child(icon)
+	var label := Label.new()
+	label.theme_type_variation = &"ContractDetail"
+	label.custom_minimum_size.x = 130
+	# These cells sit directly on the dark panel, outside the cream item cards.
+	label.add_theme_color_override(&"font_color", Color(0.96, 0.92, 0.80))
+	cell.add_child(label)
+	material_rows[material.material_id] = {"cell": cell, "label": label, "material": material}
+	return cell
 
 
 func _build_row(item: ItemDefinition) -> Control:
@@ -245,7 +300,7 @@ func _build_row(item: ItemDefinition) -> Control:
 	var stats := Label.new()
 	stats.theme_type_variation = &"ContractDetail"
 	stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	var summary := item.get_attack_summary() if item.is_weapon() else ItemDefinition.slot_name(item.slot)
+	var summary := item.get_attack_summary() if item.is_weapon() or item.is_tool() else ItemDefinition.slot_name(item.slot)
 	if item.two_handed:
 		summary += " · two-handed"
 	stats.text = "%s  ·  %s" % [summary, ", ".join(item.get_stat_lines())]
@@ -261,7 +316,7 @@ func _build_row(item: ItemDefinition) -> Control:
 	equip.pressed.connect(_on_equip_pressed.bind(item))
 	side.add_child(equip)
 	var slots: Array[Button] = []
-	if item.is_weapon():
+	if item.is_quick_slottable():
 		var slot_row := HBoxContainer.new()
 		slot_row.add_theme_constant_override(&"separation", 4)
 		side.add_child(slot_row)
@@ -306,7 +361,7 @@ func _refresh() -> void:
 			status.text = "Owned" + (" · quick slot %d" % (slot + 1) if slot >= 0 else "")
 			status.add_theme_color_override(&"font_color", Color(0.6, 1.0, 0.6))
 		else:
-			status.text = "Not owned · buy it at the Armory"
+			status.text = "Not owned · buy it from the Toolwright" if item.is_tool() else "Not owned · buy it at the Armory"
 			status.add_theme_color_override(&"font_color", Color(0.7, 0.7, 0.75))
 		equip.text = "Unequip" if equipped else "Equip"
 		equip.disabled = not owned
@@ -315,3 +370,8 @@ func _refresh() -> void:
 			var button := slot_buttons[index] as Button
 			button.disabled = not owned
 			button.set_pressed_no_signal(slot == index)
+	for material_id in material_rows:
+		var cell := material_rows[material_id]
+		var count := inventory.get_material_count(material_id)
+		(cell["label"] as Label).text = "%s × %d" % [(cell["material"] as MaterialItem).display_name, count]
+		(cell["cell"] as Control).modulate = Color.WHITE if count > 0 else Color(1, 1, 1, 0.45)

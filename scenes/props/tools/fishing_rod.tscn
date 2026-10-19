@@ -1,0 +1,94 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="Mat_pole"]
+albedo_color = Color(0.56, 0.36, 0.2, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="Mat_cork"]
+albedo_color = Color(0.78, 0.6, 0.38, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_metal"]
+albedo_color = Color(0.62, 0.66, 0.72, 1)
+metallic = 0.6
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="Mat_wrap"]
+albedo_color = Color(0.2, 0.36, 0.62, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="Mesh_grip"]
+material = SubResource("Mat_cork")
+top_radius = 0.032
+bottom_radius = 0.036
+height = 0.34
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Mesh_butt"]
+material = SubResource("Mat_metal")
+top_radius = 0.038
+bottom_radius = 0.034
+height = 0.04
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Mesh_pole"]
+material = SubResource("Mat_pole")
+top_radius = 0.011
+bottom_radius = 0.027
+height = 1.5
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Mesh_wrap"]
+material = SubResource("Mat_wrap")
+top_radius = 0.016
+bottom_radius = 0.018
+height = 0.04
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="Mesh_reel"]
+material = SubResource("Mat_metal")
+top_radius = 0.055
+bottom_radius = 0.055
+height = 0.035
+radial_segments = 12
+rings = 1
+
+[sub_resource type="BoxMesh" id="Mesh_reel_handle"]
+material = SubResource("Mat_wrap")
+size = Vector3(0.012, 0.012, 0.06)
+
+[node name="FishingRod" type="Node3D"]
+
+[node name="Butt" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.19, 0)
+mesh = SubResource("Mesh_butt")
+
+[node name="Grip" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_grip")
+
+[node name="Reel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.06, 0.07)
+mesh = SubResource("Mesh_reel")
+
+[node name="ReelHandle" type="MeshInstance3D" parent="Reel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, -0.03, 0)
+mesh = SubResource("Mesh_reel_handle")
+
+[node name="Pole" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.92, 0)
+mesh = SubResource("Mesh_pole")
+
+[node name="WrapLow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+mesh = SubResource("Mesh_wrap")
+
+[node name="WrapHigh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.6, 0, 0, 0, 1, 0, 0, 0, 0.6, 0, 1.1, 0)
+mesh = SubResource("Mesh_wrap")
+
+[node name="Tip" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.67, 0)

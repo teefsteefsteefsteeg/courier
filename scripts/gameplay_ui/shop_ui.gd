@@ -9,6 +9,9 @@ extends CanvasLayer
 ## Modal like QuestBoardUI: joins "ui_modal", pauses the courier's input, closes on
 ## Escape / interact / the Close button, refuses to open over another window, and closes
 ## any open dialogue line.
+##
+## When the catalog buys_materials (the Toolwright), a "Sell your goods" section lists every
+## material the courier carries with its price and a Sell all button (gold in, materials out).
 
 signal opened(merchant: Merchant)
 signal purchased(item: ItemDefinition)
@@ -33,6 +36,9 @@ var close_hint: Label
 var close_button: Button
 ## item_id -> {"row", "button", "price", "status"} for the shown catalog (read by tests).
 var rows: Dictionary[StringName, Dictionary] = {}
+## material_id -> {"row", "button", "count", "material"} in the Sell section (read by tests).
+var sell_rows: Dictionary[StringName, Dictionary] = {}
+var _sell_header: Control = null
 var merchant: Merchant = null
 var _player: PlayerController = null
 
@@ -54,6 +60,7 @@ func _connect() -> void:
 	if inventory != null:
 		inventory.item_added.connect(func(_i): _refresh_rows())
 		inventory.equipment_changed.connect(func(_s, _i): _refresh_rows())
+		inventory.materials_changed.connect(func(_m, _c, _d): _refresh_rows())
 	for node in get_tree().get_nodes_in_group(Merchant.GROUP):
 		bind_merchant(node as Merchant)
 	get_tree().node_added.connect(func(node: Node) -> void:
@@ -78,6 +85,16 @@ func _attach_armory_merchants() -> void:
 		shop_merchant.name = "ShopMerchant"
 		shop_merchant.catalog = load(ARMORY_CATALOG) as ShopCatalog
 		shopkeeper.add_child(shop_merchant)
+	# Other shop locations (the Toolwright's stall) name their own shopkeeper and catalog.
+	for location in get_tree().get_nodes_in_group(ToolStall.GROUP):
+		var keeper := location.get(&"merchant") as NPC
+		var catalog := location.get(&"catalog") as ShopCatalog
+		if keeper == null or catalog == null or keeper.get_node_or_null(^"ShopMerchant") != null:
+			continue
+		var stall_merchant := Merchant.new()
+		stall_merchant.name = "ShopMerchant"
+		stall_merchant.catalog = catalog
+		keeper.add_child(stall_merchant)
 
 
 ## Listens to a merchant (merchants added later are bound automatically).
@@ -241,10 +258,77 @@ func _rebuild(catalog: ShopCatalog) -> void:
 		item_list.remove_child(child)
 		child.queue_free()
 	rows.clear()
+	sell_rows.clear()
+	_sell_header = null
 	for item in catalog.items:
 		if item != null:
 			item_list.add_child(_build_row(item))
+	if catalog.buys_materials:
+		var header := Label.new()
+		header.name = "SellHeader"
+		header.theme_type_variation = &"ContractTitle"
+		header.text = "Sell your goods"
+		item_list.add_child(header)
+		_sell_header = header
+		for material in inventory.get_all_materials():
+			if material.sell_price > 0:
+				item_list.add_child(_build_sell_row(material))
 	_refresh_rows()
+
+
+## Sells every carried unit of material. Returns the gold earned.
+func sell_all(material_id: StringName) -> int:
+	if not is_open() or inventory == null or wallet == null or merchant == null:
+		return 0
+	var material := inventory.get_material_definition(material_id)
+	var count := inventory.get_material_count(material_id)
+	var earned := ShopService.sell_material(wallet, inventory, merchant.get_catalog(), material_id, count)
+	if earned <= 0:
+		return 0
+	feedback_label.text = "Sold %d %s for %d gold." % [count, material.display_name, earned]
+	_refresh_rows()
+	return earned
+
+
+func _build_sell_row(material: MaterialItem) -> Control:
+	var row := PanelContainer.new()
+	row.name = "Sell_" + String(material.material_id)
+	row.theme_type_variation = &"ContractPanel"
+	var line := HBoxContainer.new()
+	line.add_theme_constant_override(&"separation", 14)
+	row.add_child(line)
+	var icon := TextureRect.new()
+	icon.texture = material.icon
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_SCALE
+	icon.custom_minimum_size = Vector2(32, 32) * ICON_SCALE
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	line.add_child(icon)
+	var text := VBoxContainer.new()
+	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	line.add_child(text)
+	var name_label := Label.new()
+	name_label.theme_type_variation = &"ContractTitle"
+	name_label.text = material.display_name
+	text.add_child(name_label)
+	var count := Label.new()
+	count.theme_type_variation = &"ContractDetail"
+	text.add_child(count)
+	var side := VBoxContainer.new()
+	side.alignment = BoxContainer.ALIGNMENT_CENTER
+	side.custom_minimum_size.x = 170
+	line.add_child(side)
+	var price := Label.new()
+	price.theme_type_variation = &"ContractTitle"
+	price.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	price.text = "%d g each" % material.sell_price
+	side.add_child(price)
+	var button := Button.new()
+	button.pressed.connect(func() -> void: sell_all(material.material_id))
+	side.add_child(button)
+	sell_rows[material.material_id] = {"row": row, "button": button, "count": count, "material": material}
+	return row
 
 
 func _build_row(item: ItemDefinition) -> Control:
@@ -275,7 +359,7 @@ func _build_row(item: ItemDefinition) -> Control:
 	var stats := Label.new()
 	stats.theme_type_variation = &"ContractDetail"
 	var stat_lines := item.get_stat_lines()
-	var kind := item.get_attack_summary() if item.is_weapon() else ItemDefinition.slot_name(item.slot)
+	var kind := item.get_attack_summary() if item.is_weapon() or item.is_tool() else ItemDefinition.slot_name(item.slot)
 	if item.two_handed:
 		kind += " · two-handed"
 	stats.text = "%s  ·  %s" % [kind, ", ".join(stat_lines) if not stat_lines.is_empty() else "no bonuses"]
@@ -333,6 +417,19 @@ func _refresh_rows() -> void:
 			status.text = "Need %d more gold" % (item.price - wallet.gold) if check == ShopService.PurchaseResult.NOT_ENOUGH_GOLD else ""
 			if button.disabled:
 				button.tooltip_text = ShopService.result_text(check, item, wallet)
+	# Materials: only the ones carried are shown.
+	var any_to_sell := false
+	for material_id in sell_rows:
+		var sell := sell_rows[material_id]
+		var material: MaterialItem = sell["material"]
+		var count := inventory.get_material_count(material_id)
+		(sell["row"] as Control).visible = count > 0
+		any_to_sell = any_to_sell or count > 0
+		(sell["count"] as Label).text = "You carry %d · %s" % [count, material.description]
+		(sell["button"] as Button).text = "Sell all (%d g)" % (count * material.sell_price)
+		(sell["button"] as Button).disabled = count <= 0
+	if _sell_header != null:
+		(_sell_header as Label).text = "Sell your goods" if any_to_sell else "Sell your goods: bring fish, wood, stone, ore or clay"
 
 
 func _focus_first_button() -> void:

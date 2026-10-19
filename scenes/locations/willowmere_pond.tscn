@@ -1,0 +1,493 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/pond.gd" id="1_hmnnx"]
+[ext_resource type="Script" path="res://scripts/inventory/material_item.gd" id="2_xsll0"]
+[ext_resource type="Resource" path="res://data/materials/pond_perch.tres" id="3_kmxft"]
+[ext_resource type="Resource" path="res://data/materials/silver_trout.tres" id="4_pp5vu"]
+[ext_resource type="Resource" path="res://data/materials/golden_carp.tres" id="5_376rm"]
+[ext_resource type="Script" path="res://scripts/tools/repair_site.gd" id="6_6vs7c"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="7_si3uy"]
+[ext_resource type="Script" path="res://scripts/tools/fishing_spot.gd" id="8_g4s8c"]
+[ext_resource type="PackedScene" path="res://scenes/world/tools/dig_spot.tscn" id="9_10fxi"]
+[ext_resource type="Script" path="res://scripts/tools/harvest_node.gd" id="10_xhj4c"]
+[ext_resource type="Resource" path="res://data/materials/clay.tres" id="11_26fbj"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/ultimate_nature/Grass_2.fbx" id="12_ok512"]
+[ext_resource type="PackedScene" path="res://scenes/props/env/rock_flat.tscn" id="13_80op4"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/bucket_metal.gltf" id="14_j6fck"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/rope_bundle_B.gltf" id="15_wmqys"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="16_one6a"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_muv5f"]
+albedo_color = Color(0.5, 0.37, 0.24, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_hjbpe"]
+material = SubResource("StandardMaterial3D_muv5f")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pbnc5"]
+material = SubResource("StandardMaterial3D_muv5f")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_30dmj"]
+material = SubResource("StandardMaterial3D_muv5f")
+size = Vector3(1.1, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yarpw"]
+material = SubResource("StandardMaterial3D_muv5f")
+size = Vector3(1.1, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_26wom"]
+material = SubResource("StandardMaterial3D_muv5f")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ijp70"]
+material = SubResource("StandardMaterial3D_muv5f")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ncpc4"]
+albedo_color = Color(0.42, 0.3, 0.2, 1)
+roughness = 0.85
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_iy40t"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_a35jr"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_5qhyk"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_a5ytx"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_8wjsx"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_65mud"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_u7el0"]
+material = SubResource("StandardMaterial3D_muv5f")
+size = Vector3(1.2, 0.05, 0.26)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uigv7"]
+albedo_color = Color(0.6, 0.43, 0.27, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_75en3"]
+material = SubResource("StandardMaterial3D_uigv7")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_x1bxm"]
+material = SubResource("StandardMaterial3D_uigv7")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5ypa7"]
+material = SubResource("StandardMaterial3D_uigv7")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_557tx"]
+material = SubResource("StandardMaterial3D_uigv7")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sdfnb"]
+material = SubResource("StandardMaterial3D_uigv7")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8mga7"]
+material = SubResource("StandardMaterial3D_uigv7")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_m4jjj"]
+material = SubResource("StandardMaterial3D_uigv7")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wnnvh"]
+material = SubResource("StandardMaterial3D_uigv7")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1dnwi"]
+material = SubResource("StandardMaterial3D_uigv7")
+size = Vector3(1.5, 0.06, 0.28)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_5cnax"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_dxwjb"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_wve7a"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pbx3b"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_xugug"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bcxfo"]
+material = SubResource("StandardMaterial3D_ncpc4")
+top_radius = 0.07
+bottom_radius = 0.08
+height = 0.7
+radial_segments = 10
+rings = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trrtg"]
+size = Vector3(1.9, 1.6, 0.3)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_qsupc"]
+radius = 1.2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_42v6p"]
+radius = 0.8
+
+[node name="WillowmerePond" type="Node3D" unique_id=1738804740]
+
+[node name="Pond" type="Node3D" parent="." unique_id=1838915301]
+script = ExtResource("1_hmnnx")
+radius_x = 4.6
+radius_z = 3.6
+jetty_angle_degrees = 90.0
+jetty_length = 2.8
+fish = Array[ExtResource("2_xsll0")]([ExtResource("3_kmxft"), ExtResource("4_pp5vu"), ExtResource("5_376rm")])
+fish_weights = PackedFloat32Array(62, 30, 8)
+
+[node name="Jetty" type="Node3D" parent="." unique_id=1318841086 node_paths=PackedStringArray("damaged_visual", "repaired_visual", "unlocks", "blockers", "shake_node")]
+script = ExtResource("6_6vs7c")
+materials = Dictionary[StringName, int]({
+&"wood": 4
+})
+reward_gold = 30
+reward_reputation = 5
+damaged_visual = NodePath("Damaged")
+repaired_visual = NodePath("Repaired")
+unlocks = [NodePath("../JettySpot")]
+blockers = [NodePath("Blocker")]
+target_id = &"pond_jetty"
+display_name = "Pond Jetty"
+verb = "Repair"
+strokes = 5
+stroke_speed = 1.6
+reach = 3.0
+chip_color = Color(0.62, 0.45, 0.26, 1)
+shake_node = NodePath("Damaged")
+
+[node name="Damaged" type="Node3D" parent="Jetty" unique_id=1253706339]
+
+[node name="Plank" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=567443288]
+transform = Transform3D(0.98768836, 0, -0.15643448, 0, 1, 0, 0.15643448, 0, 0.98768836, 0, 0.09, 3.4268308)
+mesh = SubResource("BoxMesh_hjbpe")
+
+[node name="Plank2" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=1759462141]
+transform = Transform3D(0.98768836, 0, 0.15643448, 0, 1, 0, -0.15643448, 0, 0.98768836, 0, 0.09, 2.786831)
+mesh = SubResource("BoxMesh_pbnc5")
+
+[node name="Plank3" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=646494420]
+transform = Transform3D(0.9803263, -0.120368935, -0.15643448, 0.12186935, 0.99254614, 0, 0.15526843, -0.019064568, 0.98768836, 0.2, 0.09, 2.466831)
+mesh = SubResource("BoxMesh_30dmj")
+
+[node name="Plank4" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=1931876155]
+transform = Transform3D(0.9803263, -0.120368935, 0.15643448, 0.12186935, 0.99254614, 0, -0.15526843, 0.019064568, 0.98768836, 0.2, 0.09, 1.8268309)
+mesh = SubResource("BoxMesh_yarpw")
+
+[node name="Plank5" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=1442948633]
+transform = Transform3D(0.98768836, 0, -0.15643448, 0, 1, 0, 0.15643448, 0, 0.98768836, 0, 0.09, 1.5068308)
+mesh = SubResource("BoxMesh_26wom")
+
+[node name="Plank6" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=582428297]
+transform = Transform3D(0.98768836, 0, 0.15643448, 0, 1, 0, -0.15643448, 0, 0.98768836, 0, 0.09, 0.8668308)
+mesh = SubResource("BoxMesh_ijp70")
+
+[node name="Post" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=535488295]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72, 0.15, 3.3868308)
+mesh = SubResource("CylinderMesh_iy40t")
+
+[node name="Post2" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=425896835]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72, 0.15, 2.036831)
+mesh = SubResource("CylinderMesh_a35jr")
+
+[node name="Post3" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=565090058]
+transform = Transform3D(1, 0, 0, 0, 0.9848077, -0.17364818, 0, 0.17364818, 0.9848077, -0.72, 0.15, 0.63683087)
+mesh = SubResource("CylinderMesh_5qhyk")
+
+[node name="Post4" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=690619704]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.72, 0.15, 3.3868308)
+mesh = SubResource("CylinderMesh_a5ytx")
+
+[node name="Post5" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=1497687050]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.72, 0.15, 2.036831)
+mesh = SubResource("CylinderMesh_8wjsx")
+
+[node name="Post6" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=1835039654]
+transform = Transform3D(1, 0, 0, 0, 0.9848077, -0.17364818, 0, 0.17364818, 0.9848077, 0.72, 0.15, 0.63683087)
+mesh = SubResource("CylinderMesh_65mud")
+
+[node name="Adrift" type="MeshInstance3D" parent="Jetty/Damaged" unique_id=828114370]
+transform = Transform3D(0.7648422, 0, 0.64421767, 0, 1, 0, -0.64421767, 0, 0.7648422, 1.2, 0.06, 1.0868309)
+mesh = SubResource("BoxMesh_u7el0")
+
+[node name="Repaired" type="Node3D" parent="Jetty" unique_id=177821860]
+
+[node name="Plank" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=957250703]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 3.4268308)
+mesh = SubResource("BoxMesh_75en3")
+
+[node name="Plank2" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=1550367007]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 3.1068308)
+mesh = SubResource("BoxMesh_x1bxm")
+
+[node name="Plank3" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=11903171]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 2.786831)
+mesh = SubResource("BoxMesh_5ypa7")
+
+[node name="Plank4" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=1822879916]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 2.466831)
+mesh = SubResource("BoxMesh_557tx")
+
+[node name="Plank5" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=407285462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 2.1468308)
+mesh = SubResource("BoxMesh_sdfnb")
+
+[node name="Plank6" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=642711385]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 1.8268309)
+mesh = SubResource("BoxMesh_8mga7")
+
+[node name="Plank7" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=128611]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 1.5068308)
+mesh = SubResource("BoxMesh_m4jjj")
+
+[node name="Plank8" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=2138211206]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 1.1868309)
+mesh = SubResource("BoxMesh_wnnvh")
+
+[node name="Plank9" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=1914869155]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0.8668308)
+mesh = SubResource("BoxMesh_1dnwi")
+
+[node name="Post" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=32738884]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72, 0.15, 3.3868308)
+mesh = SubResource("CylinderMesh_5cnax")
+
+[node name="Post2" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=1361879413]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72, 0.15, 2.036831)
+mesh = SubResource("CylinderMesh_dxwjb")
+
+[node name="Post3" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=436932377]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.72, 0.15, 0.63683087)
+mesh = SubResource("CylinderMesh_wve7a")
+
+[node name="Post4" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=647497601]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.72, 0.15, 3.3868308)
+mesh = SubResource("CylinderMesh_pbx3b")
+
+[node name="Post5" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=828405951]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.72, 0.15, 2.036831)
+mesh = SubResource("CylinderMesh_xugug")
+
+[node name="Post6" type="MeshInstance3D" parent="Jetty/Repaired" unique_id=1907572801]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.72, 0.15, 0.63683087)
+mesh = SubResource("CylinderMesh_bcxfo")
+
+[node name="Blocker" type="StaticBody3D" parent="Jetty" unique_id=59308449]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Jetty/Blocker" unique_id=1242163350]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 3.3868308)
+shape = SubResource("BoxShape3D_trrtg")
+
+[node name="Interactable" type="Area3D" parent="Jetty" unique_id=1085585992]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.386831)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("7_si3uy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Jetty/Interactable" unique_id=1514985612]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_qsupc")
+
+[node name="JettySpot" type="Node3D" parent="." unique_id=1127506639 node_paths=PackedStringArray("pond", "cast_point", "requires_repair")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.88683087)
+script = ExtResource("8_g4s8c")
+pond = NodePath("../Pond")
+cast_point = NodePath("CastPoint")
+catch_bonus = 3.0
+requires_repair = NodePath("../Jetty")
+target_id = &"pond_jetty_spot"
+display_name = "the Jetty"
+required_tool = 1
+verb = "Fish at"
+action = &"tool_cast"
+strokes = 1
+reach = 2.5
+chip_color = Color(0, 0, 0, 0)
+
+[node name="CastPoint" type="Marker3D" parent="JettySpot" unique_id=1774116351]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="Interactable" type="Area3D" parent="JettySpot" unique_id=1237061349]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("7_si3uy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="JettySpot/Interactable" unique_id=1517674101]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_42v6p")
+
+[node name="DigWest" type="Node3D" parent="." unique_id=834261073 node_paths=PackedStringArray("standing_visual", "depleted_visual", "shake_node") instance=ExtResource("9_10fxi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.821138, 0, 3.9883924)
+script = ExtResource("10_xhj4c")
+yield_material = ExtResource("11_26fbj")
+yield_min = 1
+yield_max = 2
+activity = &"dig"
+standing_visual = NodePath("Standing")
+depleted_visual = NodePath("Depleted")
+depleted_name = "Dug-up Soil"
+target_id = &"pond_dig_west"
+display_name = "Soft Soil"
+required_tool = 5
+verb = "Dig"
+action = &"tool_dig"
+stroke_speed = 1.25
+reach = 2.5999999999999996
+chip_color = Color(0.42, 0.3, 0.2, 1)
+shake_node = NodePath("Standing")
+
+[node name="DigNorth" type="Node3D" parent="." unique_id=587538772 node_paths=PackedStringArray("standing_visual", "depleted_visual", "shake_node") instance=ExtResource("9_10fxi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8624335, 0, -5.445191)
+script = ExtResource("10_xhj4c")
+yield_material = ExtResource("11_26fbj")
+yield_min = 1
+yield_max = 2
+activity = &"dig"
+standing_visual = NodePath("Standing")
+depleted_visual = NodePath("Depleted")
+depleted_name = "Dug-up Soil"
+target_id = &"pond_dig_north"
+display_name = "Soft Soil"
+required_tool = 5
+verb = "Dig"
+action = &"tool_dig"
+stroke_speed = 1.25
+reach = 2.5999999999999996
+chip_color = Color(0.42, 0.3, 0.2, 1)
+shake_node = NodePath("Standing")
+
+[node name="Dressing" type="Node3D" parent="." unique_id=82763671]
+
+[node name="Reeds0" type="Node3D" parent="Dressing" unique_id=627229572 instance=ExtResource("12_ok512")]
+transform = Transform3D(1.1911907, 0, -0.14513691, 0, 1.8248734, 0, 0.14513691, 0, 1.1911907, 5.3054924, 0, 0.07739263)
+
+[node name="Reeds1" type="Node3D" parent="Dressing" unique_id=7089594 instance=ExtResource("12_ok512")]
+transform = Transform3D(1.0853527, 0, 0.51186883, 0, 2.248928, 0, -0.51186883, 0, 1.0853527, 3.972031, 0, 2.3465488)
+
+[node name="Reeds2" type="Node3D" parent="Dressing" unique_id=1597890857 instance=ExtResource("12_ok512")]
+transform = Transform3D(0.43381965, 0, 1.118839, 0, 2.3887262, 0, -1.118839, 0, 0.43381965, 2.5148304, 0, 3.2744372)
+
+[node name="Reeds5" type="Node3D" parent="Dressing" unique_id=1096392644 instance=ExtResource("12_ok512")]
+transform = Transform3D(0.21550183, 0, -1.180491, 0, 1.8688204, 0, 1.180491, 0, 0.21550183, -3.2788725, 0, 3.269106)
+
+[node name="Reeds6" type="Node3D" parent="Dressing" unique_id=1389836440 instance=ExtResource("12_ok512")]
+transform = Transform3D(0.018351046, 0, -1.1998597, 0, 2.0777502, 0, 1.1998597, 0, 0.018351046, -4.4895873, 0, 1.7817782)
+
+[node name="Reeds7" type="Node3D" parent="Dressing" unique_id=1654986837 instance=ExtResource("12_ok512")]
+transform = Transform3D(-1.0583042, 0, 0.5656788, 0, 1.7019572, 0, -0.5656788, 0, -1.0583042, -4.4007826, 0, -0.5302005)
+
+[node name="Reeds8" type="Node3D" parent="Dressing" unique_id=1368280355 instance=ExtResource("12_ok512")]
+transform = Transform3D(1.0366722, 0, 0.60440946, 0, 2.024209, 0, -0.60440946, 0, 1.0366722, -4.322041, 0, -1.6646589)
+
+[node name="Reeds9" type="Node3D" parent="Dressing" unique_id=2141072372 instance=ExtResource("12_ok512")]
+transform = Transform3D(0.5856326, 0, 1.0473942, 0, 1.9596215, 0, -1.0473942, 0, 0.5856326, -2.683571, 0, -3.156638)
+
+[node name="Reeds10" type="Node3D" parent="Dressing" unique_id=1359750693 instance=ExtResource("12_ok512")]
+transform = Transform3D(-1.0691453, 0, 0.5449113, 0, 2.1085851, 0, -0.5449113, 0, -1.0691453, -0.96624327, 0, -3.7352026)
+
+[node name="Reeds11" type="Node3D" parent="Dressing" unique_id=1985219905 instance=ExtResource("12_ok512")]
+transform = Transform3D(-1.0132234, 0, 0.6429452, 0, 2.382234, 0, -0.6429452, 0, -1.0132234, 1.290306, 0, -3.6954734)
+
+[node name="Reeds12" type="Node3D" parent="Dressing" unique_id=1431182577 instance=ExtResource("12_ok512")]
+transform = Transform3D(0.2678488, 0, 1.1697253, 0, 1.9185532, 0, -1.1697253, 0, 0.2678488, 2.0238643, 0, -2.8201163)
+
+[node name="Reeds13" type="Node3D" parent="Dressing" unique_id=387867259 instance=ExtResource("12_ok512")]
+transform = Transform3D(0.42824772, 0, 1.1209835, 0, 1.735513, 0, -1.1209835, 0, 0.42824772, 4.3304057, 0, -1.6489923)
+
+[node name="BankStone" type="StaticBody3D" parent="Dressing" unique_id=854658219 instance=ExtResource("13_80op4")]
+transform = Transform3D(0.58114994, 0, 0.14921395, 0, 0.6, 0, -0.14921395, 0, 0.58114994, 5.182272, 0, 1.3305813)
+
+[node name="BankStone2" type="StaticBody3D" parent="Dressing" unique_id=602352303 instance=ExtResource("13_80op4")]
+transform = Transform3D(-0.40450847, 0, -0.29389268, 0, 0.5, 0, 0.29389268, 0, -0.40450847, -3.8719587, 0, -2.8131425)
+
+[node name="BankStone3" type="StaticBody3D" parent="Dressing" unique_id=864895354 instance=ExtResource("13_80op4")]
+transform = Transform3D(0.62370455, 0, -0.31779337, 0, 0.7, 0, 0.31779337, 0, 0.62370455, 4.1317797, 0, -2.1052468)
+
+[node name="Bucket" type="Node3D" parent="Dressing" unique_id=1526703703 instance=ExtResource("14_j6fck")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 1.3, 0, 4.286831)
+
+[node name="Rope" type="Node3D" parent="Dressing" unique_id=52636559 instance=ExtResource("15_wmqys")]
+transform = Transform3D(0.48267043, 0, 0.26368406, 0, 0.55, 0, -0.26368406, 0, 0.48267043, -1.35, 0, 4.186831)
+
+[node name="Location" type="Marker3D" parent="." unique_id=989763147]
+script = ExtResource("16_one6a")
+location_id = &"willowmere_pond"
+display_name = "Willowmere Pond"
+subtitle = "Fish, clay and a broken jetty"
+kind = 4
+discover_radius = 9.0

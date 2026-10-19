@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="2_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Knight.glb" id="3_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="4_anim"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/hammer.gltf" id="5_hammer"]
+
+[node name="ToolwrightHobb" instance=ExtResource("1_npc")]
+npc_name = "Toolwright Hobb"
+lines = PackedStringArray("A good tool outlives three couriers, if you oil it.", "Marked trees are fair game. The rest belong to the village.", "Bring me ore from the old quarry and I'll pay in honest coin.", "The pond jetty's been rotting since spring. Someone with a hammer could fix that.")
+body_color = Color(0.45, 0.42, 0.5, 1)
+npc_id = &"toolwright"
+
+[node name="Visual" parent="."]
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 0, 0, 0)
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("2_char")
+model = ExtResource("3_model")
+held_item = ExtResource("5_hammer")
+held_item_transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("4_anim")
+character = NodePath("../Visual/Character")

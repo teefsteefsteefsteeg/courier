@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/fishing_rod.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://scenes/props/tools/fishing_rod.tscn" id="3_model"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = &"fishing_rod"
+display_name = "Fishing Rod"
+description = "Cast from a pond bank or the jetty, wait for the bite, then hook it quickly."
+slot = 0
+price = 40
+icon = ExtResource("2_icon")
+held_model = ExtResource("3_model")
+tool_type = 1
+held_transform = Transform3D(0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 0, 0, 1, 0, 0, 0)

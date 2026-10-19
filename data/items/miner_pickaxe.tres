@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/miner_pickaxe.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_rpg_tools/pickaxe.gltf" id="3_model"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = &"miner_pickaxe"
+display_name = "Miner's Pickaxe"
+description = "Breaks ore rocks at the old quarry for stone and iron ore."
+slot = 0
+price = 60
+icon = ExtResource("2_icon")
+held_model = ExtResource("3_model")
+tool_type = 4

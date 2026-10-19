@@ -68,6 +68,12 @@
 [ext_resource type="PackedScene" path="res://scenes/environment/megakit_pilot_dressing.tscn" id="56_megakit"]
 [ext_resource type="Script" path="res://scripts/world/village_terrain.gd" id="60_terrain"]
 [ext_resource type="Material" path="res://assets/materials/environment/village_ground.tres" id="61_ground"]
+[ext_resource type="PackedScene" path="res://scenes/locations/willowmere_pond.tscn" id="h5_pond"]
+[ext_resource type="PackedScene" path="res://scenes/locations/tool_stall.tscn" id="h5_stall"]
+[ext_resource type="PackedScene" path="res://scenes/world/tools/harvest_tree.tscn" id="h5_tree"]
+[ext_resource type="PackedScene" path="res://scenes/world/tools/ore_rock.tscn" id="h5_rock"]
+[ext_resource type="PackedScene" path="res://scenes/world/tools/broken_fence.tscn" id="h5_fence"]
+[ext_resource type="PackedScene" path="res://scenes/world/tools/crumbled_wall.tscn" id="h5_wall"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -156,6 +162,15 @@ size = Vector3(10, 4, 6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_armory_zone"]
 size = Vector3(7, 4, 6.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pond_zone"]
+size = Vector3(14, 4, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_quarry_zone"]
+size = Vector3(10, 4, 9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_stall_zone"]
+size = Vector3(7, 4, 5)
 
 [node name="Village" type="Node3D"]
 
@@ -837,6 +852,108 @@ display_name = "Willowmere Armory"
 subtitle = "Weaponsmith Brenna"
 kind = 2
 discover_radius = 0.0
+
+[node name="ToolSites" type="Node3D" parent="."]
+
+[node name="WillowmerePond" parent="ToolSites" instance=ExtResource("h5_pond")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.5, 0, -23)
+
+[node name="ToolStall" parent="ToolSites" instance=ExtResource("h5_stall")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -26.2, 0, 9.2)
+
+[node name="GroveTree1" parent="ToolSites" instance=ExtResource("h5_tree")]
+transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, -10.4, 0, -32.6)
+target_id = &"grove_tree_1"
+
+[node name="GroveTree2" parent="ToolSites" instance=ExtResource("h5_tree")]
+transform = Transform3D(-0.766044, 0, -0.642788, 0, 1, 0, 0.642788, 0, -0.766044, -7.0, 0, -31.0)
+target_id = &"grove_tree_2"
+
+[node name="GroveTree3" parent="ToolSites" instance=ExtResource("h5_tree")]
+transform = Transform3D(-0.173648, 0, 0.984808, 0, 1, 0, -0.984808, 0, -0.173648, -3.6, 0, -30.0)
+target_id = &"grove_tree_3"
+
+[node name="QuarryRock1" parent="ToolSites" instance=ExtResource("h5_rock")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -30.5, 0, -28.5)
+target_id = &"quarry_rock_1"
+
+[node name="QuarryRock2" parent="ToolSites" instance=ExtResource("h5_rock")]
+transform = Transform3D(-0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, -0.939693, -33, 0, -26.8)
+target_id = &"quarry_rock_2"
+
+[node name="QuarryRock3" parent="ToolSites" instance=ExtResource("h5_rock")]
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -28.4, 0, -31.4)
+target_id = &"quarry_rock_3"
+
+[node name="QuarryWall" parent="ToolSites" instance=ExtResource("h5_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.6, 0, -32.8)
+target_id = &"quarry_wall"
+display_name = "Quarry Wall"
+
+[node name="PumpkinFence" parent="ToolSites" instance=ExtResource("h5_fence")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, 0, -16.8)
+target_id = &"pumpkin_fence"
+display_name = "Pumpkin Patch Fence"
+
+[node name="PondZone" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.5, 0, -23)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("26_zone")
+display_name = "Willowmere Pond"
+subtitle = "Fish, clay and a broken jetty"
+zone_priority = 4
+location_id = &"willowmere_pond"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/PondZone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("BoxShape3D_pond_zone")
+
+[node name="QuarryZone" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, 0, -29.6)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("26_zone")
+display_name = "Old Quarry"
+subtitle = "Stone and iron ore"
+zone_priority = 4
+location_id = &"old_quarry"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/QuarryZone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("BoxShape3D_quarry_zone")
+
+[node name="ToolStallZone" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.2, 0, 8.6)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("26_zone")
+display_name = "Hill Smithy Tools"
+subtitle = "Toolwright Hobb"
+zone_priority = 4
+location_id = &"tool_stall"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/ToolStallZone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("BoxShape3D_stall_zone")
+
+[node name="OldQuarry" type="Marker3D" parent="Locations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, 0, -29.6)
+script = ExtResource("9_world_location")
+location_id = &"old_quarry"
+display_name = "Old Quarry"
+subtitle = "Stone and iron ore"
+kind = 3
+discover_radius = 8.0
+
+[node name="WoodcuttersGrove" type="Marker3D" parent="Locations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.0, 0, -31.2)
+script = ExtResource("9_world_location")
+location_id = &"woodcutters_grove"
+display_name = "Woodcutters' Grove"
+subtitle = "Marked trees"
+kind = 3
+discover_radius = 8.0
 
 [node name="VillagePortal" parent="." instance=ExtResource("9_portal")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.2, 0, 9)

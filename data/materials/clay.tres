@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MaterialItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/material_item.gd" id="1_material"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/clay.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_material")
+material_id = &"clay"
+display_name = "Clay"
+description = "Sticky pond-bank clay. Masons mix it into mortar."
+kind = 4
+icon = ExtResource("2_icon")
+sell_price = 3

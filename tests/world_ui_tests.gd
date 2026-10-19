@@ -128,8 +128,9 @@ func _test_world_structure() -> void:
 	var shop := level.get_node("Buildings/AlchemyShop") as MedievalBuilding
 	_check(shop != null and _roof_color(shop).is_equal_approx(shop.roof_color), "alchemy shop applies per-instance roof colour")
 	var zones := get_nodes_in_group(LocationZone.GROUP)
-	# Six from Phase 4, plus the Armory's zone (Phase 5G location registry).
-	_check(zones.size() == 7, "seven location zones registered (got %d)" % zones.size())
+	# Six from Phase 4, the Armory's zone (Phase 5G location registry), and the pond, quarry and
+	# tool stall zones (Phase 5H).
+	_check(zones.size() == 10, "ten location zones registered (got %d)" % zones.size())
 
 
 ## Albedo of the first roof-tile surface override under a MedievalBuilding.

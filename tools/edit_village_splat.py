@@ -11,9 +11,12 @@ Operations:
                                except where a `keep` lane is painted
   move_shade(rect, dx, dz)     remove a house's contact shade and stamp it at the new place
 
-PHASE_5H lists the edits for the Phase 5H village spacing pass; the matching lane polylines
-are in assets/textures/terrain/village_layout.json. Run once from the project root:
+phase5h() lists the edits for the Phase 5H village spacing pass and phase5h_tools() the pond
+footpath; the matching lane polylines are in assets/textures/terrain/village_layout.json.
+Each step was applied once, from the project root:
   python tools/edit_village_splat.py phase5h
+  python tools/edit_village_splat.py phase5h-tools
+  python tools/edit_village_splat.py phase5h-stall
 """
 import sys
 
@@ -96,10 +99,29 @@ def phase5h(s):
     s.lane(FERN_LANE)
 
 
+# Phase 5H tools: the footpath from the west farm track to the Willowmere Pond jetty.
+POND_PATH = [(-29.0, -15.0), (-26.0, -16.6), (-23.5, -18.0)]
+
+
+def phase5h_tools(s):
+    s.lane(POND_PATH)
+
+
+# Phase 5H tools: the smithy's spur continued south across the west lane to the tool stall.
+STALL_SPUR = [(-26.1, 3.0), (-26.2, 7.4)]
+
+
+def phase5h_stall(s):
+    s.lane(STALL_SPUR)
+
+
+# Each step is applied once, in order; re-running one repeats its edits.
+STEPS = {"phase5h": phase5h, "phase5h-tools": phase5h_tools, "phase5h-stall": phase5h_stall}
+
 if __name__ == "__main__":
-    if sys.argv[1:] != ["phase5h"]:
+    if len(sys.argv) != 2 or sys.argv[1] not in STEPS:
         sys.exit(__doc__)
     splats = Splats()
-    phase5h(splats)
+    STEPS[sys.argv[1]](splats)
     splats.save()
     print("edited", SPLAT_A, SPLAT_B)

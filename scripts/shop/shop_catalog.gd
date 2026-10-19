@@ -6,6 +6,8 @@ extends Resource
 @export var title: String = "Shop"
 @export var greeting: String = ""
 @export var items: Array[ItemDefinition] = []
+## The merchant also buys the courier's gathered materials (MaterialItem.sell_price each).
+@export var buys_materials: bool = false
 
 
 func get_item(item_id: StringName) -> ItemDefinition:

@@ -57,7 +57,9 @@ func _process(_delta: float) -> void:
 	label.add_theme_font_size_override("font_size", 20)
 	panel.offset_left = -width * 0.5
 	panel.offset_right = width * 0.5
-	(panel.get_parent() as Control).offset_top = -144.0
+	# Leave room above the bottom-left key guide on narrow canvases, including
+	# long tool prompts that wrap onto a second line.
+	(panel.get_parent() as Control).offset_top = -200.0 if get_viewport().get_visible_rect().size.x < 1100.0 else -144.0
 	if not _sync_modal() and _focused != null and is_instance_valid(_focused) and get_prompt_text() != label.text:
 		# Context prompts change without a focus change (package picked up, quest advanced).
 		_refresh()
@@ -126,7 +128,9 @@ func _refresh() -> void:
 ## World point the badge is drawn beside, for interactable.
 func get_badge_anchor(interactable: Interactable) -> Vector3:
 	var owner_node := interactable.get_parent() as Node3D
-	var base := owner_node if owner_node != null else interactable
+	# A tool target's interaction point can sit away from its origin (the pond jetty's is on
+	# the bank, the node at the pond's centre), so the badge follows the interactable.
+	var base := owner_node if owner_node != null and not owner_node is ToolTarget else interactable
 	var height := npc_badge_height if owner_node is NPC else object_badge_height
 	if interactable.has_meta(&"prompt_anchor_height"):
 		height = float(interactable.get_meta(&"prompt_anchor_height"))

@@ -5,31 +5,44 @@ extends Node
 ## can be owned must be registered (item_definitions) so a save can be read back.
 ## Weapons are unique: owning one twice is refused.
 ##
-## Also holds the five weapon quick slots (QuickWeaponBar, keys 1-5). A quick slot only
-## refers to an owned main-hand weapon by id; ownership stays in the owned list, and a
-## weapon sits in at most one quick slot. A newly added weapon fills the first empty slot.
+## Also holds the five quick slots (QuickWeaponBar, keys 1-5). A quick slot only refers to
+## an owned main-hand weapon or tool by id; ownership stays in the owned list, and an item
+## sits in at most one quick slot. A newly added weapon or tool fills the first empty slot.
+## Tools (ItemDefinition.tool_type) go in the main hand like weapons.
+##
+## Materials (Phase 5H): stackable MaterialItem counts (fish, wood, stone, ore, clay), up to
+## MAX_STACK each, added by gathering and removed by repairs and selling.
 
 signal item_added(item: ItemDefinition)
 ## item is null when the slot was emptied.
 signal equipment_changed(slot: ItemDefinition.Slot, item: ItemDefinition)
 signal quick_slots_changed
+## A material count changed by delta (positive when gathered).
+signal materials_changed(material: MaterialItem, count: int, delta: int)
 
 const GROUP := &"courier_inventory"
 const QUICK_SLOT_COUNT := 5
+const MAX_STACK := 999
 
 ## Every item that can be owned (shop wares). Unknown ids in a save are dropped.
 @export var item_definitions: Array[ItemDefinition] = []
+## Every material that can be carried. Unknown ids in a save are dropped.
+@export var material_definitions: Array[MaterialItem] = []
 
 var _definitions: Dictionary[StringName, ItemDefinition] = {}
 var _owned: Array[StringName] = []
 var _equipped: Dictionary[int, StringName] = {}
 var _quick_slots: Array[StringName] = [&"", &"", &"", &"", &""]
+var _material_definitions: Dictionary[StringName, MaterialItem] = {}
+var _materials: Dictionary[StringName, int] = {}
 
 
 func _enter_tree() -> void:
 	add_to_group(GROUP)
 	for item in item_definitions:
 		register_item(item)
+	for material in material_definitions:
+		register_material(material)
 
 
 static func find(tree: SceneTree) -> CourierInventory:
@@ -62,15 +75,15 @@ func get_all_definitions() -> Array[ItemDefinition]:
 	return items
 
 
-## Adds item; false if it is null, has no id, or is already owned. A weapon also goes into
-## the first empty quick slot.
+## Adds item; false if it is null, has no id, or is already owned. A weapon or tool also
+## goes into the first empty quick slot.
 func add_item(item: ItemDefinition) -> bool:
 	if item == null or item.item_id == &"" or has_item(item.item_id):
 		return false
 	register_item(item)
 	_owned.append(item.item_id)
 	item_added.emit(item)
-	if item.is_weapon() and find_quick_slot(item.item_id) < 0:
+	if item.is_quick_slottable() and find_quick_slot(item.item_id) < 0:
 		var empty := _quick_slots.find(&"")
 		if empty >= 0:
 			assign_quick_slot(empty, item.item_id)
@@ -124,10 +137,10 @@ func get_equipped_items() -> Array[ItemDefinition]:
 
 # --- quick slots ----------------------------------------------------------------
 
-## True when item_id may go in a quick slot: an owned main-hand weapon.
+## True when item_id may go in a quick slot: an owned main-hand weapon or tool.
 func can_quick_slot(item_id: StringName) -> bool:
 	var item := get_definition(item_id)
-	return item != null and item.is_weapon() and has_item(item_id)
+	return item != null and item.is_quick_slottable() and has_item(item_id)
 
 
 ## Puts an owned weapon in quick slot index (0-based), moving it out of any other slot.
@@ -174,26 +187,127 @@ func select_quick_slot(index: int) -> bool:
 	return item != null and equip(item.item_id)
 
 
+## The tool in the main hand, or null (bare hands or a weapon).
+func get_equipped_tool() -> ItemDefinition:
+	var item := get_equipped(ItemDefinition.Slot.MAIN_HAND)
+	return item if item != null and item.is_tool() else null
+
+
+## The first owned tool of type, or null.
+func find_owned_tool(type: ItemDefinition.ToolType) -> ItemDefinition:
+	for id in _owned:
+		var item := get_definition(id)
+		if item != null and item.is_tool() and item.tool_type == type:
+			return item
+	return null
+
+
+# --- materials ------------------------------------------------------------------
+
+func register_material(material: MaterialItem) -> void:
+	if material != null and material.material_id != &"":
+		_material_definitions[material.material_id] = material
+
+
+func get_material_definition(material_id: StringName) -> MaterialItem:
+	return _material_definitions.get(material_id)
+
+
+## Every registered material, in registration order.
+func get_all_materials() -> Array[MaterialItem]:
+	var out: Array[MaterialItem] = []
+	for id in _material_definitions:
+		out.append(_material_definitions[id])
+	return out
+
+
+func get_material_count(material_id: StringName) -> int:
+	return _materials.get(material_id, 0)
+
+
+## Adds up to amount of a material (capped at MAX_STACK). Returns how many were added.
+func add_material(material: MaterialItem, amount: int = 1) -> int:
+	if material == null or material.material_id == &"" or amount <= 0:
+		return 0
+	register_material(material)
+	var count := get_material_count(material.material_id)
+	var added := mini(amount, MAX_STACK - count)
+	if added <= 0:
+		return 0
+	_materials[material.material_id] = count + added
+	materials_changed.emit(material, count + added, added)
+	return added
+
+
+## True when every material_id -> amount in costs is carried.
+func has_materials(costs: Dictionary) -> bool:
+	for id in costs:
+		if get_material_count(StringName(id)) < int(costs[id]):
+			return false
+	return true
+
+
+## Removes every material_id -> amount in costs, all or nothing. Returns whether it did.
+func remove_materials(costs: Dictionary) -> bool:
+	if not has_materials(costs):
+		return false
+	for id in costs:
+		var material_id := StringName(id)
+		var amount := int(costs[id])
+		if amount <= 0:
+			continue
+		var count := get_material_count(material_id) - amount
+		if count > 0:
+			_materials[material_id] = count
+		else:
+			_materials.erase(material_id)
+		materials_changed.emit(get_material_definition(material_id), count, -amount)
+	return true
+
+
+## Carried materials (material_id -> count) in registration order.
+func get_material_counts() -> Dictionary[StringName, int]:
+	var out: Dictionary[StringName, int] = {}
+	for id in _material_definitions:
+		if _materials.has(id):
+			out[id] = _materials[id]
+	return out
+
+
 # --- save -----------------------------------------------------------------------
 
 func to_dict() -> Dictionary:
 	var equipped := {}
 	for slot in _equipped:
 		equipped[ItemDefinition.Slot.keys()[slot]] = String(_equipped[slot])
+	var materials := {}
+	for id in _materials:
+		materials[String(id)] = _materials[id]
 	return {
 		"owned": _owned.map(func(id: StringName) -> String: return String(id)),
 		"equipped": equipped,
 		"quick_slots": _quick_slots.map(func(id: StringName) -> String: return String(id)),
+		"materials": materials,
 	}
 
 
 ## Replaces the contents with saved data (unknown ids and unowned equipment are dropped).
-## Saves from before quick slots fill them with the owned weapons in order.
+## Saves from before quick slots fill them with the owned weapons in order; saves from
+## before materials carry none.
 func from_dict(data: Dictionary) -> void:
 	for slot in _equipped.keys():
 		unequip(slot)
 	_owned.clear()
 	_quick_slots.fill(&"")
+	for id in _materials.keys():
+		var removed: int = _materials[id]
+		_materials.erase(id)
+		materials_changed.emit(get_material_definition(id), 0, -removed)
+	var saved_materials: Dictionary = data.get("materials", {})
+	for id in saved_materials:
+		var material := get_material_definition(StringName(id))
+		if material != null:
+			add_material(material, clampi(int(saved_materials[id]), 0, MAX_STACK))
 	for id in data.get("owned", []):
 		var item := get_definition(StringName(id))
 		if item != null and not has_item(item.item_id):

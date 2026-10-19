@@ -33,6 +33,24 @@ const ACTIONS := {
 	&"revive": [&"general/Spawn_Ground", &"general/Idle_A"],
 	&"interact": [&"general/Interact"],
 	&"pickup": [&"general/PickUp"],
+	# Tools (Phase 5H). No tool clips in the FREE pack either: the overhead throw is the
+	# chop, the mining swing and the fishing cast; the reach-forward interact is a hammer or
+	# trowel stroke; the pick-up bend is a shovel dig; use-item reels a fish in.
+	&"tool_chop": [&"general/Throw"],
+	&"tool_mine": [&"general/Throw"],
+	&"tool_hammer": [&"general/Interact"],
+	&"tool_trowel": [&"general/Interact"],
+	&"tool_dig": [&"general/PickUp"],
+	&"tool_cast": [&"general/Throw"],
+	&"tool_reel": [&"general/Use_Item"],
+}
+## Fraction of a tool clip at which the tool meets its target: the strike of the throw
+## (58%: the hand is furthest forward after the wind-up), the reach of interact (36%), the
+## lowest point of pick-up (43%), the pull of use-item (41%). Measured from the right hand
+## (handslot.r) of the imported clips. Tool results are applied at this moment.
+const TOOL_IMPACT := {
+	&"tool_chop": 0.58, &"tool_mine": 0.58, &"tool_cast": 0.58,
+	&"tool_hammer": 0.36, &"tool_trowel": 0.36, &"tool_dig": 0.43, &"tool_reel": 0.41,
 }
 ## Clips that loop (the imported files mark every clip as play-once).
 const LOOPING := [&"general/Idle_A", &"general/Idle_B", &"move/Walking_A", &"move/Running_A", &"move/Running_B", &"move/Jump_Idle"]
@@ -92,10 +110,18 @@ func _ready() -> void:
 
 
 ## Puts scene (a prop such as a sword or staff) in the right hand, replacing the current
-## one; null empties the hand. Used for NPC props and the courier's equipped weapon.
-func set_held_item(scene: PackedScene) -> void:
+## one; null empties the hand. Used for NPC props and the courier's equipped weapon or tool.
+## pose (a Transform3D) places it in the hand; without one, held_item_transform does.
+func set_held_item(scene: PackedScene, pose: Variant = null) -> void:
 	held_item = scene
-	_set_hand_item(&"RightHandSlot", &"handslot.r", scene, held_item_transform)
+	var xform: Transform3D = pose if pose is Transform3D else held_item_transform
+	_set_hand_item(&"RightHandSlot", &"handslot.r", scene, xform)
+
+
+## Length in seconds of the clip an action plays at speed (0 when it has no clip).
+func get_action_length(action: StringName, speed: float = 1.0) -> float:
+	var clip := resolve(action)
+	return animation_player.get_animation(clip).length / maxf(absf(speed), 0.01) if clip != &"" else 0.0
 
 
 ## Puts scene (a shield) in the left hand, replacing the current one; null empties it.

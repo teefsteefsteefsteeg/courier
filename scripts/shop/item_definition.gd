@@ -20,9 +20,16 @@ extends Resource
 ##                 Shield; zero/one means "no change".
 ##   attack stats  for SWORD / AXE / BOW: attack_damage, attack_range (m), attack_cooldown
 ##                 (s), and for melee attack_arc_degrees and attack_windup (s until the hit).
+##   tool_type     (Phase 5H) a tool, not a weapon: it goes in the main hand like a weapon
+##                 (and on a quick slot) but never attacks. ToolUser works designated world
+##                 objects with it (ToolTarget: fishing spots, harvestable trees, mineable
+##                 rocks, dig spots, repairable structures). NONE = not a tool.
+##   held_transform  pose of held_model in the hand (tools from another pack need one).
 
 enum Slot { MAIN_HAND, OFF_HAND }
 enum WeaponType { NONE, STAFF, SWORD, AXE, BOW }
+## Append only: saved data and ToolTarget scenes store these values.
+enum ToolType { NONE, FISHING_ROD, HAMMER, WOOD_AXE, PICKAXE, SHOVEL, TROWEL }
 
 @export var item_id: StringName
 @export var display_name: String = ""
@@ -33,6 +40,8 @@ enum WeaponType { NONE, STAFF, SWORD, AXE, BOW }
 @export var held_model: PackedScene
 @export var weapon_type: WeaponType = WeaponType.NONE
 @export var two_handed: bool = false
+@export var tool_type: ToolType = ToolType.NONE
+@export var held_transform: Transform3D = Transform3D.IDENTITY
 
 @export_group("Stats")
 ## Added to CombatController.bolt_damage.
@@ -65,9 +74,29 @@ static func weapon_type_name(value: WeaponType) -> String:
 	return ["", "Staff", "Sword", "Axe", "Bow"][value]
 
 
-## True for main-hand weapons (what quick slots accept).
+static func tool_type_name(value: ToolType) -> String:
+	return ["", "Fishing rod", "Hammer", "Woodcutting axe", "Pickaxe", "Shovel", "Trowel"][value]
+
+
+## What a tool is for, e.g. "chops marked trees" ("" for NONE).
+static func tool_use_text(value: ToolType) -> String:
+	return ["", "catches fish in open water", "repairs wooden structures", "chops marked trees",
+			"mines ore rocks", "digs soft soil", "repairs stonework"][value]
+
+
+## True for main-hand weapons.
 func is_weapon() -> bool:
-	return slot == Slot.MAIN_HAND and weapon_type != WeaponType.NONE
+	return slot == Slot.MAIN_HAND and weapon_type != WeaponType.NONE and tool_type == ToolType.NONE
+
+
+## True for tools (main hand, never attack).
+func is_tool() -> bool:
+	return slot == Slot.MAIN_HAND and tool_type != ToolType.NONE
+
+
+## Weapons and tools can go on a quick slot.
+func is_quick_slottable() -> bool:
+	return is_weapon() or is_tool()
 
 
 func is_melee() -> bool:
@@ -77,6 +106,9 @@ func is_melee() -> bool:
 ## Player-facing stat lines, e.g. ["20 damage", "0.36 s", "1.8 m reach"].
 func get_stat_lines() -> PackedStringArray:
 	var lines: PackedStringArray = []
+	if is_tool():
+		lines.append(tool_use_text(tool_type))
+		return lines
 	if is_melee() or weapon_type == WeaponType.BOW:
 		lines.append("%d damage" % roundi(attack_damage))
 		lines.append("%.2f s" % attack_cooldown)
@@ -93,8 +125,11 @@ func get_stat_lines() -> PackedStringArray:
 	return lines
 
 
-## "Sword · fast melee" style summary of how the weapon attacks ("" for non-weapons).
+## "Sword · fast melee" style summary of how the weapon attacks, "Tool · Pickaxe" for a
+## tool ("" for anything else).
 func get_attack_summary() -> String:
+	if is_tool():
+		return "Tool · %s" % tool_type_name(tool_type)
 	match weapon_type:
 		WeaponType.STAFF:
 			return "Staff · magic bolts"

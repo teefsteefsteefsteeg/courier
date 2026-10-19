@@ -1,7 +1,7 @@
 class_name QuickWeaponBar
 extends PanelContainer
-## HUD bar with the five weapon quick slots (CourierInventory quick slots). Each slot shows
-## its weapon's icon and key (quick_slot_1..5, keys 1-5 by default); the equipped weapon is
+## HUD bar with the five quick slots (CourierInventory quick slots; weapons and, since Phase
+## 5H, tools). Each slot shows its item's icon and key (quick_slot_1..5, keys 1-5 by default); the equipped weapon is
 ## outlined in gold and empty slots are dim. Above the slots: the weapon in hand, how it
 ## attacks and its stats. A key press or a click equips the slot's weapon, except while a
 ## modal window (group ui_modal) or a dialogue line is open, or the courier's input is off.
@@ -103,8 +103,11 @@ func refresh() -> void:
 		for state in [&"normal", &"hover", &"pressed", &"disabled", &"focus"]:
 			button.add_theme_stylebox_override(state, style)
 		button.modulate = Color.WHITE if item != null else Color(1, 1, 1, 0.55)
-		button.tooltip_text = ("%s [%s]" % [item.display_name, key]) if item != null else "Empty slot [%s]: assign a weapon in Equipment [%s]" % [key, InputHints.key_for(&"toggle_equipment")]
-	if equipped != null and equipped.is_weapon():
+		button.tooltip_text = ("%s [%s]" % [item.display_name, key]) if item != null else "Empty slot [%s]: assign a weapon or tool in Equipment [%s]" % [key, InputHints.key_for(&"toggle_equipment")]
+	if equipped != null and equipped.is_tool():
+		info_label.text = equipped.display_name
+		stats_label.text = "Tool: no attacks  ·  [%s] use" % InputHints.key_for(&"combat_magic_bolt")
+	elif equipped != null and equipped.is_weapon():
 		info_label.text = equipped.display_name
 		stats_label.text = "%s  ·  %s" % [equipped.get_attack_summary(), ", ".join(equipped.get_stat_lines())]
 	else:

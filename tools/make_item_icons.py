@@ -2,7 +2,8 @@
 
     python tools/make_item_icons.py
 
-Writes assets/ui/item_icons/<item_id>.png for the Armory catalog. Shapes are rasterised
+Writes assets/ui/item_icons/<item_id>.png for the Armory and Toolwright catalogs and the
+gathered materials (data/materials/, by material_id). Shapes are rasterised
 on a 16 px grid and get a dark 1 px outline, matching the input prompt keycaps' palette.
 """
 import math
@@ -122,6 +123,133 @@ def bow():
             ((200, 206, 216, 255), head), ((80, 150, 220, 255), fletch)])
 
 
+# --- Phase 5H tools and materials -------------------------------------------------------
+
+STEEL = (178, 186, 198, 255)
+STEEL_DARK = (118, 126, 140, 255)
+STEEL_LIGHT = (226, 232, 240, 255)
+
+
+def disc(cx, cy, r2):
+    return {(x, y) for y in range(16) for x in range(16) if (x - cx) ** 2 + (y - cy) ** 2 <= r2}
+
+
+def fishing_rod():
+    pole, cork, reel, cord, float_red, float_white = set(), set(), set(), set(), set(), set()
+    line(pole, 2, 14, 13, 1)
+    line(cork, 2, 14, 4, 12)
+    reel.update({(5, 12), (6, 12), (5, 13), (6, 13)})
+    line(cord, 13, 1, 13, 10)
+    float_red.update({(12, 11), (13, 11), (14, 11)})
+    float_white.update({(12, 12), (13, 12), (14, 12), (13, 13)})
+    return draw([(WOOD, pole), (LEATHER, cork), (STEEL_DARK, reel), ((226, 220, 200, 255), cord),
+            ((214, 54, 44, 255), float_red), ((240, 240, 232, 255), float_white)])
+
+
+def hammer():
+    handle, head, face, band = set(), set(), set(), set()
+    line(handle, 3, 14, 9, 6)
+    for y in range(2, 7):
+        for x in range(7, 14):
+            if (x - 10) + (y - 4) in range(-4, 5) and abs((x - 10) - (y - 4)) <= 3:
+                head.add((x, y))
+    face.update({(12, 5), (13, 4), (13, 5), (12, 6)})
+    band.update({(8, 7), (9, 7)})
+    return draw([(WOOD, handle), (STEEL, head), (STEEL_DARK, face), (LEATHER, band)])
+
+
+def woodcutter_axe():
+    handle, head, edge = set(), set(), set()
+    line(handle, 3, 14, 10, 3)
+    for i, w in enumerate([2, 3, 4, 4, 3, 2]):
+        for x in range(10, 10 + w):
+            head.add((x, 2 + i))
+    for i, w in enumerate([2, 3, 4, 4, 3, 2]):
+        edge.add((9 + w, 2 + i))
+    return draw([(WOOD, handle), (STEEL_DARK, head), (STEEL_LIGHT, edge), (WOOD_DARK, {(6, 10)})])
+
+
+def pickaxe():
+    handle, head, tips = set(), set(), set()
+    line(handle, 3, 14, 10, 5)
+    for x in range(3, 15):
+        y = round(4 + ((x - 9) / 6.0) ** 2 * 2.5)
+        head.add((x, y))
+        head.add((x, y - 1))
+    tips.update({(2, 7), (14, 7)})
+    return draw([(WOOD, handle), (STEEL, head), (STEEL_LIGHT, tips), (LEATHER, {(9, 7), (8, 8)})])
+
+
+def shovel():
+    handle, grip, blade, shine = set(), set(), set(), set()
+    line(handle, 11, 2, 6, 9)
+    grip.update({(11, 1), (12, 1), (12, 2), (10, 1)})
+    for y in range(9, 15):
+        for x in range(2, 9):
+            if (x - 5) ** 2 / 9.0 + (y - 11) ** 2 / 12.0 <= 1.0:
+                blade.add((x, y))
+    shine.update({(4, 10), (4, 11)})
+    return draw([(WOOD, handle), (LEATHER, grip), (STEEL, blade), (STEEL_LIGHT, shine)])
+
+
+def trowel():
+    handle, neck, blade, edge = set(), set(), set(), set()
+    line(handle, 11, 3, 14, 0)
+    line(neck, 10, 4, 9, 6)
+    for y in range(6, 15):
+        half = (y - 6) * 0.45
+        for x in range(16):
+            if abs(x - (9 - (y - 6) * 0.55)) <= half + 0.5:
+                blade.add((x, y))
+    line(edge, 1, 14, 6, 14)
+    return draw([(WOOD, handle), (STEEL_DARK, neck), (STEEL, blade), (STEEL_LIGHT, edge)])
+
+
+def fish(body, belly, fin):
+    shape, under, tail, eye = set(), set(), set(), set()
+    for y in range(16):
+        for x in range(16):
+            if ((x - 7) / 5.5) ** 2 + ((y - 8) / 3.2) ** 2 <= 1.0:
+                shape.add((x, y))
+                if y >= 9:
+                    under.add((x, y))
+    for i in range(4):
+        tail.update({(12 + i, 8 - i), (12 + i, 8 + i), (12 + i, 8)})
+    eye.add((4, 7))
+    return draw([(fin, tail), (body, shape), (belly, under), (OUTLINE, eye), (fin, {(7, 4), (8, 4), (8, 5)})])
+
+
+def log():
+    bark, end, ring = set(), set(), set()
+    for y in range(5, 12):
+        for x in range(2, 13):
+            bark.add((x, y))
+    end.update(disc(12.5, 8.0, 10.5))
+    ring.update({(12, 8), (13, 8), (12, 7)})
+    return draw([(WOOD_DARK, bark), ((176, 132, 84, 255), end), (WOOD, ring), (LEATHER, {(5, 7), (8, 10), (9, 6)})])
+
+
+def stone(light, dark, specks=()):
+    rock, shade = set(), set()
+    for y in range(16):
+        for x in range(16):
+            if ((x - 7.5) / 6.0) ** 2 + ((y - 9) / 5.0) ** 2 <= 1.0:
+                rock.add((x, y))
+                if y >= 10 or x >= 11:
+                    shade.add((x, y))
+    return draw([(light, rock), (dark, shade), ((214, 156, 92, 255), set(specks))])
+
+
+def clay():
+    lump, wet = set(), set()
+    for y in range(16):
+        for x in range(16):
+            if ((x - 7.5) / 6.5) ** 2 + ((y - 10) / 4.2) ** 2 <= 1.0:
+                lump.add((x, y))
+    wet.update({(5, 8), (6, 8), (9, 9)})
+    return draw([((178, 104, 72, 255), lump), ((214, 146, 108, 255), wet)])
+
+
 ICONS = {
     "wooden_sword": lambda: sword((182, 132, 78, 255), WOOD_DARK, WOOD_DARK, LEATHER),
     "iron_sword": lambda: sword((178, 184, 194, 255), (122, 128, 140, 255), GOLD, GOLD_DARK),
@@ -130,6 +258,20 @@ ICONS = {
     "magic_staff": staff,
     "wooden_shield": shield,
     "hunting_bow": bow,
+    # Phase 5H tools (Toolwright) and gathered materials.
+    "fishing_rod": fishing_rod,
+    "carpenter_hammer": hammer,
+    "woodcutter_axe": woodcutter_axe,
+    "miner_pickaxe": pickaxe,
+    "garden_shovel": shovel,
+    "mason_trowel": trowel,
+    "pond_perch": lambda: fish((112, 150, 96, 255), (196, 206, 150, 255), (210, 120, 70, 255)),
+    "silver_trout": lambda: fish((150, 168, 190, 255), (226, 232, 240, 255), (196, 120, 150, 255)),
+    "golden_carp": lambda: fish((222, 168, 54, 255), (250, 214, 120, 255), (200, 100, 40, 255)),
+    "wood": log,
+    "stone": lambda: stone((150, 150, 156, 255), (110, 110, 118, 255)),
+    "iron_ore": lambda: stone((120, 104, 98, 255), (90, 76, 72, 255), [(5, 7), (8, 9), (10, 6), (6, 11)]),
+    "clay": clay,
 }
 
 

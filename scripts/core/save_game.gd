@@ -3,9 +3,11 @@ extends Node
 ## Minimal save file (the project had none): wallet, inventory and equipment, finished
 ## quests, and one-time grants. JSON at `path`. Lives in GameplayServices.
 ##
-## What is saved: gold, reputation, owned and equipped items and quick slots, every quest
-## that reached REWARDED (so a reward is never paid twice, even across sessions), the
-## explored map, discovered locations and activated portals, and the starting-gold flag. Deliveries in progress are not saved (the carried package is not
+## What is saved: gold, reputation, owned and equipped items (weapons and tools), quick
+## slots and gathered materials, every quest that reached REWARDED (so a reward is never
+## paid twice, even across sessions), the explored map, discovered locations and activated
+## portals, depleted harvest nodes, repaired structures and gathering tallies (Phase 5H,
+## "gathering"), and the starting-gold flag. Deliveries in progress are not saved (the carried package is not
 ## persisted); after a reload such a contract is simply on the board again.
 ##
 ## Loading and autosave run when `enabled`, which defaults to off in headless runs so
@@ -34,6 +36,9 @@ const DEV_STARTING_GOLD := 500
 ## Explored map, discovered locations and activated portals ("exploration" key; saves
 ## without it start unexplored).
 @export var exploration: ExplorationService
+## Depleted harvest nodes, repaired structures ("gathering" key; saves without it start
+## with every node standing and nothing repaired).
+@export var gathering: GatheringService
 
 var starting_gold_granted: bool = false
 var _save_left: float = -1.0
@@ -57,6 +62,8 @@ func _ready() -> void:
 		quest_manager = QuestManager.find(get_tree())
 	if exploration == null:
 		exploration = ExplorationService.find(get_tree())
+	if gathering == null:
+		gathering = GatheringService.find(get_tree())
 	if DisplayServer.get_name() == "headless" and not force_enabled_headless:
 		enabled = false
 	_start.call_deferred()
@@ -106,6 +113,7 @@ func to_dict() -> Dictionary:
 		"wallet": {"gold": wallet.gold, "reputation": wallet.reputation} if wallet != null else {},
 		"inventory": inventory.to_dict() if inventory != null else {},
 		"exploration": exploration.to_dict() if exploration != null else {},
+		"gathering": gathering.to_dict() if gathering != null else {},
 		"quests": quests,
 		"flags": {"starting_gold_granted": starting_gold_granted},
 	}
@@ -122,6 +130,8 @@ func from_dict(data: Dictionary) -> void:
 		inventory.from_dict(data.get("inventory", {}))
 	if exploration != null:
 		exploration.from_dict(data.get("exploration", {}))
+	if gathering != null:
+		gathering.from_dict(data.get("gathering", {}))
 	if quest_manager != null:
 		quest_manager.restore_finished_quests(data.get("quests", {}))
 	_restoring = false
@@ -160,6 +170,9 @@ func _watch() -> void:
 		inventory.item_added.connect(func(_i): request_save())
 		inventory.equipment_changed.connect(func(_s, _i): request_save())
 		inventory.quick_slots_changed.connect(request_save)
+		inventory.materials_changed.connect(func(_m, _c, _d): request_save())
+	if gathering != null:
+		gathering.changed.connect(request_save)
 	if exploration != null:
 		exploration.location_discovered.connect(func(_l): request_save())
 		exploration.portal_activated.connect(func(_p): request_save())

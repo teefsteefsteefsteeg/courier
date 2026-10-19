@@ -7,6 +7,9 @@ extends Node
 ##   FAST_MELEE (sword) / HEAVY_MELEE (axe): a swing that, after melee_windup seconds,
 ##   damages every enemy within melee_range and melee_arc_degrees in front.
 ##   ARROW (bow): a faster, longer-range projectile with the arrow model.
+##   TOOL (a tool in the main hand, Phase 5H): no attack at all. The primary action emits
+##   tool_use_requested instead (ToolUser works the tool on the object in front), so a tool
+##   can never damage anyone and a weapon can never fish, chop, mine or repair.
 ##   All share one cooldown (the "bolt" cooldown the HUD shows), which switching weapons
 ##   never shortens. A switch cancels a swing that has not landed yet; switch_delay (off by
 ##   default) can add a minimum wait before the next attack.
@@ -37,6 +40,8 @@ signal melee_resolved(hits: int)
 signal melee_cancelled
 signal arrow_fired(origin: Vector3, direction: Vector3)
 signal dash_started
+## The primary action was used with a tool in hand (AttackStyle.TOOL).
+signal tool_use_requested
 ## Stamina changed (spent by a dash or regenerating).
 signal stamina_changed(current: float, maximum: float)
 signal dash_finished
@@ -60,7 +65,7 @@ const ENEMY_LAYER := 16
 const MAGIC_BOLT_SCENE := preload("res://scenes/gameplay/combat/magic_bolt.tscn")
 const ARROW_SCENE := preload("res://scenes/gameplay/combat/arrow.tscn")
 
-enum AttackStyle { MAGIC_BOLT, FAST_MELEE, HEAVY_MELEE, ARROW }
+enum AttackStyle { MAGIC_BOLT, FAST_MELEE, HEAVY_MELEE, ARROW, TOOL }
 
 @export var health: CombatHealth
 ## Handle the combat input actions. A PlayerController parent's input_enabled also applies.
@@ -221,6 +226,11 @@ func try_attack(direction := Vector3.ZERO) -> bool:
 			return try_melee(direction)
 		AttackStyle.ARROW:
 			return try_arrow(direction)
+		AttackStyle.TOOL:
+			if health != null and health.is_dead():
+				return _block(&"tool", &"dead")
+			tool_use_requested.emit()
+			return false
 	return try_magic_bolt(direction)
 
 

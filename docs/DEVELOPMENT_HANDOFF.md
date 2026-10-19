@@ -91,11 +91,47 @@ Uncommitted state left in the role worktrees, intentionally not part of any comm
   scaling (`docs/PHASE5F_STATUS_HUD.md`). The game has no mana or EXP; those bars bind to shield
   energy and rank progress.
 
+## 2b. Phase 5G and 5H (2026-10-19, on `phase5f-integrated`)
+- `aa4ad5e` **Phase 5G** (committed as a baseline; it had been left uncommitted):
+  - WorldLocation registry and ExplorationService (discovery, fog of war);
+  - teleport portals with fast travel;
+  - world map with legend (`tools/bake_world_map.gd`).
+- `de43cda` **Phase 5H village and movement** (`docs/PHASE5H_VILLAGE_AND_TOOLS.md` §1-3):
+  - the Armory's barrel moved off Brenna's counter, and Brenna serves across it
+    (`Armory.serve_reach`);
+  - bell tower, CottageBlue, CottageOak and CottageFern moved apart (gaps 1.1 → 6.9 m and
+    1.2 → 3.2 m at the worst spots), with lanes and contact shade repainted by
+    `tools/edit_village_splat.py`;
+  - walk 4.5 → 5.0 m/s and run 7.5 → 8.4 m/s, with clip rates following the speed.
+- **Phase 5H RPG tools** (same doc §4-9), from KayKit RPG Tools Bits:
+  - six tools (Fishing Rod, Woodcutter's Axe, Miner's Pickaxe, Shovel, Carpenter's Hammer,
+    Mason's Trowel) sold by Toolwright Hobb at the Hill Smithy stall;
+  - gathered materials (3 fish, wood, stone, iron ore, clay), which he also buys back;
+  - Willowmere Pond (the first water) with a repairable jetty, the Woodcutters' Grove, the Old
+    Quarry, dig spots, a broken fence and a crumbled wall;
+  - the `ToolUser` / `ToolTarget` / `GatheringService` system, the tool HUD, Equipment window
+    sections, and save/load of all of it.
+- **Concurrent session:** while 5H was being finished, another Claude session (writing under
+  `validation/phase6/`) ran a "Phase 6" validation in this worktree. It made small fixes to the
+  5H tool files (`ShopService.sell_material`, a stack-full guard in `HarvestNode`, a narrow-canvas
+  offset for the interaction prompt, equipment UI). Those edits are included as found.
+  - **Not committed** (its own work, left in the working tree for review):
+    - `docs/PHASE6_CONTINUATION.md`, `tests/phase6_tools_tests.gd` and its capture scripts;
+    - `assets/generated/` and `assets/blender/` (a Blender fishing rod plus dungeon models);
+    - a `RunewoodRegion` underground dungeon instanced in `village.tscn`;
+    - a map-bake filter in `tools/bake_world_map.gd`;
+    - its 12-zone `world_ui_tests` expectation;
+    - the Fishing Rod item pointing at its rod.
+  - The committed `village.tscn`, `world_ui_tests.gd`, rod item, tool test and manifest were staged
+    without those parts.
+
 ## 3. Feature status (integrated build)
 | Area | Status | Notes |
 |---|---|---|
-| Village, buildings, Armory visuals | Complete | MegaKit buildings, Armory location |
-| Player movement, camera, occlusion | Complete | WASD, Shift run, iso camera, fading occluders |
+| Village, buildings, Armory visuals | Complete | MegaKit buildings, Armory location; 5H: barrel off Brenna's counter, four buildings respaced |
+| Player movement, camera, occlusion | Complete | WASD, Shift run, iso camera, fading occluders; 5H: walk 5.0 / run 8.4 m/s |
+| Map, exploration, portals (5G) | Complete | World map with fog of war, location discovery, teleport portals |
+| RPG tools (5H) | Complete for MVP | Fishing, woodcutting, mining, digging, hammer and trowel repairs; Toolwright shop buys materials; saved |
 | Dash / animations | Complete, fixed | Idle after dash with keys released; run while held; verified in tests and a rendered run |
 | Combat | Complete for MVP | Magic Bolt, Dash, Package Shield; Slime and Wisp only during the Dragon Egg forest run |
 | NPC interaction and dialogue | Complete | Dialogue box, quest lines, giver lines; no branching dialogue data |
@@ -104,23 +140,28 @@ Uncommitted state left in the role worktrees, intentionally not part of any comm
 | Input prompts | Complete | Keyboard/mouse keycaps from the InputMap; gamepad icons cropped but unused (no gamepad bindings) |
 | Journal, quest board | Complete | Modal, keyboard focus |
 | Shop, inventory, equipment, gold | Complete for MVP | Weapon types: sword fast melee, axe heavy melee, staff bolts, bow arrows (Hunting Bow, 250 g). Quick slots 1-5, Equipment window (Tab). See `PHASE5F_WEAPON_SWITCHING.md` |
-| Save/load | Partial | Gold, rep, items, equipment, finished quests, starting-gold flag. **Deliveries in progress are not saved.** No title/continue menu |
+| Save/load | Partial | Gold, rep, items and tools, equipment, materials, finished quests, exploration, depleted nodes and repairs, starting-gold flag. **Deliveries in progress are not saved.** No title/continue menu |
 | Settings menu | Not built | `UISettings` API exists (`show_movement_guide`); no UI |
 | Gamepad | Not supported | No bindings |
 | Human playtest | **Not done** | All checks are automated or scripted rendered runs |
 
-## 4. Test results (integrated, 2026-10-19)
-All 26 suites in `tests/*_tests.gd` pass, **2368 checks, 0 failures**. No exit-time leak
-reports in any suite. `--quit-after 300` village boot logs no ERROR/WARNING lines. Import
-complete (332 sidecars, all resolved).
+## 4. Test results (Phase 5H commit, 2026-10-19)
+- **Coverage:** all 30 suites in `tests/*_tests.gd` pass, **2614 checks, 0 failures**.
+- **How:** run on a clean export of the committed tree (`git checkout-index` into a scratch
+  folder, fresh `--import`), so the result does not depend on uncommitted files in this
+  worktree.
+- No exit-time leak reports.
+- `--quit-after 300` village boot logs no ERROR/WARNING lines.
+- `input_prompt` now passes at 1024x600 thanks to the continuation session's prompt offset. It
+  had been failing since the keycap HUD commit.
 
 | Suite | Checks | Suite | Checks |
 |---|---|---|---|
 | phase1 | 52 | phase5a_asset | 198 |
 | phase2 | 105 | phase5b_environment | 43 |
-| phase3 | 79 | phase5c_character | 76 |
+| phase3 | 79 | phase5c_character | 83 |
 | phase3_demo | 14 | phase5d_megakit | 64 |
-| phase3_visual | 123 | phase5e_village | 68 |
+| phase3_visual | 123 | phase5e_village | 74 |
 | phase4_gameplay | 183 | phase5f_building | 138 |
 | phase4_visual | 167 | phase5f_armory | 37 |
 | phase4_integration_visual | 135 | phase5f_gameplay_ui | 125 |
@@ -129,6 +170,11 @@ complete (332 sidecars, all resolved).
 | world_ui | 127 | player_animation | 38 |
 | equipment_visual | 34 | phase5f_integration | 17 |
 | weapon_quick_switch | 94 | status_hud | 41 |
+| keycap | 14 | stamina | 22 |
+| **phase5h_village** | 53 | **tool_system** | 144 |
+
+Rendered Phase 5H walkthrough (`capture_phase5h_screenshots.gd`, 1600x900, real key presses): 27
+steps, 0 problems. Images are in `docs/validation/phase5h/`.
 
 Rendered check at 1600x900 (`capture_phase5f_integrated_screenshots.gd`):
 - Brenna's prompt and keycap show.
@@ -176,6 +222,18 @@ and `capture_armory_screenshots.gd`.
   change). Don't commit it.
 - **`TODO.md`:** older phase follow-ups listed there (shadow tuning, portrait art, occluders for
   small props, NPC body type) are still open.
+- **Phase 5H tools** (details in `docs/PHASE5H_VILLAGE_AND_TOOLS.md` §9):
+  - Tool clips reuse the FREE pack's Throw / Interact / PickUp / Use_Item.
+  - Fishing timing, respawn times and prices are untested by a person.
+  - There are six tools but five quick slots (the rest go through Tab).
+  - The fishing rod is primitive meshes.
+  - 27 of the pack's 49 models are copied but unused: no crafting, light or navigation system
+    uses them.
+- **Untracked folders in the worktree that are not part of any commit:**
+  - Raw asset packs the user dropped into `assets/` (KayKit RPG Tools, a Bestiary kit, a Brackeys
+    VFX bundle, a pixel-effects pack). `assets/__MACOSX/` holds macOS resource forks that make
+    `--import` print ERR_FILE_CORRUPT lines.
+  - `validation/phase6/` (the other session's user-data and captures).
 
 ## 6. Recommended next priorities
 1. **Human playtest** of `phase5f-integrated` (all three contracts, the Armory purchase, a dash
@@ -190,6 +248,9 @@ and `capture_armory_screenshots.gd`.
    cropping pass for that row).
 7. **Root-cause the scene-embedded Merchant leak** so merchants can be authored in scenes.
 8. More contracts and NPCs (quest data is already data-driven).
+9. **Give gathered materials more uses**: a crafting bench (the pack's saw, anvil and grindstone
+   are already at the stall), contracts that ask for fish or ore, and tool clips if the paid
+   animation pack is available.
 
 ## 7. Conventions worth knowing
 - **Services:** found by group (`QuestManager.find(get_tree())` etc.); no autoloads.

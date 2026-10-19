@@ -19,6 +19,21 @@
 [ext_resource type="Resource" path="res://data/items/hunting_bow.tres" id="17_hunting_bow"]
 [ext_resource type="Script" path="res://scripts/world/exploration_service.gd" id="18_exploration"]
 [ext_resource type="Script" path="res://scripts/world/fast_travel.gd" id="19_fast_travel"]
+[ext_resource type="Resource" path="res://data/items/fishing_rod.tres" id="20_fishing_rod"]
+[ext_resource type="Resource" path="res://data/items/carpenter_hammer.tres" id="21_carpenter_hammer"]
+[ext_resource type="Resource" path="res://data/items/woodcutter_axe.tres" id="22_woodcutter_axe"]
+[ext_resource type="Resource" path="res://data/items/miner_pickaxe.tres" id="23_miner_pickaxe"]
+[ext_resource type="Resource" path="res://data/items/garden_shovel.tres" id="24_garden_shovel"]
+[ext_resource type="Resource" path="res://data/items/mason_trowel.tres" id="25_mason_trowel"]
+[ext_resource type="Script" path="res://scripts/inventory/material_item.gd" id="30_material"]
+[ext_resource type="Resource" path="res://data/materials/pond_perch.tres" id="31_pond_perch"]
+[ext_resource type="Resource" path="res://data/materials/silver_trout.tres" id="32_silver_trout"]
+[ext_resource type="Resource" path="res://data/materials/golden_carp.tres" id="33_golden_carp"]
+[ext_resource type="Resource" path="res://data/materials/wood.tres" id="34_wood"]
+[ext_resource type="Resource" path="res://data/materials/stone.tres" id="35_stone"]
+[ext_resource type="Resource" path="res://data/materials/iron_ore.tres" id="36_iron_ore"]
+[ext_resource type="Resource" path="res://data/materials/clay.tres" id="37_clay"]
+[ext_resource type="Script" path="res://scripts/tools/gathering_service.gd" id="40_gathering"]
 
 [node name="GameplayServices" type="Node"]
 
@@ -32,7 +47,8 @@ wallet = NodePath("../CourierWallet")
 
 [node name="CourierInventory" type="Node" parent="."]
 script = ExtResource("7_inventory")
-item_definitions = Array[ExtResource("10_item")]([ExtResource("11_wooden_sword"), ExtResource("12_iron_sword"), ExtResource("13_steel_sword"), ExtResource("14_battle_axe"), ExtResource("15_magic_staff"), ExtResource("16_wooden_shield"), ExtResource("17_hunting_bow")])
+item_definitions = Array[ExtResource("10_item")]([ExtResource("11_wooden_sword"), ExtResource("12_iron_sword"), ExtResource("13_steel_sword"), ExtResource("14_battle_axe"), ExtResource("15_magic_staff"), ExtResource("16_wooden_shield"), ExtResource("17_hunting_bow"), ExtResource("20_fishing_rod"), ExtResource("21_carpenter_hammer"), ExtResource("22_woodcutter_axe"), ExtResource("23_miner_pickaxe"), ExtResource("24_garden_shovel"), ExtResource("25_mason_trowel")])
+material_definitions = Array[ExtResource("30_material")]([ExtResource("31_pond_perch"), ExtResource("32_silver_trout"), ExtResource("33_golden_carp"), ExtResource("34_wood"), ExtResource("35_stone"), ExtResource("36_iron_ore"), ExtResource("37_clay")])
 
 [node name="EquipmentStats" type="Node" parent="." node_paths=PackedStringArray("inventory")]
 script = ExtResource("8_equipment")
@@ -40,6 +56,9 @@ inventory = NodePath("../CourierInventory")
 
 [node name="ExplorationService" type="Node" parent="."]
 script = ExtResource("18_exploration")
+
+[node name="GatheringService" type="Node" parent="."]
+script = ExtResource("40_gathering")
 
 [node name="SaveGame" type="Node" parent="." node_paths=PackedStringArray("wallet", "inventory", "quest_manager")]
 script = ExtResource("9_save")

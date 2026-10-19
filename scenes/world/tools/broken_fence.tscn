@@ -1,0 +1,73 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/tools/repair_site.gd" id="1_ec20u"]
+[ext_resource type="PackedScene" path="res://scenes/props/megakit/wood_fence.tscn" id="2_ajrpc"]
+[ext_resource type="PackedScene" path="res://assets/models/megakit/village/Prop_WoodenFence_Single.gltf" id="3_8orj7"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="4_pfqve"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v2g8d"]
+albedo_color = Color(0.6, 0.44, 0.28, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_c6uwj"]
+material = SubResource("StandardMaterial3D_v2g8d")
+size = Vector3(1, 0.05, 0.14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_f6lpd"]
+material = SubResource("StandardMaterial3D_v2g8d")
+size = Vector3(1, 0.05, 0.14)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_t65cw"]
+radius = 1.3
+
+[node name="BrokenFence" type="Node3D" unique_id=1492838945 node_paths=PackedStringArray("damaged_visual", "repaired_visual", "shake_node")]
+script = ExtResource("1_ec20u")
+materials = Dictionary[StringName, int]({
+&"wood": 3
+})
+reward_gold = 25
+reward_reputation = 4
+damaged_visual = NodePath("Damaged")
+repaired_visual = NodePath("Repaired")
+display_name = "Broken Fence"
+verb = "Repair"
+strokes = 4
+stroke_speed = 1.6
+reach = 3.0
+chip_color = Color(0.62, 0.45, 0.26, 1)
+shake_node = NodePath("Damaged")
+
+[node name="Damaged" type="Node3D" parent="." unique_id=978626783]
+
+[node name="Standing" type="StaticBody3D" parent="Damaged" unique_id=1098838392 instance=ExtResource("2_ajrpc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0, 0)
+
+[node name="Fallen" type="Node3D" parent="Damaged" unique_id=484727922 instance=ExtResource("3_8orj7")]
+transform = Transform3D(1.0425097, -0.21943575, 0.030839685, 0, 0.14833069, 1.0554277, -0.22159228, -1.032364, 0.14508931, 1.2, 0.08, 0.55)
+
+[node name="Plank" type="MeshInstance3D" parent="Damaged" unique_id=112044573]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 0.5, 0.04, 1.2)
+mesh = SubResource("BoxMesh_c6uwj")
+
+[node name="Plank2" type="MeshInstance3D" parent="Damaged" unique_id=2118035139]
+transform = Transform3D(0.64278764, 0, -0.76604444, 0, 1, 0, 0.76604444, 0, 0.64278764, 1.9, 0.04, 1)
+mesh = SubResource("BoxMesh_f6lpd")
+
+[node name="Repaired" type="Node3D" parent="." unique_id=271521188]
+
+[node name="Left" type="StaticBody3D" parent="Repaired" unique_id=1063069174 instance=ExtResource("2_ajrpc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0, 0)
+
+[node name="Right" type="StaticBody3D" parent="Repaired" unique_id=788818793 instance=ExtResource("2_ajrpc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 0, 0)
+
+[node name="Interactable" type="Area3D" parent="." unique_id=1643284444]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0.6)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("4_pfqve")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable" unique_id=1497365452]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_t65cw")
