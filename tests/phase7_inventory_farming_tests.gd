@@ -98,11 +98,13 @@ func _test_inventory_views() -> void:
 	_check((equipment.rows[&"woodcutter_axe"]["row"] as Control).is_visible_in_tree() and (equipment.material_rows[&"wheat_seeds"]["cell"] as Control).is_visible_in_tree(), "tools, seeds and materials show there")
 	_check(equipment.selected_id == &"woodcutter_axe", "the selection follows the view (%s)" % equipment.selected_id)
 	await _press(&"quick_switch_tool")
+	_check(equipment.view == EquipmentUI.View.PROVISIONS, "[T] goes on to Provisions (Phase 8)")
+	await _press(&"quick_switch_tool")
 	_check(equipment.view == EquipmentUI.View.WEAPONS, "[T] switches back")
 	(equipment.tab_buttons[1] as Button).pressed.emit()
 	_check(equipment.view == EquipmentUI.View.TOOLS, "the side tab switches too")
 	# One inventory: the window lists exactly what CourierInventory registers.
-	_check(equipment.rows.size() == inventory.get_all_definitions().size() and equipment.material_rows.size() == inventory.get_all_materials().size(), "every item and material comes from CourierInventory")
+	_check(equipment.rows.size() == inventory.get_all_definitions().size() and equipment.material_rows.size() + equipment.consumable_rows.size() == inventory.get_all_materials().size() and equipment.consumable_rows.size() == inventory.get_all_consumables().size(), "every item, material and provision comes from CourierInventory")
 	await _press(&"toggle_equipment")
 	_check(not equipment.is_open() and player.input_enabled, "Q closes it and returns control")
 

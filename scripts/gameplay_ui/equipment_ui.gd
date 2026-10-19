@@ -4,8 +4,12 @@ extends CanvasLayer
 ## page (Humble Pixel inventory pack, assets/ui/inventory/) with two views, switched with
 ## the side tabs or [Q] (quick_switch_tool; the courier's tool switch cannot fire while the window
 ## is open, so the key is free here):
-##   Weapons & Gear  weapons, then off-hand and armor, as a grid of item cells
+##   Weapons & Gear  weapons, then armor (off-hand and body armor), as a grid of item cells
 ##   Tools & Goods   tools, then seeds, produce and gathered materials with their counts
+##   Provisions      (Phase 8) health potions, mana potions, food and combat buffs with their
+##                   counts; selecting one shows its effects, a Use button and the
+##                   consumable quick slots (keys 6-0). The header shows how many kinds of
+##                   provisions the pack holds (CourierInventory.CONSUMABLE_BAG_SLOTS).
 ## Each cell shows the item's icon, name, enhancement badge (+1..+5 in the level's colour),
 ## an E for equipped and its quick-slot number. Selecting a cell shows its details on the
 ## right: stats, enhancement stars, status and the actions (Equip / Unequip, quick slots
@@ -20,14 +24,15 @@ signal opened
 signal closed
 signal view_changed(view: int)
 
-enum View { WEAPONS, TOOLS }
+enum View { WEAPONS, TOOLS, PROVISIONS }
 
 const THEME := preload("res://scenes/gameplay/ui/gameplay_ui_theme.tres")
 const UI := "res://assets/ui/inventory/"
 const GOLD := Color(1, 0.84, 0.3)
 const INK := Color(0.30, 0.19, 0.11)
 const INK_SOFT := Color(0.45, 0.33, 0.22)
-const VIEW_TITLES := ["Weapons & Gear", "Tools & Goods"]
+const VIEW_TITLES := ["Weapons & Gear", "Tools & Goods", "Provisions"]
+const VIEW_COUNT := 3
 const CELL_SIZE := Vector2(104, 112)
 
 @export var inventory: CourierInventory
@@ -51,6 +56,14 @@ var rows: Dictionary[StringName, Dictionary] = {}
 ## material_id -> {"cell", "label", "material"}: carried materials (read by tests).
 var material_rows: Dictionary[StringName, Dictionary] = {}
 var selected_id: StringName = &""
+## material_id -> {"cell", "label", "item": ConsumableItem} (read by tests).
+var consumable_rows: Dictionary[StringName, Dictionary] = {}
+## The consumable shown in the details panel (Provisions view).
+var selected_consumable: StringName = &""
+var bag_label: Label
+var _consumable_actions: VBoxContainer
+var _use_button: Button
+var _consumable_slot_buttons: Array[Button] = []
 var _views: Array[VBoxContainer] = []
 var _detail_icon: TextureRect
 var _detail_name: Label
@@ -79,6 +92,7 @@ func _bind() -> void:
 		inventory.quick_slots_changed.connect(_refresh)
 		inventory.materials_changed.connect(func(_m, _c, _d): _refresh())
 		inventory.enhancement_changed.connect(func(_i, _l): _refresh())
+		inventory.consumable_slots_changed.connect(_refresh)
 
 
 func is_open() -> bool:
@@ -125,7 +139,7 @@ func close() -> void:
 	closed.emit()
 
 
-## Shows the Weapons & Gear or the Tools & Goods view.
+## Shows the Weapons & Gear, Tools & Goods or Provisions view.
 func set_view(value: int) -> void:
 	view = value
 	for index in _views.size():
@@ -135,17 +149,22 @@ func set_view(value: int) -> void:
 		tab_buttons[index].set_pressed_no_signal(index == view)
 		tab_buttons[index].add_theme_stylebox_override(&"normal", _cell_styles["tab_on"] if index == view else _cell_styles["tab_off"])
 	title_label.text = VIEW_TITLES[view]
-	switch_hint.text = "[%s] %s" % [InputHints.key_for(&"quick_switch_tool"), "Tools & Goods" if view == View.WEAPONS else "Weapons & Gear"]
+	switch_hint.text = "[%s] %s" % [InputHints.key_for(&"quick_switch_tool"), VIEW_TITLES[(view + 1) % VIEW_COUNT]]
 	# Keep the selection in the view on screen.
-	var selected: Dictionary = rows.get(selected_id, {})
-	if selected.is_empty() or _view_of(selected["item"]) != view:
-		_select_first()
+	if view == View.PROVISIONS:
+		if not consumable_rows.has(selected_consumable):
+			_select_first()
+	else:
+		var selected: Dictionary = rows.get(selected_id, {})
+		if selected.is_empty() or _view_of(selected["item"]) != view:
+			_select_first()
 	_refresh()
 	view_changed.emit(view)
 
 
+## [Q]: Weapons & Gear -> Tools & Goods -> Provisions -> Weapons & Gear.
 func toggle_view() -> void:
-	set_view(View.TOOLS if view == View.WEAPONS else View.WEAPONS)
+	set_view((view + 1) % VIEW_COUNT)
 
 
 ## Opening and closing run in _input: the inventory key is Tab (Phase 8 revision), and a
@@ -212,6 +231,40 @@ func _on_slot_pressed(item: ItemDefinition, index: int) -> void:
 		feedback_label.text = "Cleared quick slot %d." % (index + 1)
 	elif inventory.assign_quick_slot(index, item.item_id):
 		feedback_label.text = "%s is on quick slot %d [%s]." % [item.display_name, index + 1, InputHints.key_for(StringName("quick_slot_%d" % (index + 1)))]
+	_refresh()
+
+
+## Shows a consumable's details (switching to Provisions).
+func select_consumable(material_id: StringName) -> void:
+	if not consumable_rows.has(material_id):
+		return
+	selected_consumable = material_id
+	if view != View.PROVISIONS:
+		set_view(View.PROVISIONS)
+	_refresh()
+
+
+## Uses one of a consumable as the Use button does. Returns whether it was used.
+func use_consumable(material_id: StringName) -> bool:
+	var vitals := CourierVitals.find(get_tree())
+	var item := inventory.get_material_definition(material_id) as ConsumableItem
+	if vitals == null or item == null:
+		return false
+	var used := vitals.consume(material_id)
+	feedback_label.text = ("Used %s: %s." % [item.display_name, ", ".join(item.get_effect_lines())]) if used else "Can't use %s now." % item.display_name
+	_refresh()
+	return used
+
+
+func _on_consumable_slot_pressed(index: int) -> void:
+	var item := inventory.get_material_definition(selected_consumable) as ConsumableItem
+	if item == null:
+		return
+	if inventory.find_consumable_slot(item.material_id) == index:
+		inventory.clear_consumable_slot(index)
+		feedback_label.text = "Cleared provisions slot [%s]." % InputHints.key_for(CourierVitals.SLOT_ACTIONS[index])
+	elif inventory.assign_consumable_slot(index, item.material_id):
+		feedback_label.text = "%s is on provisions slot [%s]." % [item.display_name, InputHints.key_for(CourierVitals.SLOT_ACTIONS[index])]
 	_refresh()
 
 
@@ -299,12 +352,12 @@ func _build() -> void:
 	tabs.name = "Tabs"
 	tabs.add_theme_constant_override(&"separation", 10)
 	outer.add_child(tabs)
-	for index in 2:
+	for index in VIEW_COUNT:
 		var tab := Button.new()
-		tab.name = ["WeaponsTab", "ToolsTab"][index]
+		tab.name = ["WeaponsTab", "ToolsTab", "ProvisionsTab"][index]
 		tab.toggle_mode = true
 		tab.custom_minimum_size = Vector2(72, 72)
-		tab.icon = load("res://assets/ui/item_icons/iron_sword.png") if index == 0 else load(UI + "icon_tools.png")
+		tab.icon = [load("res://assets/ui/item_icons/iron_sword.png"), load(UI + "icon_tools.png"), load("res://assets/ui/item_icons/health_potion.png")][index]
 		tab.expand_icon = true
 		tab.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		tab.tooltip_text = VIEW_TITLES[index]
@@ -336,6 +389,10 @@ func _build() -> void:
 	switch_hint.name = "SwitchHint"
 	header.add_child(switch_hint)
 	InputPromptLabel.attach(switch_hint)
+	bag_label = _label("", 16, INK_SOFT)
+	bag_label.name = "Pack"
+	bag_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	header.add_child(bag_label)
 	gold_label = _label("", 20, Color(0.62, 0.42, 0.06))
 	header.add_child(gold_label)
 	var rule := ColorRect.new()
@@ -353,9 +410,9 @@ func _build() -> void:
 	var views := VBoxContainer.new()
 	views.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(views)
-	for index in 2:
+	for index in VIEW_COUNT:
 		var list := VBoxContainer.new()
-		list.name = ["WeaponsView", "ToolsView"][index]
+		list.name = ["WeaponsView", "ToolsView", "ProvisionsView"][index]
 		list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		list.add_theme_constant_override(&"separation", 6)
 		views.add_child(list)
@@ -425,6 +482,33 @@ func _build_detail() -> Control:
 	_detail_actions = VBoxContainer.new()
 	_detail_actions.name = "Actions"
 	box.add_child(_detail_actions)
+	# Provisions: one set of actions for whichever consumable is selected.
+	_consumable_actions = VBoxContainer.new()
+	_consumable_actions.name = "ConsumableActions"
+	_consumable_actions.add_theme_constant_override(&"separation", 6)
+	_consumable_actions.visible = false
+	box.add_child(_consumable_actions)
+	_use_button = Button.new()
+	_use_button.name = "Use"
+	_use_button.text = "Use"
+	_use_button.pressed.connect(func() -> void: use_consumable(selected_consumable))
+	_consumable_actions.add_child(_use_button)
+	_consumable_actions.add_child(_label("Provisions slot", 14, INK_SOFT))
+	var slot_row := HBoxContainer.new()
+	slot_row.add_theme_constant_override(&"separation", 4)
+	_consumable_actions.add_child(slot_row)
+	for index in CourierInventory.CONSUMABLE_SLOT_COUNT:
+		var slot_button := Button.new()
+		slot_button.text = InputHints.key_for(CourierVitals.SLOT_ACTIONS[index])
+		slot_button.toggle_mode = true
+		slot_button.custom_minimum_size = Vector2(44, 34)
+		slot_button.pressed.connect(_on_consumable_slot_pressed.bind(index))
+		for state in [&"pressed", &"hover_pressed"]:
+			slot_button.add_theme_stylebox_override(state, _slot_assigned_style)
+		slot_button.add_theme_color_override(&"font_pressed_color", Color(0.12, 0.08, 0.02))
+		slot_button.add_theme_color_override(&"font_hover_pressed_color", Color(0.12, 0.08, 0.02))
+		slot_row.add_child(slot_button)
+		_consumable_slot_buttons.append(slot_button)
 	return detail
 
 
@@ -449,10 +533,11 @@ func _rebuild() -> void:
 		child.queue_free()
 	rows.clear()
 	material_rows.clear()
+	consumable_rows.clear()
 	var all := inventory.get_all_definitions()
 	var sections := [
 		[View.WEAPONS, "Weapons", func(i: ItemDefinition) -> bool: return i.is_weapon()],
-		[View.WEAPONS, "Gear", func(i: ItemDefinition) -> bool: return not i.is_weapon() and not i.is_tool()],
+		[View.WEAPONS, "Armor", func(i: ItemDefinition) -> bool: return not i.is_weapon() and not i.is_tool()],
 		[View.TOOLS, "Tools", func(i: ItemDefinition) -> bool: return i.is_tool()],
 	]
 	for section in sections:
@@ -466,7 +551,22 @@ func _rebuild() -> void:
 		for item in items:
 			grid.add_child(_build_cell(item))
 			_detail_actions.add_child(_build_actions(item))
-	var materials := inventory.get_all_materials()
+	var consumables := inventory.get_all_consumables()
+	for group in [["Health Potions", MaterialItem.Kind.HEALTH_POTION], ["Mana Potions", MaterialItem.Kind.MANA_POTION],
+			["Food", MaterialItem.Kind.FOOD], ["Combat Buffs", MaterialItem.Kind.BUFF]]:
+		var members := consumables.filter(func(c: ConsumableItem) -> bool: return c.kind == group[1])
+		if members.is_empty():
+			continue
+		_views[View.PROVISIONS].add_child(_section_label(group[0]))
+		var grid := GridContainer.new()
+		grid.name = String(group[0]).replace(" ", "")
+		grid.columns = 3
+		grid.add_theme_constant_override(&"h_separation", 14)
+		grid.add_theme_constant_override(&"v_separation", 6)
+		_views[View.PROVISIONS].add_child(grid)
+		for item in members:
+			grid.add_child(_build_consumable_cell(item))
+	var materials := inventory.get_all_materials().filter(func(m: MaterialItem) -> bool: return not m.is_consumable())
 	for group in [["Seeds", [MaterialItem.Kind.SEED]], ["Produce", [MaterialItem.Kind.PRODUCE]],
 			["Materials", [MaterialItem.Kind.FISH, MaterialItem.Kind.WOOD, MaterialItem.Kind.STONE, MaterialItem.Kind.ORE, MaterialItem.Kind.CLAY]]]:
 		var members := materials.filter(func(m: MaterialItem) -> bool: return (group[1] as Array).has(m.kind))
@@ -488,6 +588,12 @@ func _rebuild() -> void:
 
 
 func _select_first() -> void:
+	if view == View.PROVISIONS:
+		selected_consumable = &""
+		for material_id in consumable_rows:
+			if selected_consumable == &"" or (inventory.get_material_count(material_id) > 0 and inventory.get_material_count(selected_consumable) == 0):
+				selected_consumable = material_id
+		return
 	var equipped := inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND) if inventory != null else null
 	if equipped != null and _view_of(equipped) == view and rows.has(equipped.item_id):
 		selected_id = equipped.item_id
@@ -638,11 +744,43 @@ func _build_material_cell(material: MaterialItem) -> Control:
 	return cell
 
 
+## A carried-count cell for a food or potion; selecting it shows its details.
+func _build_consumable_cell(item: ConsumableItem) -> Control:
+	var cell := _build_material_cell(item)
+	material_rows.erase(item.material_id)
+	var button := cell as Button
+	for connection in button.pressed.get_connections():
+		button.pressed.disconnect(connection["callable"])
+	button.pressed.connect(select_consumable.bind(item.material_id))
+	button.tooltip_text = "%s\n%s" % [", ".join(item.get_effect_lines()), item.description]
+	var label := (cell.get_child(0) as Control).get_child(1) as Label
+	# The provisions slot key, as a badge in the corner.
+	var key := _label("", 13, Color(0.15, 0.4, 0.12))
+	key.name = "SlotKey"
+	key.add_theme_color_override(&"font_outline_color", Color(0.97, 0.92, 0.78))
+	key.add_theme_constant_override(&"outline_size", 4)
+	key.position = Vector2(162, -6)
+	cell.add_child(key)
+	consumable_rows[item.material_id] = {"cell": cell, "label": label, "item": item, "key": key}
+	return cell
+
+
 func _refresh() -> void:
 	if inventory == null:
 		return
 	var wallet := CourierWallet.find(get_tree())
 	gold_label.text = "%d g" % wallet.gold if wallet != null else ""
+	bag_label.text = "Pack %d / %d kinds" % [inventory.get_consumable_stack_count(), CourierInventory.CONSUMABLE_BAG_SLOTS] if view == View.PROVISIONS else ""
+	for material_id in consumable_rows:
+		var entry := consumable_rows[material_id]
+		var item: ConsumableItem = entry["item"]
+		var count := inventory.get_material_count(material_id)
+		var slot := inventory.find_consumable_slot(material_id)
+		(entry["label"] as Label).text = "%s × %d" % [item.display_name, count]
+		(entry["key"] as Label).text = InputHints.key_for(CourierVitals.SLOT_ACTIONS[slot]) if slot >= 0 else ""
+		var cell := entry["cell"] as Button
+		cell.modulate = Color.WHITE if count > 0 else Color(1, 1, 1, 0.45)
+		cell.add_theme_stylebox_override(&"normal", _cell_styles["cell_selected"] if material_id == selected_consumable else _cell_styles["cell"])
 	for item_id in rows:
 		var row := rows[item_id]
 		if not row.has("status"):
@@ -692,6 +830,11 @@ func _refresh() -> void:
 
 
 func _refresh_detail() -> void:
+	_consumable_actions.visible = view == View.PROVISIONS and consumable_rows.has(selected_consumable)
+	_detail_actions.visible = view != View.PROVISIONS
+	if view == View.PROVISIONS:
+		_refresh_consumable_detail()
+		return
 	var row: Dictionary = rows.get(selected_id, {})
 	if row.is_empty():
 		_detail_icon.texture = null
@@ -714,3 +857,25 @@ func _refresh_detail() -> void:
 	else:
 		_detail_stars.text = "Enhancement  " + "★".repeat(level) + "☆".repeat(Enhancement.MAX_LEVEL - level) + ("  " + Enhancement.TIER_NAMES[level] if level > 0 else "")
 		_detail_stars.add_theme_color_override(&"font_color", Enhancement.level_color(level).darkened(0.25) if level > 0 else INK_SOFT)
+
+
+func _refresh_consumable_detail() -> void:
+	var entry: Dictionary = consumable_rows.get(selected_consumable, {})
+	_detail_stars.text = ""
+	if entry.is_empty():
+		_detail_icon.texture = null
+		_detail_name.text = "No provisions yet"
+		_detail_kind.text = ""
+		_detail_stats.text = "Buy food and potions from Grocer Tilda at the Food Market."
+		return
+	var item: ConsumableItem = entry["item"]
+	var count := inventory.get_material_count(item.material_id)
+	_detail_icon.texture = item.icon
+	_detail_name.text = item.display_name
+	_detail_kind.text = "%s · carried %d / %d" % [MaterialItem.kind_name(item.kind), count, item.get_stack_limit()]
+	_detail_stats.text = "\n".join(item.get_effect_lines()) + "\n\n" + item.description
+	_use_button.disabled = count <= 0
+	_use_button.text = "Use (%d left)" % count if count > 0 else "None left"
+	var slot := inventory.find_consumable_slot(item.material_id)
+	for index in _consumable_slot_buttons.size():
+		_consumable_slot_buttons[index].set_pressed_no_signal(slot == index)

@@ -30,6 +30,12 @@ extends Node
 ##
 ## Timers only advance in advance(delta), called each physics frame while simulate is on,
 ## so tests can drive the controller with exact deltas.
+##
+## Phase 8: damage_multiplier (food and buffs) scales every primary attack; crit_chance
+## (0 unless a buff raises it, so damage stays deterministic) makes a hit critical
+## (x crit_multiplier, critical_hit). A staff's bolts cost bolt_mana_cost MP from
+## mana_source (CourierVitals; refused with &"no_mana" when it cannot pay). basic_hit
+## reports hits of the primary attack only (rage is built from those, not from skills).
 
 signal magic_bolt_fired(origin: Vector3, direction: Vector3)
 ## A melee swing started (heavy: axe). Its hit lands melee_windup seconds later.
@@ -57,6 +63,10 @@ signal shield_broken
 ## reason: &"cooldown", &"dashing", &"dead", &"no_body", &"no_package", &"shield_depleted",
 ## &"no_stamina".
 signal ability_blocked(ability: StringName, reason: StringName)
+## A primary attack (swing, arrow, bolt) damaged target. Skills do not emit this.
+signal basic_hit(target: Node, amount: float)
+## A hit was critical (also reported by target_hit).
+signal critical_hit(target: Node, amount: float)
 
 ## Group the owning body joins so enemies can find the courier.
 const PLAYER_GROUP := &"combat_player"
@@ -136,6 +146,21 @@ enum AttackStyle { MAGIC_BOLT, FAST_MELEE, HEAVY_MELEE, ARROW, TOOL }
 @export_range(0.0, 200.0, 0.5) var defense: float = 0.0
 ## Unabsorbed damage taken while carrying applies damage * this as package impact force.
 @export var package_impact_per_damage: float = 0.25
+
+@export_group("Phase 8")
+## Multiplies every primary attack's damage (CourierVitals sets it from food and buffs).
+@export var damage_multiplier: float = 1.0
+## Added to the defense from equipment (buffs).
+@export var defense_bonus: float = 0.0
+## Chance (0..1) that a hit is critical. 0 by default; buffs raise it.
+@export_range(0.0, 1.0, 0.01) var crit_chance: float = 0.0
+@export var crit_multiplier: float = 1.75
+## MP each Magic Bolt costs (EquipmentStats: a staff's bolts cost MP; bare hands are free).
+@export var bolt_mana_cost: float = 0.0
+
+## Pays bolt_mana_cost: any object with spend(amount) -> bool (CourierVitals).
+var mana_source: Object = null
+var crit_rng := RandomNumberGenerator.new()
 
 var _body: CharacterBody3D = null
 var _carrier: PackageCarrier = null
@@ -337,9 +362,13 @@ func _resolve_melee() -> void:
 	if not _is_dead():
 		for target in get_melee_targets(_melee_direction):
 			var health := CombatHealth.find_on(target)
-			if health.apply_damage(melee_damage, _body.global_position):
+			var critical := roll_critical()
+			if health.apply_damage(melee_damage * damage_multiplier * (crit_multiplier if critical else 1.0), _body.global_position):
 				hits += 1
 				target_hit.emit(target, health.last_damage_taken)
+				basic_hit.emit(target, health.last_damage_taken)
+				if critical:
+					critical_hit.emit(target, health.last_damage_taken)
 	melee_resolved.emit(hits)
 
 
@@ -358,7 +387,8 @@ func try_arrow(direction := Vector3.ZERO) -> bool:
 		aim = get_aim_direction()
 	var origin := _body.global_position + Vector3.UP * bolt_spawn_height + aim * bolt_spawn_forward
 	var arrow := (arrow_scene if arrow_scene != null else ARROW_SCENE).instantiate() as CombatProjectile
-	arrow.damage = arrow_damage
+	var critical := roll_critical()
+	arrow.damage = arrow_damage * damage_multiplier * (crit_multiplier if critical else 1.0)
 	arrow.speed = arrow_speed
 	arrow.max_distance = arrow_range
 	arrow.collision_mask = bolt_collision_mask
@@ -368,7 +398,7 @@ func try_arrow(direction := Vector3.ZERO) -> bool:
 	arrow.global_position = origin
 	arrow.look_at(origin + aim, Vector3.UP)
 	arrow.reset_physics_interpolation()
-	arrow.hit.connect(_on_bolt_hit)
+	arrow.hit.connect(_on_bolt_hit.bind(critical))
 	_bolt_cooldown_left = arrow_cooldown
 	_attack_cooldown_total = arrow_cooldown
 	arrow_fired.emit(origin, aim)
@@ -386,13 +416,16 @@ func try_magic_bolt(direction := Vector3.ZERO) -> bool:
 		return _block(&"magic_bolt", &"cooldown")
 	if _body == null or not _body.is_inside_tree() or _body.get_parent() == null:
 		return _block(&"magic_bolt", &"no_body")
+	if bolt_mana_cost > 0.0 and mana_source != null and not bool(mana_source.call(&"spend", bolt_mana_cost)):
+		return _block(&"magic_bolt", &"no_mana")
 	var aim := _flatten(direction)
 	if aim == Vector3.ZERO:
 		aim = get_aim_direction()
 	var origin := _body.global_position + Vector3.UP * bolt_spawn_height + aim * bolt_spawn_forward
 	var scene := magic_bolt_scene if magic_bolt_scene != null else MAGIC_BOLT_SCENE
 	var bolt := scene.instantiate() as CombatProjectile
-	bolt.damage = bolt_damage
+	var critical := roll_critical()
+	bolt.damage = bolt_damage * damage_multiplier * (crit_multiplier if critical else 1.0)
 	bolt.speed = bolt_speed
 	bolt.max_distance = bolt_range
 	bolt.collision_mask = bolt_collision_mask
@@ -401,7 +434,7 @@ func try_magic_bolt(direction := Vector3.ZERO) -> bool:
 	_body.get_parent().add_child(bolt)
 	bolt.global_position = origin
 	bolt.reset_physics_interpolation()
-	bolt.hit.connect(_on_bolt_hit)
+	bolt.hit.connect(_on_bolt_hit.bind(critical))
 	_bolt_cooldown_left = bolt_cooldown
 	_attack_cooldown_total = bolt_cooldown
 	magic_bolt_fired.emit(origin, aim)
@@ -594,9 +627,10 @@ const DEFENSE_SCALE := 20.0
 
 ## Damage left after armor: amount * DEFENSE_SCALE / (DEFENSE_SCALE + defense), at least 1.
 func reduce_by_defense(amount: float) -> float:
-	if amount <= 0.0 or defense <= 0.0:
+	var total := defense + defense_bonus
+	if amount <= 0.0 or total <= 0.0:
 		return amount
-	return maxf(amount * DEFENSE_SCALE / (DEFENSE_SCALE + defense), minf(amount, 1.0))
+	return maxf(amount * DEFENSE_SCALE / (DEFENSE_SCALE + total), minf(amount, 1.0))
 
 ## CombatHealth.damage_interceptor: returns the damage that reaches health.
 func _intercept_damage(amount: float, _source_position: Vector3) -> float:
@@ -635,8 +669,16 @@ func _on_carried_package_changed(package: PackageInstance) -> void:
 		set_package_shield_enabled(false)
 
 
-func _on_bolt_hit(target: Node, amount: float) -> void:
+func _on_bolt_hit(target: Node, amount: float, critical: bool = false) -> void:
 	target_hit.emit(target, amount)
+	basic_hit.emit(target, amount)
+	if critical:
+		critical_hit.emit(target, amount)
+
+
+## True when the next hit should be critical (never while crit_chance is 0).
+func roll_critical() -> bool:
+	return crit_chance > 0.0 and crit_rng.randf() < crit_chance
 
 
 # --- helpers ---------------------------------------------------------------------

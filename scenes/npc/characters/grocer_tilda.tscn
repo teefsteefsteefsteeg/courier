@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/npc/npc.tscn" id="1_npc"]
+[ext_resource type="Script" path="res://scripts/characters/kaykit_character.gd" id="2_char"]
+[ext_resource type="PackedScene" path="res://assets/characters/kaykit_adventurers/Rogue.glb" id="3_model"]
+[ext_resource type="Script" path="res://scripts/characters/npc_animator.gd" id="4_anim"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_apple_01.glb" id="5_apple"]
+
+[node name="GrocerTilda" instance=ExtResource("1_npc")]
+npc_name = "Grocer Tilda"
+lines = PackedStringArray("Couriers who skip lunch end up flat on the forest floor. Eat something!", "Red potions mend you at once. Bread and cheese take their time, but they're kinder to the purse.", "Warrior's Ale before a fight, a stew after. That's the guild way.", "Blue water from the springs for anyone who flings spells about.")
+body_color = Color(0.62, 0.35, 0.3, 1)
+npc_id = &"grocer"
+
+[node name="Visual" parent="."]
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 0, 0, 0)
+
+[node name="Character" type="Node3D" parent="Visual"]
+script = ExtResource("2_char")
+model = ExtResource("3_model")
+held_item = ExtResource("5_apple")
+held_item_transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 0, 0, 0)
+idle_variation = true
+
+[node name="Animator" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("4_anim")
+character = NodePath("../Visual/Character")

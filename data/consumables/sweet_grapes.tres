@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ConsumableItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/consumable_item.gd" id="1_consumable"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/sweet_grapes.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_consumable")
+material_id = &"sweet_grapes"
+display_name = "Sweet Grapes"
+description = "A bunch of dark grapes. Restores mana and quickens its return for a minute."
+kind = 7
+icon = ExtResource("2_icon")
+sell_price = 3
+buy_price = 9
+max_stack = 20
+mana = 20.0
+effect_duration = 60.0
+buff_id = &"grape_focus"
+buff_name = "Focused"
+mp_regen_bonus = 1.5

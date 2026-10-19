@@ -518,7 +518,7 @@ func _test_weapons_leave_targets_alone() -> void:
 func _test_shop() -> void:
 	print("[Toolwright]")
 	inventory.unequip(ItemDefinition.Slot.MAIN_HAND)
-	var stall := level.find_children("*", "ToolStall", true, false)[0] as ToolStall
+	var stall := level.get_node("ToolSites/ToolStall") as ToolStall
 	player.teleport_to(stall.get_shop_front().global_position)
 	await _frames(5)
 	_check(player.interaction.focused == stall.merchant.interactable, "Toolwright Hobb is in reach from the shop front")
@@ -582,7 +582,7 @@ func _test_ui() -> void:
 	var headers := equipment.item_list.get_children().filter(func(c: Node) -> bool: return c is Label).map(func(l: Label) -> String: return l.text)
 	equipment.set_view(EquipmentUI.View.TOOLS)
 	headers += equipment.item_list.get_children().filter(func(c: Node) -> bool: return c is Label).map(func(l: Label) -> String: return l.text)
-	_check(equipment.is_open() and headers == ["Weapons", "Gear", "Tools", "Seeds", "Produce", "Materials"], "the inventory has Weapons and Gear, then Tools, Seeds, Produce and Materials sections %s" % [headers])
+	_check(equipment.is_open() and headers == ["Weapons", "Armor", "Tools", "Seeds", "Produce", "Materials"], "the inventory has Weapons and Armor, then Tools, Seeds, Produce and Materials sections %s" % [headers])
 	_check(equipment.rows.has(&"garden_shovel") and (equipment.rows[&"woodcutter_axe"]["slots"] as Array).size() == 5, "tools can be equipped and quick-slotted there")
 	var wood_label := equipment.material_rows[&"wood"]["label"] as Label
 	_check(wood_label.text == "Wood × %d" % inventory.get_material_count(&"wood"), "materials show their counts (%s)" % wood_label.text)

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ConsumableItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/consumable_item.gd" id="1_consumable"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/bread_loaf.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_consumable")
+material_id = &"bread_loaf"
+display_name = "Bread Loaf"
+description = "Baked this morning. Restores health over ten seconds."
+kind = 7
+icon = ExtResource("2_icon")
+sell_price = 3
+buy_price = 8
+max_stack = 20
+heal_over_time = 40.0
+effect_duration = 10.0

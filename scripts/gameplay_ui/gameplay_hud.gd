@@ -20,6 +20,9 @@ var onboarding: Label
 var movement_guide: MovementGuide
 ## Weapon quick slots (keys 1-5), bottom-right under the package panels.
 var quick_weapon_bar: QuickWeaponBar
+## Phase 8: food and potion quick slots (6-0), at the bottom left of the weapon bar (the
+## right column keeps its height, so short windows still fit the minimap above it).
+var quick_consumable_bar: QuickConsumableBar
 ## Equipment window (Tab): owned gear and quick-slot assignment.
 var equipment_ui: EquipmentUI
 ## Fast-travel destinations, opened by an active TeleportPortal.
@@ -49,6 +52,10 @@ func _ready() -> void:
 	quick_weapon_bar.player = player
 	add_child(quick_weapon_bar)
 	quick_weapon_bar.add_to_group(QuestJournal.HIDDEN_WHILE_OPEN_GROUP)
+	quick_consumable_bar = QuickConsumableBar.new()
+	quick_consumable_bar.name = "QuickConsumableBar"
+	add_child(quick_consumable_bar)
+	quick_consumable_bar.add_to_group(QuestJournal.HIDDEN_WHILE_OPEN_GROUP)
 	equipment_ui = EquipmentUI.new()
 	equipment_ui.name = "EquipmentUI"
 	add_child(equipment_ui)
@@ -62,7 +69,7 @@ func _ready() -> void:
 	add_child(tool_action_hud)
 	tool_action_hud.add_to_group(QuestJournal.HIDDEN_WHILE_OPEN_GROUP)
 	# World-anchored input prompts stay clear of these panels.
-	for widget: Control in [quest_tracker, wallet_display, package_indicator, quest_notification.panel, package_status_hud.get_node("Panel"), onboarding, movement_guide, quick_weapon_bar, tool_action_hud]:
+	for widget: Control in [quest_tracker, wallet_display, package_indicator, quest_notification.panel, package_status_hud.get_node("Panel"), onboarding, movement_guide, quick_weapon_bar, quick_consumable_bar, tool_action_hud]:
 		widget.add_to_group(InputPrompt.AVOID_GROUP)
 	if player == null:
 		return
@@ -93,6 +100,8 @@ func _process(_delta: float) -> void:
 	var bar_height := quick_weapon_bar.get_combined_minimum_size().y
 	_place(quick_weapon_bar, Vector2.ONE, Vector2(-width - MARGIN, -MARGIN - bar_height), Vector2(width, bar_height))
 	var bar_space := bar_height + GAP if quick_weapon_bar.visible else 0.0
+	var food_size := quick_consumable_bar.get_combined_minimum_size()
+	_place(quick_consumable_bar, Vector2.ONE, Vector2(-width - MARGIN - GAP - food_size.x, -MARGIN - food_size.y), food_size)
 	var status_height := maxf(110, package_status_hud.get_node("Panel").get_combined_minimum_size().y)
 	_place(package_status_hud, Vector2.ONE, Vector2(-width - MARGIN, -MARGIN - bar_space - status_height), Vector2(width, status_height))
 	var indicator_height := maxf(100, package_indicator.get_combined_minimum_size().y)

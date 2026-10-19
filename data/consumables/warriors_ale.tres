@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ConsumableItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/consumable_item.gd" id="1_consumable"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/warriors_ale.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_consumable")
+material_id = &"warriors_ale"
+display_name = "Warrior's Ale"
+description = "A foaming mug of the guild's strong ale. Rage at once, and Battle Fury: +20% damage and +10% critical chance for a minute."
+kind = 10
+icon = ExtResource("2_icon")
+sell_price = 12
+buy_price = 35
+max_stack = 10
+rage = 30.0
+effect_duration = 60.0
+buff_id = &"battle_fury"
+buff_name = "Battle Fury"
+damage_multiplier = 1.2
+crit_chance = 0.1

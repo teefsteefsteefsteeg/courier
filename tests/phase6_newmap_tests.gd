@@ -98,6 +98,9 @@ func _run() -> void:
 	quests.accept_quest(&"q001_first_delivery")
 	var quest_snapshot: Dictionary=quests.get_state(&"q001_first_delivery").to_dict() if quests.get_state(&"q001_first_delivery")!=null else {}
 	combat.health.apply_damage(7)
+	# Phase 8 HP regeneration would heal while walking to the vault: off, so the check below
+	# sees only what the transition does to HP.
+	CourierVitals.find(self).hp_regen_per_second=0.0
 	combat._stamina=47
 	combat._stamina_regen_wait=20
 	var hp:=combat.health.get_health()

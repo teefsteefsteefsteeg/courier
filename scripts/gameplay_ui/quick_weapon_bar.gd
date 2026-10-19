@@ -22,8 +22,8 @@ const GOLD := Color(1, 0.84, 0.3)
 var mode_label: Label
 var info_label: Label
 var stats_label: Label
-## Phase 8: the +5 weapon's ultimate and its cooldown ("[C] Flame Slash · ready");
-## hidden when the weapon in hand has none.
+## Phase 8: the +5 weapon's ultimate and what it waits for ("[C] Flame Slash · ready",
+## "· 6 s", "· 32/50 rage", "· needs 30 MP"); hidden when the weapon in hand has none.
 var ultimate_label: Label
 ## One Button per slot (read by tests).
 var slot_buttons: Array[Button] = []
@@ -231,7 +231,15 @@ func _update_ultimate() -> void:
 	if skill.is_empty():
 		return
 	var left := ultimates.get_cooldown_remaining()
-	var text := "[%s] %s  ·  %s" % [InputHints.key_for(&"weapon_ultimate"), skill["name"], "ready" if left <= 0.0 else "%d s" % ceili(left)]
+	var state := "ready"
+	var vitals := CourierVitals.find(get_tree())
+	if left > 0.0:
+		state = "%d s" % ceili(left)
+	elif vitals != null and not vitals.has_rage(ultimates.get_rage_cost()):
+		state = "%d/%d rage" % [floori(vitals.get_rage()), roundi(ultimates.get_rage_cost())]
+	elif vitals != null and skill.has("mp_cost") and vitals.get_mana() < float(skill["mp_cost"]):
+		state = "needs %d MP" % roundi(float(skill["mp_cost"]))
+	var text := "[%s] %s  ·  %s" % [InputHints.key_for(&"weapon_ultimate"), skill["name"], state]
 	if ultimate_label.text != text:
 		ultimate_label.text = text
 

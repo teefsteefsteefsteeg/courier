@@ -10,6 +10,10 @@ extends CanvasLayer
 ## top of them: lost health or shield leaves a pale chip that drains away, healing
 ## flashes the restored segment, reputation slides the EXP bar, and a rank-up pulses the
 ## badge. Layout uses containers anchored to the top-left and scales down on small screens.
+## Phase 8: real MP and rage bars from CourierVitals (found by group): MP drains with staff
+## bolts and the Arcane Storm and regenerates; rage fills with hits and glows with "[ultimate
+## key] READY" when the +5 weapon's ultimate can be released (WeaponUltimates.is_ready()). Active
+## food and potion buffs show as icons with their seconds left.
 
 const BOLT_COLOR := Color(0.7, 0.5, 1.0)
 const DASH_COLOR := Color(0.45, 0.85, 1.0)
@@ -51,6 +55,12 @@ var bolt_bar: ProgressBar
 var bolt_label: Label
 var dash_bar: ProgressBar
 var dash_label: Label
+var mana_bar: ProgressBar
+var mana_label: Label
+var rage_bar: ProgressBar
+var rage_label: Label
+## Active buffs: one icon + seconds label each.
+var buff_row: HBoxContainer
 
 var health_current := 100.0
 var health_max := 100.0
@@ -70,6 +80,11 @@ var rank_title := "Novice Courier"
 var rank_progress := 0.0
 var reputation := 0
 var reputation_to_next := 0
+var mana_current := 100.0
+var mana_max := 100.0
+var rage_current := 0.0
+var rage_max := 100.0
+var ultimate_ready := false
 
 var _local_bolt_timer := false
 var _local_dash_timer := false
@@ -81,6 +96,9 @@ var _badge_pulse := 0.0
 var _low_pulse := 0.0
 var _exp_shown := 0.0
 var _wallet: CourierWallet = null
+var _vitals: CourierVitals = null
+var _rage_pulse := 0.0
+var _rage_fill: StyleBoxTexture
 var _combat: CombatController = null
 var _bind_left := 0.0
 var _health_fill: StyleBoxTexture
@@ -200,8 +218,28 @@ func set_progression(new_rank: int, title: String, progress: float, value: int, 
 	_refresh()
 
 
+## Real MP from CourierVitals.
+func set_mana(current: float, maximum: float) -> void:
+	_ensure_built()
+	mana_max = maxf(maximum, 0.001)
+	mana_current = clampf(current, 0.0, mana_max)
+	_refresh()
+
+
+## Real rage from CourierVitals; ready = the held weapon's ultimate can be released now.
+func set_rage(current: float, maximum: float, ready: bool = ultimate_ready) -> void:
+	_ensure_built()
+	rage_max = maxf(maximum, 0.001)
+	rage_current = clampf(current, 0.0, rage_max)
+	ultimate_ready = ready
+	_refresh()
+
+
 func advance(delta: float) -> void:
 	var changed := false
+	if ultimate_ready:
+		_rage_pulse = fmod(_rage_pulse + delta * 4.0, TAU)
+		changed = true
 	if _local_bolt_timer and bolt_remaining > 0.0:
 		bolt_remaining = maxf(0.0, bolt_remaining - delta)
 		changed = true
@@ -249,7 +287,8 @@ func is_bolt_ready() -> bool:
 ## Finds the CourierWallet (rank and reputation) and the courier's CombatController
 ## (shield maximum) once they exist; retries once a second.
 func _bind_services(delta: float) -> void:
-	if _wallet != null and _combat != null:
+	_poll_vitals()
+	if _wallet != null and _combat != null and _vitals != null:
 		return
 	_bind_left -= delta
 	if _bind_left > 0.0 or not is_inside_tree():
@@ -265,6 +304,54 @@ func _bind_services(delta: float) -> void:
 		_combat = CombatController.find_on(get_tree().get_first_node_in_group(CombatController.PLAYER_GROUP))
 		if _combat != null:
 			set_shield_state(_combat.is_shield_active(), _combat.get_shield_durability())
+	if _vitals == null:
+		_vitals = CourierVitals.find(get_tree())
+		if _vitals != null:
+			_vitals.mana_changed.connect(set_mana)
+			_vitals.buffs_changed.connect(_rebuild_buffs)
+			set_mana(_vitals.get_mana(), _vitals.max_mana)
+			_rebuild_buffs()
+
+
+## Rage, the ultimate's readiness and the buffs' seconds change every frame: polled.
+func _poll_vitals() -> void:
+	if _vitals == null or not is_instance_valid(_vitals):
+		return
+	var ultimates := WeaponUltimates.find(get_tree())
+	var ready := ultimates != null and ultimates.is_ready()
+	if not is_equal_approx(_vitals.get_rage(), rage_current) or ready != ultimate_ready:
+		set_rage(_vitals.get_rage(), _vitals.max_rage, ready)
+	for i in mini(buff_row.get_child_count(), _vitals.buffs.size()):
+		var label := buff_row.get_child(i).get_node(^"Time") as Label
+		label.text = "%ds" % ceili(float(_vitals.buffs[i]["remaining"]))
+
+
+func _rebuild_buffs() -> void:
+	for child in buff_row.get_children():
+		buff_row.remove_child(child)
+		child.queue_free()
+	if _vitals == null:
+		return
+	for buff in _vitals.buffs:
+		var item := buff["item"] as ConsumableItem
+		var chip := HBoxContainer.new()
+		chip.name = String(buff["id"])
+		chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chip.add_theme_constant_override(&"separation", 2)
+		chip.tooltip_text = "%s: %s" % [buff["name"], ", ".join(item.get_effect_lines())]
+		var icon := TextureRect.new()
+		icon.texture = item.icon
+		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.custom_minimum_size = Vector2(20, 20)
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chip.add_child(icon)
+		var time := _label(11, Color(0.86, 1.0, 0.8))
+		time.name = "Time"
+		chip.add_child(time)
+		buff_row.add_child(chip)
+	buff_row.visible = buff_row.get_child_count() > 0
 
 
 func _pull_progression() -> void:
@@ -306,6 +393,16 @@ func _refresh() -> void:
 		shield_label.text = "Shield: Broken"
 	else:
 		shield_label.text = "Shield: Off"
+
+	mana_bar.max_value = mana_max
+	mana_bar.value = mana_current
+	mana_label.text = "MP %d / %d" % [roundi(mana_current), roundi(mana_max)]
+	rage_bar.max_value = rage_max
+	rage_bar.value = rage_current
+	rage_label.text = "Rage %d · %s READY" % [roundi(rage_current), InputHints.key_for(&"weapon_ultimate")] if ultimate_ready else "Rage %d" % roundi(rage_current)
+	var rage_glow := (0.5 + 0.5 * sin(_rage_pulse)) * 0.6 if ultimate_ready else 0.0
+	_rage_fill.modulate_color = Color.WHITE.lerp(Color(1.7, 1.45, 1.1), rage_glow)
+	rage_label.add_theme_color_override(&"font_color", GOLD_BRIGHT if ultimate_ready else IVORY)
 
 	var bolt_ratio := 1.0 - bolt_remaining / bolt_total
 	bolt_bar.value = bolt_ratio
@@ -429,6 +526,22 @@ func _ensure_built() -> void:
 	shield_bar.max_value = 1.0
 	shield_trail.max_value = 1.0
 
+	# MP and rage side by side under the shield.
+	var resources := HBoxContainer.new()
+	resources.name = "Resources"
+	resources.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	resources.add_theme_constant_override(&"separation", 6)
+	column.add_child(resources)
+	var mana := _add_bar(resources, "Mana", 14.0, _gradient([Color(0.62, 0.62, 1.0), Color(0.32, 0.26, 0.92), Color(0.15, 0.1, 0.5)]), Color(0.85, 0.85, 1.0, 0.85), 11)
+	mana_bar = mana[0]
+	mana_label = mana[1]
+	(mana_bar.get_parent() as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var rage := _add_bar(resources, "Rage", 14.0, _gradient([Color(1.0, 0.72, 0.3), Color(0.92, 0.36, 0.08), Color(0.55, 0.14, 0.03)]), Color(1.0, 0.85, 0.7, 0.85), 11)
+	rage_bar = rage[0]
+	rage_label = rage[1]
+	_rage_fill = rage[3]
+	(rage_bar.get_parent() as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
 	exp_bar = _thin_bar("Reputation", 6.0, _track_style(2), _gradient([Color(1.0, 0.92, 0.6), Color(0.86, 0.62, 0.2), Color(0.56, 0.36, 0.08)]))
 	exp_bar.max_value = 1.0
 	column.add_child(exp_bar)
@@ -455,6 +568,12 @@ func _ensure_built() -> void:
 	footer.add_child(exp_label)
 	bolt_bar.max_value = 1.0
 	dash_bar.max_value = 1.0
+	buff_row = HBoxContainer.new()
+	buff_row.name = "Buffs"
+	buff_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	buff_row.add_theme_constant_override(&"separation", 8)
+	buff_row.visible = false
+	column.add_child(buff_row)
 
 
 ## Circular portrait in a thin gold ring, with the rank badge on its lower right.

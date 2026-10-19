@@ -209,8 +209,9 @@ func _test_attack_tiers() -> void:
 		0: [], 1: [],
 		2: [&"sword_ice_streaks"],
 		3: [&"sword_ember_burst", &"sword_ember_impact"],
-		4: [&"sword_flame_front", &"sword_ember_burst", &"sword_ember_impact"],
-		5: [&"legendary_trail", &"sword_heat_flash", &"sword_flame_front", &"sword_ember_impact", &"sword_fire_impact"],
+		# Phase 8 recovery: +4/+5 hits also scorch the ground under the target.
+		4: [&"sword_flame_front", &"sword_ember_burst", &"sword_ember_impact", &"sword_scorch"],
+		5: [&"legendary_trail", &"sword_heat_flash", &"sword_flame_front", &"sword_ember_impact", &"sword_fire_impact", &"sword_scorch"],
 	}
 	var sword := inventory.get_definition(&"iron_sword")
 	await _spawn_target(aim * 1.2)

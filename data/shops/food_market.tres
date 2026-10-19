@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ShopCatalog" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/shop_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" path="res://scripts/inventory/material_item.gd" id="2_material"]
+[ext_resource type="Resource" path="res://data/consumables/health_potion.tres" id="3_health_potion"]
+[ext_resource type="Resource" path="res://data/consumables/mana_potion.tres" id="4_mana_potion"]
+[ext_resource type="Resource" path="res://data/consumables/red_apple.tres" id="5_red_apple"]
+[ext_resource type="Resource" path="res://data/consumables/bread_loaf.tres" id="6_bread_loaf"]
+[ext_resource type="Resource" path="res://data/consumables/fresh_milk.tres" id="7_fresh_milk"]
+[ext_resource type="Resource" path="res://data/consumables/sweet_grapes.tres" id="8_sweet_grapes"]
+[ext_resource type="Resource" path="res://data/consumables/cheese_wheel.tres" id="9_cheese_wheel"]
+[ext_resource type="Resource" path="res://data/consumables/roast_ham.tres" id="10_roast_ham"]
+[ext_resource type="Resource" path="res://data/consumables/raw_steak.tres" id="11_raw_steak"]
+[ext_resource type="Resource" path="res://data/consumables/warriors_ale.tres" id="12_warriors_ale"]
+[ext_resource type="Resource" path="res://data/consumables/berserker_draught.tres" id="13_berserker_draught"]
+[ext_resource type="Resource" path="res://data/consumables/ironbark_stew.tres" id="14_ironbark_stew"]
+
+[resource]
+script = ExtResource("1_catalog")
+shop_id = &"food_market"
+title = "Willowmere Food Market"
+greeting = "Fresh bread, ripe fruit, potions from the alchemist's cellar and the guild's own ale. A courier on the road needs to eat!"
+sells_materials = Array[ExtResource("2_material")]([ExtResource("3_health_potion"), ExtResource("4_mana_potion"), ExtResource("5_red_apple"), ExtResource("6_bread_loaf"), ExtResource("7_fresh_milk"), ExtResource("8_sweet_grapes"), ExtResource("9_cheese_wheel"), ExtResource("10_roast_ham"), ExtResource("11_raw_steak"), ExtResource("12_warriors_ale"), ExtResource("13_berserker_draught"), ExtResource("14_ironbark_stew")])

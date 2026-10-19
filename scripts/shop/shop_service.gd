@@ -46,7 +46,8 @@ static func sell_material(wallet: CourierWallet, inventory: CourierInventory, ca
 
 
 ## Buys amount of a material the catalog sells: buy_price x amount gold out, the material
-## in, all or nothing (not enough gold or no room in the stack changes nothing). Returns
+## in, all or nothing (not enough gold, no room in the stack or, for a new consumable, no
+## free bag slot changes nothing). Returns
 ## the gold spent.
 static func buy_material(wallet: CourierWallet, inventory: CourierInventory, catalog: ShopCatalog, material: MaterialItem, amount: int) -> int:
 	if wallet == null or inventory == null or catalog == null or material == null or amount <= 0:
@@ -54,7 +55,7 @@ static func buy_material(wallet: CourierWallet, inventory: CourierInventory, cat
 	if not catalog.sells_materials.has(material) or material.buy_price <= 0:
 		return 0
 	var cost := material.buy_price * amount
-	if wallet.gold < cost or inventory.get_material_count(material.material_id) + amount > CourierInventory.MAX_STACK:
+	if wallet.gold < cost or inventory.get_room_for(material) < amount:
 		return 0
 	if not wallet.spend_gold(cost):
 		return 0

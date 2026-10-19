@@ -32,8 +32,8 @@ regeneration, dragon companion and flight).
 | 3 | Weapon enhancement VFX rework (+1 silver spark .. +5 legendary elemental) | **Done**, then **reworked per weapon** (`docs/WEAPON_ELEMENTAL_VFX.md`: sword fire, axe earth, bow wind/lightning, staff arcane; +5 ultimates on C) |
 | 4 | Animated HUD avatar | **Done** (below) |
 | 5 | Enterable houses (Armory, Post Office, one home) with NPCs | **Done** (below) |
-| 6 | Food market, consumables, food slots 6-0, MP and rage, HP regeneration | not started |
-| 7 | Staff spells and weapon ultimates (Z / X / C) | **partly**: the four +5 ultimates on C are done (`WeaponUltimates`, see `docs/WEAPON_ELEMENTAL_VFX.md`); staff spells and Z / X skills not started; MP is a hook only |
+| 6 | Food market, consumables, food slots 6-0, MP and rage, HP regeneration | **Done** (recovery milestone 1 below) |
+| 7 | Staff spells and weapon ultimates (Z / X / C) | **partly**: the four +5 ultimates on C now cost rage and leave world-space effects (recovery milestone 1); staff bolts and the Arcane Storm spend real MP; Z / X skills not started |
 | 8 | New region: waterfall, river, bridge, fishing spot, gateway | **Done** (below: Wyrmfall Vale) |
 | 9 | Dungeon, Bestiary enemies, dragon boss (bite, breath, AoE), HP bar, rewards | **started** (uncommitted: dragon model with authored Bite/Breath/Slam/Hit/Roar/Death, boss VFX vendored; no dungeon or boss script yet) |
 | 10 | Dragon companion: base placement, Earthquake, Fire, summon, mount and flight | not started |
@@ -277,3 +277,92 @@ held model by `EnhancementVisuals`; `elements` lists them for tests):
 Every weapon class now has its own element and every level its own composition; normal
 attacks get weapon-specific effects; a +5 weapon has an ultimate on [C] with real hit
 detection. Full description, tables, tests and screenshots: `docs/WEAPON_ELEMENTAL_VFX.md`.
+
+## Recovery milestone 1 (2026-10-19): world-space VFX, vitals, consumables
+Brief "Phase 8 recovery" part A. Everything below runs from real gameplay events and is
+covered by `tests/phase8_vitals_tests.gd` (115 checks) plus the updated older suites.
+
+### World-space weapon effects (`scripts/vfx/ground_fx.gd`, `GroundFx`)
+- New library of effects that live in the environment: **decals projected onto the terrain**
+  (they follow slopes): shockwave rings, glowing fissures that cool to dark, burn marks,
+  spinning rune circles; **lightning from the sky** (camera-facing jagged ribbons with a
+  white core, glow and forks, flickering, light flash, burn mark, spark ring); **flame
+  patches** that keep burning; **3D rock debris**; dust rings; flipbook explosions with
+  smoke; light flashes; elemental **status effects on enemies** (burning, shocked, stunned,
+  arcane); **camera shake** (`IsoCameraRig.add_shake`). Textures baked by
+  `tools/make_ground_vfx.py` into `assets/vfx/ground/` (glowing shapes get a premultiplied
+  `_emission` map: a Decal's emission ignores alpha). The white Brackeys fire / explosion
+  sheets get a colour ramp (`GroundFx.fire_ramp`).
+- +5 ultimates reworked on top of their existing hit rules (`WeaponUltimates`):
+  - Sword Flame Slash: the ground it crosses burns (a flame patch and a scorch mark every
+    0.9 m), hit enemies burn, it ends in an explosion; travelling light; shake.
+  - Axe Earthquake: fissure decal opening to the 7 m radius, three shockwave rings, rocks
+    thrown up at the centre and along the front, dust, stun shown on staggered enemies.
+  - Bow Thunder Arrow: lightning from the sky on the first target and every chained one,
+    flickering arcs between them, shocked status.
+  - Staff Arcane Storm: rune circle drawn on the terrain under the target, six timed violet
+    lightning strikes from the sky with real area damage, arcane status.
+- Normal attacks (`AttackEffects`): critical hits (gold "CRITICAL n" text, flash, sparks,
+  shake), a rune circle at the feet for every spell cast, axe +3..+5 chops crack the ground,
+  sword +4/+5 hits scorch it, defeated enemies burst (dust, sparks, light). Passive +1..+5
+  weapon effects are unchanged.
+
+### HP regeneration, MP and rage (`scripts/combat/courier_vitals.gd`, `CourierVitals`)
+- New GameplayServices node (persists across regions with the player). HP regenerates
+  1.5/s after 6 s without damage, at 25% while in combat (a hit dealt/taken in the last 5 s,
+  or an enemy chasing the courier), never above max, never while knocked out; all
+  configurable exports. The HUD follows through the normal health signal.
+- MP 100, regenerates 2.5/s; a staff's bolts cost 4 MP (`EquipmentStats.STAFF_BOLT_MANA`,
+  refused with `no_mana`); bare-handed bolts are free; the Arcane Storm costs 30 MP.
+- Rage 100: +8 per hit of a primary attack (`CombatController.basic_hit`; skills don't
+  build it), +0.5 per damage taken, decays after 8 s out of combat. **Every ultimate costs
+  50 rage** (`CourierVitals.ULTIMATE_RAGE_COST`). The weapon bar says what the ultimate waits
+  for ("6 s", "32/50 rage", "needs 30 MP").
+- **Development mode: unlimited rage** (user request): in a debug build with a window the
+  rage bar stays full and ultimates never spend it; headless tests keep the rule.
+- Crits: `CombatController.crit_chance` (0 by default so damage stays deterministic; buffs
+  raise it), x1.75, `critical_hit` signal. `damage_multiplier` and `defense_bonus` come from
+  buffs.
+- HUD (`combat_hud.gd`): real MP and rage bars under the shield bar ("Rage n · C READY"
+  pulses when the ultimate can be released), and a row of active buff icons with seconds.
+
+### Food, potions and the inventory
+- `ConsumableItem` (`scripts/inventory/consumable_item.gd`) extends `MaterialItem` (new kinds
+  FOOD, HEALTH_POTION, MANA_POTION, BUFF; per-item `max_stack`): heal at once, heal over
+  time, mana, rage, and a timed buff (damage x, defense +, crit +, rage gain x, HP / MP regen
+  +). 12 in `data/consumables/`: Health Potion, Mana Potion, Red Apple, Bread Loaf, Fresh
+  Milk, Sweet Grapes, Cheese Wheel (Well Fed), Roast Ham (Hearty), Hunter's Steak (Blood Up,
+  the rage food), Warrior's Ale (Battle Fury), Berserker Draught (Berserk), Ironbark Stew.
+  Potions share a 1.5 s cooldown and are refused when they would do nothing.
+- `CourierInventory`: stack limits, at most 16 kinds of provisions carried
+  (`CONSUMABLE_BAG_SLOTS`), five consumable quick slots on **6 7 8 9 0** (saved, auto-filled;
+  `QuickConsumableBar` at the bottom left of the weapon bar with icon, count, key and potion
+  cooldown).
+- Inventory window: third view **Provisions** (Q cycles Weapons & Gear -> Tools & Goods ->
+  Provisions) with Health Potions / Mana Potions / Food / Combat Buffs sections, counts, the
+  pack's capacity, effects and description, Use, and slot buttons 6-0. "Gear" is now
+  "Armor".
+- **Food Market** (`scenes/locations/food_market.tscn`, `tools/generate_food_market.gd`): a
+  striped stall on the market square (16.2, -2.8; it replaces the plain goods stall) dressed
+  with Food & Market models, Grocer Tilda (`grocer_tilda.tscn`), catalog
+  `data/shops/food_market.tres`. The shop lists each provision with its effects and stack
+  room ("You carry 3 / 10"); full stacks and a full pack refuse with a reason. The
+  Toolwright does not buy provisions.
+- Icons cropped from the user's UI sheet (`assets/potion/01_image-01.png`: red/blue potion,
+  bread, apple, milk, steak) by `tools/crop_consumable_icons.py`; the others rendered from the
+  vendored Avramania Food & Market models (CC0, `assets/models/food_market/`) by
+  `tools/render_food_icons.gd`.
+- Saved: `SaveGame` "vitals" (health, MP, rage, buffs, heals in progress) and the
+  consumable slots.
+
+### Rendered evidence (`tests/capture_phase8_vitals.gd` -> `docs/validation/phase8/70..89`)
+HUD with MP/rage/buffs (70), Food Market stall and shop (71, 72), Provisions view (73),
+hurt by a real slime and regenerated (74, 75), critical hit (76), Flame Slash burning
+ground / explosion / trail (77-79), Earthquake rings / rocks / fissures (80-82), Thunder
+Arrow strikes and chain (83-85), Arcane Storm circle and strikes (86-88), staff cast circle
+with rage READY (89).
+
+### Known limits
+- No human playtest. Balance numbers (regen, costs, prices, buff strengths) are first passes.
+- Burn marks are mostly covered by the still-burning flames in the 1.2 s frame.
+- Decals also tint characters standing inside them (they project onto render layer 1).

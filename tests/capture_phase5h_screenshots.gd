@@ -90,7 +90,7 @@ func _armory_and_village() -> void:
 # --- Toolwright ------------------------------------------------------------------------
 
 func _shop() -> void:
-	var stall := level.find_children("*", "ToolStall", true, false)[0] as ToolStall
+	var stall := level.get_node("ToolSites/ToolStall") as ToolStall
 	player.teleport_to(stall.get_shop_front().global_position + Vector3(0.6, 0, -2.5))
 	rig.set_zoom(11.0)
 	rig.snap_to_target()

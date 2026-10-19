@@ -15,6 +15,13 @@ extends Node
 ## harvesting and removed by repairs, planting and selling.
 ##
 ## Enhancement (Phase 7): each owned item has a level 0..Enhancement.MAX_LEVEL.
+##
+## Consumables (Phase 8): ConsumableItem materials (food, potions, buffs) stack up to their
+## own limit (MaterialItem.get_stack_limit), and at most CONSUMABLE_BAG_SLOTS different
+## consumables are carried at once. Five consumable quick slots (keys 6-0,
+## QuickConsumableBar) refer to carried consumables by id; a newly carried consumable fills
+## the first empty one, and a slot keeps its consumable when the stack runs out (it shows
+## as empty until more is bought).
 
 signal item_added(item: ItemDefinition)
 ## item is null when the slot was emptied.
@@ -24,10 +31,14 @@ signal quick_slots_changed
 signal materials_changed(material: MaterialItem, count: int, delta: int)
 ## An owned item's enhancement level changed.
 signal enhancement_changed(item_id: StringName, level: int)
+signal consumable_slots_changed
 
 const GROUP := &"courier_inventory"
 const QUICK_SLOT_COUNT := 5
 const MAX_STACK := 999
+const CONSUMABLE_SLOT_COUNT := 5
+## Different consumables the courier can carry at once (each a stack).
+const CONSUMABLE_BAG_SLOTS := 16
 
 ## Every item that can be owned (shop wares). Unknown ids in a save are dropped.
 @export var item_definitions: Array[ItemDefinition] = []
@@ -41,6 +52,7 @@ var _quick_slots: Array[StringName] = [&"", &"", &"", &"", &""]
 var _material_definitions: Dictionary[StringName, MaterialItem] = {}
 var _materials: Dictionary[StringName, int] = {}
 var _enhancements: Dictionary[StringName, int] = {}
+var _consumable_slots: Array[StringName] = [&"", &"", &"", &"", &""]
 ## The weapon and the tool most recently taken in hand (Phase 8 quick switch, saved).
 var last_weapon: StringName = &""
 var last_tool: StringName = &""
@@ -286,18 +298,94 @@ func get_material_count(material_id: StringName) -> int:
 	return _materials.get(material_id, 0)
 
 
-## Adds up to amount of a material (capped at MAX_STACK). Returns how many were added.
+## Adds up to amount of a material (capped at its stack limit; a new consumable needs a
+## free bag slot). Returns how many were added.
 func add_material(material: MaterialItem, amount: int = 1) -> int:
 	if material == null or material.material_id == &"" or amount <= 0:
 		return 0
 	register_material(material)
 	var count := get_material_count(material.material_id)
-	var added := mini(amount, MAX_STACK - count)
+	if count == 0 and material.is_consumable() and get_consumable_stack_count() >= CONSUMABLE_BAG_SLOTS:
+		return 0
+	var added := mini(amount, material.get_stack_limit() - count)
 	if added <= 0:
 		return 0
 	_materials[material.material_id] = count + added
 	materials_changed.emit(material, count + added, added)
+	if material.is_consumable() and find_consumable_slot(material.material_id) < 0:
+		var empty := _consumable_slots.find(&"")
+		if empty >= 0:
+			assign_consumable_slot(empty, material.material_id)
 	return added
+
+
+## How many more of material fit (stack limit, and a free bag slot for a new consumable).
+func get_room_for(material: MaterialItem) -> int:
+	if material == null:
+		return 0
+	var count := get_material_count(material.material_id)
+	if count == 0 and material.is_consumable() and get_consumable_stack_count() >= CONSUMABLE_BAG_SLOTS:
+		return 0
+	return maxi(material.get_stack_limit() - count, 0)
+
+
+## Different consumables carried now (bag slots in use).
+func get_consumable_stack_count() -> int:
+	var used := 0
+	for id in _materials:
+		var material := get_material_definition(id)
+		if material != null and material.is_consumable() and _materials[id] > 0:
+			used += 1
+	return used
+
+
+## Every registered consumable, in registration order.
+func get_all_consumables() -> Array[ConsumableItem]:
+	var out: Array[ConsumableItem] = []
+	for id in _material_definitions:
+		if _material_definitions[id] is ConsumableItem:
+			out.append(_material_definitions[id])
+	return out
+
+
+# --- consumable quick slots -----------------------------------------------------------
+
+## Puts a registered consumable in consumable slot index (0-based), moving it out of any
+## other slot. False for a bad index or something that is not a consumable.
+func assign_consumable_slot(index: int, material_id: StringName) -> bool:
+	var material := get_material_definition(material_id)
+	if index < 0 or index >= CONSUMABLE_SLOT_COUNT or material == null or not material.is_consumable():
+		return false
+	if _consumable_slots[index] == material_id:
+		return true
+	var previous := find_consumable_slot(material_id)
+	if previous >= 0:
+		_consumable_slots[previous] = &""
+	_consumable_slots[index] = material_id
+	consumable_slots_changed.emit()
+	return true
+
+
+func clear_consumable_slot(index: int) -> void:
+	if index < 0 or index >= CONSUMABLE_SLOT_COUNT or _consumable_slots[index] == &"":
+		return
+	_consumable_slots[index] = &""
+	consumable_slots_changed.emit()
+
+
+## The consumable in slot index (null when the slot is empty; it may have a count of 0).
+func get_consumable_slot(index: int) -> ConsumableItem:
+	if index < 0 or index >= CONSUMABLE_SLOT_COUNT:
+		return null
+	return get_material_definition(_consumable_slots[index]) as ConsumableItem
+
+
+func get_consumable_slot_ids() -> Array[StringName]:
+	return _consumable_slots.duplicate()
+
+
+func find_consumable_slot(material_id: StringName) -> int:
+	return _consumable_slots.find(material_id) if material_id != &"" else -1
 
 
 ## True when every material_id -> amount in costs is carried.
@@ -355,6 +443,7 @@ func to_dict() -> Dictionary:
 		"enhancements": enhancements,
 		"last_weapon": String(last_weapon),
 		"last_tool": String(last_tool),
+		"consumable_slots": _consumable_slots.map(func(id: StringName) -> String: return String(id)),
 	}
 
 
@@ -373,11 +462,21 @@ func from_dict(data: Dictionary) -> void:
 		var removed: int = _materials[id]
 		_materials.erase(id)
 		materials_changed.emit(get_material_definition(id), 0, -removed)
+	_consumable_slots.fill(&"")
 	var saved_materials: Dictionary = data.get("materials", {})
 	for id in saved_materials:
 		var material := get_material_definition(StringName(id))
 		if material != null:
-			add_material(material, clampi(int(saved_materials[id]), 0, MAX_STACK))
+			add_material(material, clampi(int(saved_materials[id]), 0, material.get_stack_limit()))
+	if data.has("consumable_slots"):
+		_consumable_slots.fill(&"")
+		var saved_slots: Array = data["consumable_slots"]
+		for index in mini(saved_slots.size(), CONSUMABLE_SLOT_COUNT):
+			var slot_id := StringName(saved_slots[index])
+			var slot_material := get_material_definition(slot_id)
+			if slot_material != null and slot_material.is_consumable() and find_consumable_slot(slot_id) < 0:
+				_consumable_slots[index] = slot_id
+	consumable_slots_changed.emit()
 	for id in data.get("owned", []):
 		var item := get_definition(StringName(id))
 		if item != null and not has_item(item.item_id):

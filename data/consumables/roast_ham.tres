@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ConsumableItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/consumable_item.gd" id="1_consumable"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/roast_ham.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_consumable")
+material_id = &"roast_ham"
+display_name = "Roast Ham"
+description = "A whole roast ham. Heals over time and makes you Hearty: your attacks hit harder for two minutes."
+kind = 7
+icon = ExtResource("2_icon")
+sell_price = 10
+buy_price = 28
+max_stack = 10
+heal_over_time = 50.0
+effect_duration = 120.0
+buff_id = &"hearty"
+buff_name = "Hearty"
+damage_multiplier = 1.15

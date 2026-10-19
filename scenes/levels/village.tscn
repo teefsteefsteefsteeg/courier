@@ -63,7 +63,7 @@
 [ext_resource type="Material" path="res://assets/materials/environment/dirt_path.tres" id="51_dirt"]
 [ext_resource type="Material" path="res://assets/materials/environment/cobble_base.tres" id="52_cobble"]
 [ext_resource type="PackedScene" path="res://scenes/environment/village_dressing.tscn" id="53_dressing"]
-[ext_resource type="PackedScene" path="res://scenes/props/market_stall_goods.tscn" id="54_stall_goods"]
+[ext_resource type="PackedScene" path="res://scenes/locations/food_market.tscn" id="p8_food_market"]
 [ext_resource type="PackedScene" path="res://scenes/props/env/cauldron.tscn" id="55_cauldron"]
 [ext_resource type="PackedScene" path="res://scenes/environment/megakit_pilot_dressing.tscn" id="56_megakit"]
 [ext_resource type="Script" path="res://scripts/world/village_terrain.gd" id="60_terrain"]
@@ -389,8 +389,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0, 0)
 [node name="StallFruit" parent="Props" instance=ExtResource("13_stall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 11, 0, -2.6)
 
-[node name="StallGoods" parent="Props" instance=ExtResource("54_stall_goods")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 16, 0, -2.6)
+[node name="FoodMarket" parent="Props" instance=ExtResource("p8_food_market")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.2, 0, -2.8)
 
 [node name="Lamp1" parent="Props" instance=ExtResource("12_lamp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -4.6, 0, -3.6)

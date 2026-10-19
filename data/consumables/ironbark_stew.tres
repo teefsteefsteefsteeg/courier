@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ConsumableItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/consumable_item.gd" id="1_consumable"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/ironbark_stew.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_consumable")
+material_id = &"ironbark_stew"
+display_name = "Ironbark Stew"
+description = "A thick stew of root and bark. Heals a little and toughens your skin: +8 defense for two minutes."
+kind = 10
+icon = ExtResource("2_icon")
+sell_price = 10
+buy_price = 30
+max_stack = 10
+heal_over_time = 20.0
+effect_duration = 120.0
+buff_id = &"ironbark"
+buff_name = "Ironbark"
+defense_bonus = 8.0

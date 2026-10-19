@@ -16,6 +16,9 @@ signal defeated(enemy: Enemy)
 
 enum State { IDLE, CHASE, WINDUP, RECOVER, RETREAT, DEAD }
 
+## Every live enemy joins this group (CourierVitals checks for engaged enemies).
+const GROUP := &"enemies"
+
 @export var health: CombatHealth
 ## Explicit target. When empty, the first node in CombatController.PLAYER_GROUP is used.
 @export var target: Node3D
@@ -43,6 +46,7 @@ var _stagger_left: float = 0.0
 
 
 func _ready() -> void:
+	add_to_group(GROUP)
 	collision_layer = CombatController.ENEMY_LAYER
 	collision_mask = CombatController.WORLD_LAYER
 	if health == null:

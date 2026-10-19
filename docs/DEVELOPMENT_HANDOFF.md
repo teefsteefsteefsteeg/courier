@@ -1,5 +1,29 @@
 # Development handoff: Phase 5F integrated
 
+## UPDATE 2026-10-19 (Personal account): Phase 8 recovery brief
+Two user briefs: "Phase 8 recovery & phased multi-region world" and "true seamless open world"
+(the second overrides the region-gate design: outdoor biomes must be walkable with no gate,
+portal or loading screen; dungeons may stay separate). Order agreed: milestone 1 (gameplay
+systems), then the open world Village -> Whisperwood -> Wyrmfall, then dungeon + dragon boss,
+then the dragon companion, then the new biomes, each validated with screenshots.
+- **Recovery milestone 1 is done and committed** (`docs/PHASE8.md` "Recovery milestone 1"):
+  world-space ultimate effects (`GroundFx`), `CourierVitals` (HP regen, MP, rage, buffs;
+  unlimited rage in dev mode on user request), 12 provisions, Food Market, Provisions
+  inventory view, provisions slots 6-0. Suite `phase8_vitals_tests` (115/0); all other suites
+  pass after updating expectations the features changed (sword +4/+5 scorch effect, Q cycles
+  three inventory views, Toolwright's stall found by path, HP regen off in the vault HP check).
+- **In progress (uncommitted): seamless open world.** `WorldStreamer` / `WorldChunk` /
+  `WorldChunkSet` (`scripts/world/`), Wyrmfall moved to `WyrmfallLayout.WORLD_ORIGIN`
+  (54, 0, -184) with a pass in its south hills, and `tools/generate_wyrmfall.gd` now writes
+  chunks (`scenes/world/chunks/wyrmfall/`, `data/world/wyrmfall_chunks.tres`). Still to do:
+  streamer in `village.tscn`, Whisperwood trail and boundary opening to the pass, router /
+  gate removal, one world map and fog rect, tests and captures.
+- **Another Claude session works in this worktree at the same time** (elemental VFX
+  showcases: `scripts/vfx/{tempest_lightning,pyre_fire,nine_heavens_storm,elemental_showcase*}.gd`,
+  `scenes/vfx/`, `tests/render_*`, `docs/validation/{lightning,fire,elemental}-demo*/`,
+  `tools/build_elemental_vfx_meshes.py`, `tools/encode_elemental_demos.py`,
+  `assets/{blender,generated}/vfx/`). Not part of this work; never stage them.
+
 ## HANDOFF STATE (2026-10-19, second account switch: Kaiizen -> Personal, during Phase 8)
 
 Worktree `D:\courier-phase5f-integrated`, branch `phase5f-integrated`, head `d3f83dd` (plus this

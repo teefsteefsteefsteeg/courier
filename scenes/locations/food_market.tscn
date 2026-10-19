@@ -1,0 +1,385 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/tool_stall.gd" id="1_bik32"]
+[ext_resource type="Resource" path="res://data/shops/food_market.tres" id="2_0ipkx"]
+[ext_resource type="Material" path="res://assets/materials/buildings/timber.tres" id="3_4p0cg"]
+[ext_resource type="Material" path="res://assets/materials/buildings/planks.tres" id="4_m6nr2"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_produce_crate_01.glb" id="5_20a6t"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_cabbage_01.glb" id="6_t2xiw"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_carrot_01.glb" id="7_q7sd0"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_onion_01.glb" id="8_85fps"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_cheese_wheel_01.glb" id="9_6dbsm"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_plate_01.glb" id="10_2t61w"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_loaf_01.glb" id="11_b0twm"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_roll_01.glb" id="12_mj1v0"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_potion_01.glb" id="13_4hk1u"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_ale_mug_01.glb" id="14_hi3qw"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_apple_01.glb" id="15_jjho5"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_grapes_01.glb" id="16_fcupa"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_herb_bundle_01.glb" id="17_4xje3"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_ham_01.glb" id="18_wuf6o"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_cask_01.glb" id="19_xla5o"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_grain_sack_01.glb" id="20_1hjkv"]
+[ext_resource type="PackedScene" path="res://assets/models/food_market/mdvl_food_scales_01.glb" id="21_bprm0"]
+[ext_resource type="PackedScene" path="res://scenes/npc/characters/grocer_tilda.tscn" id="22_3vd5i"]
+[ext_resource type="Script" path="res://scripts/npc/npc.gd" id="23_1k5qi"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="24_wyjqf"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_wgfoy"]
+material = ExtResource("3_4p0cg")
+size = Vector3(2.8, 0.08, 0.72)
+
+[sub_resource type="BoxMesh" id="BoxMesh_osmje"]
+material = ExtResource("4_m6nr2")
+size = Vector3(2.76, 0.92, 0.06)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ash5k"]
+material = ExtResource("4_m6nr2")
+size = Vector3(0.06, 0.92, 0.68)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kdwyt"]
+material = ExtResource("4_m6nr2")
+size = Vector3(0.06, 0.92, 0.68)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_746vb"]
+size = Vector3(2.8, 1, 0.72)
+
+[sub_resource type="BoxMesh" id="BoxMesh_q15od"]
+material = ExtResource("3_4p0cg")
+size = Vector3(0.1, 2.6, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ulg10"]
+material = ExtResource("3_4p0cg")
+size = Vector3(0.1, 2.25, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pxc7x"]
+material = ExtResource("3_4p0cg")
+size = Vector3(0.1, 2.6, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ajbcb"]
+material = ExtResource("3_4p0cg")
+size = Vector3(0.1, 2.25, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6c5h0"]
+material = ExtResource("3_4p0cg")
+size = Vector3(3.1, 0.1, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kg1nm"]
+albedo_color = Color(0.78, 0.2, 0.16, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_qkpd3"]
+material = SubResource("StandardMaterial3D_kg1nm")
+size = Vector3(0.47142857, 0.05, 2.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1n686"]
+albedo_color = Color(0.95, 0.9, 0.78, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_wipmy"]
+material = SubResource("StandardMaterial3D_1n686")
+size = Vector3(0.47142857, 0.05, 2.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kgit8"]
+material = SubResource("StandardMaterial3D_kg1nm")
+size = Vector3(0.47142857, 0.05, 2.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_b60ah"]
+material = SubResource("StandardMaterial3D_1n686")
+size = Vector3(0.47142857, 0.05, 2.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rs5nd"]
+material = SubResource("StandardMaterial3D_kg1nm")
+size = Vector3(0.47142857, 0.05, 2.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_jx60i"]
+material = SubResource("StandardMaterial3D_1n686")
+size = Vector3(0.47142857, 0.05, 2.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_217eh"]
+material = SubResource("StandardMaterial3D_kg1nm")
+size = Vector3(0.47142857, 0.05, 2.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_uryjh"]
+material = SubResource("StandardMaterial3D_kg1nm")
+size = Vector3(0.45142856, 0.22, 0.03)
+
+[sub_resource type="BoxMesh" id="BoxMesh_onxpj"]
+material = SubResource("StandardMaterial3D_1n686")
+size = Vector3(0.45142856, 0.22, 0.03)
+
+[sub_resource type="BoxMesh" id="BoxMesh_resr4"]
+material = SubResource("StandardMaterial3D_kg1nm")
+size = Vector3(0.45142856, 0.22, 0.03)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gsiqy"]
+material = SubResource("StandardMaterial3D_1n686")
+size = Vector3(0.45142856, 0.22, 0.03)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ylewy"]
+material = SubResource("StandardMaterial3D_kg1nm")
+size = Vector3(0.45142856, 0.22, 0.03)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wbtui"]
+material = SubResource("StandardMaterial3D_1n686")
+size = Vector3(0.45142856, 0.22, 0.03)
+
+[sub_resource type="BoxMesh" id="BoxMesh_d3but"]
+material = SubResource("StandardMaterial3D_kg1nm")
+size = Vector3(0.45142856, 0.22, 0.03)
+
+[sub_resource type="BoxMesh" id="BoxMesh_y354f"]
+material = ExtResource("4_m6nr2")
+size = Vector3(1.6, 0.42, 0.06)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_vm6f4"]
+height = 0.7
+radius = 0.35
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bb5d2"]
+size = Vector3(0.7, 0.8, 1.2)
+
+[node name="FoodMarket" type="Node3D" unique_id=836990754 node_paths=PackedStringArray("merchant")]
+script = ExtResource("1_bik32")
+merchant = NodePath("Merchant")
+catalog = ExtResource("2_0ipkx")
+
+[node name="Counter" type="StaticBody3D" parent="." unique_id=1654961814]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.6)
+
+[node name="Top" type="MeshInstance3D" parent="Counter" unique_id=2020107154]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.96, 0)
+mesh = SubResource("BoxMesh_wgfoy")
+
+[node name="Front" type="MeshInstance3D" parent="Counter" unique_id=320989632]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.46, 0.33)
+mesh = SubResource("BoxMesh_osmje")
+
+[node name="SideL" type="MeshInstance3D" parent="Counter" unique_id=1885529792]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.37, 0.46, 0)
+mesh = SubResource("BoxMesh_ash5k")
+
+[node name="SideR" type="MeshInstance3D" parent="Counter" unique_id=2140224319]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.37, 0.46, 0)
+mesh = SubResource("BoxMesh_kdwyt")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Counter" unique_id=733749272]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_746vb")
+
+[node name="ProduceCrate" type="Node3D" parent="Counter" unique_id=951465375 instance=ExtResource("5_20a6t")]
+transform = Transform3D(1.6741732, 0, 0.2952019, 0, 1.7, 0, -0.2952019, 0, 1.6741732, -0.85, 1, 0.02)
+
+[node name="Cabbage01" type="Node3D" parent="Counter/ProduceCrate" unique_id=950032192 instance=ExtResource("6_t2xiw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, 0.06, 0)
+
+[node name="Carrot01" type="Node3D" parent="Counter/ProduceCrate" unique_id=647343907 instance=ExtResource("7_q7sd0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.05, 0.05)
+
+[node name="Onion01" type="Node3D" parent="Counter/ProduceCrate" unique_id=1186605251 instance=ExtResource("8_85fps")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.05, -0.06)
+
+[node name="Onion02" type="Node3D" parent="Counter/ProduceCrate" unique_id=1245651274 instance=ExtResource("8_85fps")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.05, -0.08)
+
+[node name="CheeseWheel" type="Node3D" parent="Counter" unique_id=1912110995 instance=ExtResource("9_6dbsm")]
+transform = Transform3D(1.5974774, 0, -0.58143425, 0, 1.7, 0, 0.58143425, 0, 1.5974774, -0.2, 1, -0.08)
+
+[node name="Plate" type="Node3D" parent="Counter" unique_id=822324146 instance=ExtResource("10_2t61w")]
+transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 0.28, 1, 0.12)
+
+[node name="Loaf" type="Node3D" parent="Counter/Plate" unique_id=933207953 instance=ExtResource("11_b0twm")]
+transform = Transform3D(0.8660254, 0, 0.5, 0, 1, 0, -0.5, 0, 0.8660254, 0, 0.02, 0)
+
+[node name="Roll" type="Node3D" parent="Counter" unique_id=1414642534 instance=ExtResource("12_mj1v0")]
+transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 0.5, 1, 0.2)
+
+[node name="Potion0" type="Node3D" parent="Counter" unique_id=1984346062 instance=ExtResource("13_4hk1u")]
+transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 0.72, 1, -0.12)
+
+[node name="Potion1" type="Node3D" parent="Counter" unique_id=1066455335 instance=ExtResource("13_4hk1u")]
+transform = Transform3D(1.5407232, 0, 0.7184511, 0, 1.7, 0, -0.7184511, 0, 1.5407232, 0.85, 1, -0.04)
+
+[node name="Potion2" type="Node3D" parent="Counter" unique_id=1212826968 instance=ExtResource("13_4hk1u")]
+transform = Transform3D(1.092739, 0, 1.3022755, 0, 1.7, 0, -1.3022755, 0, 1.092739, 0.98, 1, -0.12)
+
+[node name="AleMug" type="Node3D" parent="Counter" unique_id=665483303 instance=ExtResource("14_hi3qw")]
+transform = Transform3D(0.84999996, 0, -1.4722433, 0, 1.7, 0, 1.4722433, 0, 0.84999996, 1.12, 1, 0.18)
+
+[node name="Apple1" type="Node3D" parent="Counter" unique_id=598024761 instance=ExtResource("15_jjho5")]
+transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, 0.02, 1, 0.22)
+
+[node name="Apple2" type="Node3D" parent="Counter" unique_id=1908633768 instance=ExtResource("15_jjho5")]
+transform = Transform3D(-7.430936e-08, 0, 1.7, 0, 1.7, 0, -1.7, 0, -7.430936e-08, 0.1, 1, 0.26)
+
+[node name="Grapes" type="Node3D" parent="Counter" unique_id=181310751 instance=ExtResource("16_fcupa")]
+transform = Transform3D(1.3022755, 0, 1.0927389, 0, 1.7, 0, -1.0927389, 0, 1.3022755, -0.42, 1, 0.22)
+
+[node name="Awning" type="Node3D" parent="." unique_id=1111633099]
+
+[node name="Post" type="MeshInstance3D" parent="Awning" unique_id=838743898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.3, -1)
+mesh = SubResource("BoxMesh_q15od")
+
+[node name="Post2" type="MeshInstance3D" parent="Awning" unique_id=1425765846]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.125, 1.15)
+mesh = SubResource("BoxMesh_ulg10")
+
+[node name="Post3" type="MeshInstance3D" parent="Awning" unique_id=40772625]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.3, -1)
+mesh = SubResource("BoxMesh_pxc7x")
+
+[node name="Post4" type="MeshInstance3D" parent="Awning" unique_id=201040624]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.125, 1.15)
+mesh = SubResource("BoxMesh_ajbcb")
+
+[node name="FrontBeam" type="MeshInstance3D" parent="Awning" unique_id=67772923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 1.15)
+mesh = SubResource("BoxMesh_6c5h0")
+
+[node name="Cloth" type="Node3D" parent="Awning" unique_id=762276314]
+transform = Transform3D(1, 0, 0, 0, 0.98768836, -0.15643448, 0, 0.15643448, 0.98768836, 0, 2.43, 0.07)
+
+[node name="Stripe0" type="MeshInstance3D" parent="Awning/Cloth" unique_id=1850719361]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4142857, 0, 0)
+mesh = SubResource("BoxMesh_qkpd3")
+
+[node name="Stripe1" type="MeshInstance3D" parent="Awning/Cloth" unique_id=1014334741]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.94285715, 0, 0)
+mesh = SubResource("BoxMesh_wipmy")
+
+[node name="Stripe2" type="MeshInstance3D" parent="Awning/Cloth" unique_id=1387824195]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.47142857, 0, 0)
+mesh = SubResource("BoxMesh_kgit8")
+
+[node name="Stripe3" type="MeshInstance3D" parent="Awning/Cloth" unique_id=1813342525]
+mesh = SubResource("BoxMesh_b60ah")
+
+[node name="Stripe4" type="MeshInstance3D" parent="Awning/Cloth" unique_id=707076983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.47142857, 0, 0)
+mesh = SubResource("BoxMesh_rs5nd")
+
+[node name="Stripe5" type="MeshInstance3D" parent="Awning/Cloth" unique_id=681411035]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.94285715, 0, 0)
+mesh = SubResource("BoxMesh_jx60i")
+
+[node name="Stripe6" type="MeshInstance3D" parent="Awning/Cloth" unique_id=1255988111]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4142857, 0, 0)
+mesh = SubResource("BoxMesh_217eh")
+
+[node name="Flap0" type="MeshInstance3D" parent="Awning" unique_id=1821218557]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4142857, 2.14, 1.3)
+mesh = SubResource("BoxMesh_uryjh")
+
+[node name="Flap1" type="MeshInstance3D" parent="Awning" unique_id=1676222357]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.94285715, 2.14, 1.3)
+mesh = SubResource("BoxMesh_onxpj")
+
+[node name="Flap2" type="MeshInstance3D" parent="Awning" unique_id=1690429678]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.47142857, 2.14, 1.3)
+mesh = SubResource("BoxMesh_resr4")
+
+[node name="Flap3" type="MeshInstance3D" parent="Awning" unique_id=165104647]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.14, 1.3)
+mesh = SubResource("BoxMesh_gsiqy")
+
+[node name="Flap4" type="MeshInstance3D" parent="Awning" unique_id=1342756299]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.47142857, 2.14, 1.3)
+mesh = SubResource("BoxMesh_ylewy")
+
+[node name="Flap5" type="MeshInstance3D" parent="Awning" unique_id=1027460496]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.94285715, 2.14, 1.3)
+mesh = SubResource("BoxMesh_wbtui")
+
+[node name="Flap6" type="MeshInstance3D" parent="Awning" unique_id=2108262234]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4142857, 2.14, 1.3)
+mesh = SubResource("BoxMesh_d3but")
+
+[node name="Herbs" type="Node3D" parent="Awning" unique_id=2003288220 instance=ExtResource("17_4xje3")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -1, 1.72, 1.12)
+
+[node name="HangingHam" type="Node3D" parent="Awning" unique_id=2005995543 instance=ExtResource("18_wuf6o")]
+transform = Transform3D(-5.6824803e-08, 1.28025, 0.22574268, 0, 0.22574268, -1.28025, -1.3, -5.5961504e-08, -9.8675255e-09, 0.9, 1.78, 1.1)
+
+[node name="SignBoard" type="MeshInstance3D" parent="Awning" unique_id=465025955]
+transform = Transform3D(1, 0, 0, 0, 0.9781476, 0.2079117, 0, -0.2079117, 0.9781476, 0, 2.72, 1.22)
+mesh = SubResource("BoxMesh_y354f")
+
+[node name="Text" type="Label3D" parent="Awning/SignBoard" unique_id=1179842104]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04)
+pixel_size = 0.0042
+modulate = Color(1, 0.92, 0.7, 1)
+outline_modulate = Color(0.25, 0.12, 0.05, 1)
+text = "Food Market"
+font_size = 64
+outline_size = 10
+
+[node name="Cask" type="StaticBody3D" parent="." unique_id=1864147478]
+transform = Transform3D(0.921061, 0, 0.38941833, 0, 1, 0, -0.38941833, 0, 0.921061, -2.05, 0, 0.75)
+
+[node name="Model" type="Node3D" parent="Cask" unique_id=1506557684 instance=ExtResource("19_xla5o")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cask" unique_id=65623095]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+shape = SubResource("CylinderShape3D_vm6f4")
+
+[node name="GrainSacks" type="StaticBody3D" parent="." unique_id=1193018253]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 0, 0.5)
+
+[node name="Sack1" type="Node3D" parent="GrainSacks" unique_id=1079480461 instance=ExtResource("20_1hjkv")]
+transform = Transform3D(1.3155696, 0, 0.47882816, 0, 1.4, 0, -0.47882816, 0, 1.3155696, 0, 0, 0)
+
+[node name="Sack2" type="Node3D" parent="GrainSacks" unique_id=488278480 instance=ExtResource("20_1hjkv")]
+transform = Transform3D(1.0648977, 0, -0.74564934, 0, 1.3, 0, 0.74564934, 0, 1.0648977, 0.1, 0, 0.55)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GrainSacks" unique_id=1263464734]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.4, 0.28)
+shape = SubResource("BoxShape3D_bb5d2")
+
+[node name="AppleCrate" type="Node3D" parent="." unique_id=322162278 instance=ExtResource("5_20a6t")]
+transform = Transform3D(1.5454813, 0, 0.41411048, 0, 1.6, 0, -0.41411048, 0, 1.5454813, -2, 0, 1.6)
+
+[node name="Apple0" type="Node3D" parent="AppleCrate" unique_id=1291122382 instance=ExtResource("15_jjho5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.06, -0.06)
+
+[node name="Apple1" type="Node3D" parent="AppleCrate" unique_id=1384361091 instance=ExtResource("15_jjho5")]
+transform = Transform3D(0.76604444, 0, 0.6427876, 0, 1, 0, -0.6427876, 0, 0.76604444, -0.01, 0.06, -0.06)
+
+[node name="Apple2" type="Node3D" parent="AppleCrate" unique_id=434418311 instance=ExtResource("15_jjho5")]
+transform = Transform3D(0.17364822, 0, 0.9848077, 0, 1, 0, -0.9848077, 0, 0.17364822, 0.13, 0.06, -0.06)
+
+[node name="Apple3" type="Node3D" parent="AppleCrate" unique_id=1962233270 instance=ExtResource("15_jjho5")]
+transform = Transform3D(-0.50000006, 0, 0.8660254, 0, 1, 0, -0.8660254, 0, -0.50000006, -0.15, 0.06, 0.06)
+
+[node name="Apple4" type="Node3D" parent="AppleCrate" unique_id=120967137 instance=ExtResource("15_jjho5")]
+transform = Transform3D(-0.9396926, 0, 0.3420202, 0, 1, 0, -0.3420202, 0, -0.9396926, -0.01, 0.06, 0.06)
+
+[node name="Apple5" type="Node3D" parent="AppleCrate" unique_id=1580686241 instance=ExtResource("15_jjho5")]
+transform = Transform3D(-0.9396926, 0, -0.34202015, 0, 1, 0, 0.34202015, 0, -0.9396926, 0.13, 0.06, 0.06)
+
+[node name="Scales" type="Node3D" parent="." unique_id=2040905049 instance=ExtResource("21_bprm0")]
+transform = Transform3D(1.2124355, 0, -0.7, 0, 1.4, 0, 0.7, 0, 1.2124355, 2.1, 0, 1.5)
+
+[node name="Merchant" type="StaticBody3D" parent="." unique_id=1048114461 instance=ExtResource("22_3vd5i")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, -0.3)
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("23_1k5qi")
+npc_id = &"grocer"
+npc_name = "Grocer Tilda"
+lines = PackedStringArray("Couriers who skip lunch end up flat on the forest floor. Eat something!", "Red potions mend you at once. Bread and cheese take their time, but they\'re kinder to the purse.", "Warrior\'s Ale before a fight, a stew after. That\'s the guild way.", "Blue water from the springs for anyone who flings spells about.")
+body_color = Color(0.62, 0.35, 0.3, 1)
+
+[node name="Markers" type="Node3D" parent="." unique_id=569008515]
+
+[node name="ShopFront" type="Marker3D" parent="Markers" unique_id=1025690613]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.9)
+
+[node name="Location" type="Marker3D" parent="." unique_id=1461728380]
+script = ExtResource("24_wyjqf")
+location_id = &"food_market"
+display_name = "Willowmere Food Market"
+subtitle = "Grocer Tilda"
+kind = 2
+discover_radius = 7.0

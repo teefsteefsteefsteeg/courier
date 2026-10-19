@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ConsumableItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/consumable_item.gd" id="1_consumable"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/berserker_draught.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_consumable")
+material_id = &"berserker_draught"
+display_name = "Berserker Draught"
+description = "A red, bitter brew. Floods you with rage and makes hits critical far more often for 45 seconds."
+kind = 10
+icon = ExtResource("2_icon")
+sell_price = 20
+buy_price = 60
+max_stack = 5
+rage = 50.0
+effect_duration = 45.0
+buff_id = &"berserk"
+buff_name = "Berserk"
+crit_chance = 0.25
+rage_gain_multiplier = 1.5

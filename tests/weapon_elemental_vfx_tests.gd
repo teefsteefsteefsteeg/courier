@@ -12,6 +12,7 @@ extends SceneTree
 ##   or beside; Earthquake hits and staggers inside its radius only; Thunder Arrow chains to
 ##   up to 3 nearby enemies, each once; Arcane Storm strikes repeatedly; cooldowns; below +5
 ##   refused; an MP source that refuses blocks the storm; the HUD line; works in Wyrmfall.
+##   Phase 8 vitals: ultimates cost rage, so each skill test starts with a full rage bar.
 ##   godot --headless --path . --script res://tests/weapon_elemental_vfx_tests.gd
 
 const VILLAGE := "res://scenes/levels/village.tscn"
@@ -97,6 +98,9 @@ func _seconds(seconds: float) -> void:
 func _equip(id: StringName, lvl: int) -> void:
 	inventory.equip(id)
 	inventory.set_enhancement(id, lvl)
+	var vitals := CourierVitals.find(self)
+	if vitals != null:
+		vitals.add_rage(vitals.max_rage)
 	await _frames(4)
 
 
@@ -369,20 +373,16 @@ func _test_arcane_storm() -> void:
 	ultimates.skill_hit.disconnect(record)
 	ultimates.effect_spawned.disconnect(watch)
 	ultimates.cooldowns.clear()
-	# An MP source that refuses blocks it.
-	var script := GDScript.new()
-	script.source_code = "extends Node\nfunc spend(_amount: float) -> bool:\n\treturn false\n"
-	script.reload()
-	var mana := Node.new()
-	mana.set_script(script)
-	mana.add_to_group(WeaponUltimates.MANA_GROUP)
-	root.add_child(mana)
+	# Without enough MP (the courier's real mana pool) it is refused.
+	var vitals := CourierVitals.find(self)
+	vitals.add_rage(vitals.max_rage)
+	vitals.spend(vitals.get_mana())
 	var reasons: Array[StringName] = []
 	var blocked := func(_skill: StringName, reason: StringName) -> void: reasons.append(reason)
 	ultimates.ultimate_blocked.connect(blocked)
 	_check(not ultimates.use() and reasons.has(&"mana"), "without enough MP the storm is refused")
 	ultimates.ultimate_blocked.disconnect(blocked)
-	mana.queue_free()
+	vitals.restore_mana(vitals.max_mana)
 	await _clear_dummies()
 
 

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ConsumableItem" format=3]
+
+[ext_resource type="Script" path="res://scripts/inventory/consumable_item.gd" id="1_consumable"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/raw_steak.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_consumable")
+material_id = &"raw_steak"
+display_name = "Hunter's Steak"
+description = "Seared over an open fire. Heals, fills you with rage and makes every hit build more rage for 90 seconds."
+kind = 7
+icon = ExtResource("2_icon")
+sell_price = 8
+buy_price = 22
+max_stack = 10
+heal_over_time = 45.0
+rage = 20.0
+effect_duration = 90.0
+buff_id = &"blood_up"
+buff_name = "Blood Up"
+rage_gain_multiplier = 1.5

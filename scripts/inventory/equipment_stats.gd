@@ -9,9 +9,12 @@ extends Node
 ## Sets the courier's attack style and melee/arrow stats from the main-hand weapon's type,
 ## and shows the main-hand and off-hand items' held_model in the courier's hands.
 ## Lives in GameplayServices; the player is found through CombatController.PLAYER_GROUP.
+## Phase 8: a staff's Magic Bolts cost STAFF_BOLT_MANA MP each (bare-handed bolts are free).
 
 @export var inventory: CourierInventory
 @export var combat: CombatController
+
+const STAFF_BOLT_MANA := 4.0
 
 var _base := {}
 var _character: KayKitCharacter = null
@@ -95,6 +98,7 @@ func _apply_attack(weapon: ItemDefinition, damage_multiplier: float = 1.0) -> vo
 		combat.set_attack_style(CombatController.AttackStyle.TOOL)
 		return
 	var type := weapon.weapon_type if weapon != null else ItemDefinition.WeaponType.NONE
+	combat.bolt_mana_cost = STAFF_BOLT_MANA if type == ItemDefinition.WeaponType.STAFF else 0.0
 	match type:
 		ItemDefinition.WeaponType.SWORD, ItemDefinition.WeaponType.AXE:
 			combat.melee_damage = maxf(weapon.attack_damage * damage_multiplier, 1.0)

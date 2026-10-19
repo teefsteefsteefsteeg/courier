@@ -109,6 +109,15 @@ func heal(amount: float) -> float:
 	return gained
 
 
+## Sets health directly (restoring a save), clamped to 1..max_health; never revives.
+func set_health(value: float) -> void:
+	_ensure_initialized()
+	if _dead:
+		return
+	_current = clampf(value, 1.0, max_health)
+	health_changed.emit(_current, max_health)
+
+
 ## Full health and alive again (respawn).
 func reset() -> void:
 	_dead = false

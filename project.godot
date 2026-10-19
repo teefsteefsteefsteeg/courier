@@ -140,6 +140,26 @@ weapon_ultimate={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,"physical_keycode":67)]
 }
+consumable_slot_1={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":54)]
+}
+consumable_slot_2={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":55)]
+}
+consumable_slot_3={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":56)]
+}
+consumable_slot_4={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":57)]
+}
+consumable_slot_5={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"physical_keycode":48)]
+}
 
 [layer_names]
 

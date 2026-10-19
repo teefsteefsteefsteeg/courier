@@ -284,7 +284,8 @@ func _rebuild(catalog: ShopCatalog) -> void:
 		var goods_header := Label.new()
 		goods_header.name = "GoodsHeader"
 		goods_header.theme_type_variation = &"ContractTitle"
-		goods_header.text = "Seeds for the Courier's Garden"
+		var provisions := catalog.sells_materials.any(func(m: MaterialItem) -> bool: return m != null and m.is_consumable())
+		goods_header.text = "Food, potions and provisions" if provisions else "Seeds for the Courier's Garden"
 		item_list.add_child(goods_header)
 		for material in catalog.sells_materials:
 			if material != null and material.buy_price > 0:
@@ -296,8 +297,9 @@ func _rebuild(catalog: ShopCatalog) -> void:
 		header.text = "Sell your goods"
 		item_list.add_child(header)
 		_sell_header = header
+		# Gathered goods only: provisions are bought, not sold back.
 		for material in inventory.get_all_materials():
-			if material.sell_price > 0:
+			if material.sell_price > 0 and not material.is_consumable():
 				item_list.add_child(_build_sell_row(material))
 	_refresh_rows()
 
@@ -350,6 +352,8 @@ func buy_goods(material_id: StringName, amount: int) -> int:
 	var spent := ShopService.buy_material(wallet, inventory, merchant.get_catalog(), material, amount)
 	if spent > 0:
 		feedback_label.text = "Bought %d %s for %d gold." % [amount, material.display_name, spent]
+	elif inventory.get_room_for(material) < amount:
+		feedback_label.text = _no_room_text(material)
 	else:
 		feedback_label.text = "Not enough gold: %d %s cost %d." % [amount, material.display_name, material.buy_price * amount]
 	_refresh_rows()
@@ -376,8 +380,17 @@ func _build_goods_row(material: MaterialItem) -> Control:
 	line.add_child(text)
 	var name_label := Label.new()
 	name_label.theme_type_variation = &"ContractTitle"
-	name_label.text = "%s · %d g each" % [material.display_name, material.buy_price]
+	var kind_text := MaterialItem.kind_name(material.kind)
+	name_label.text = "%s · %s · %d g each" % [material.display_name, kind_text, material.buy_price] if material.is_consumable() and kind_text != material.display_name else "%s · %d g each" % [material.display_name, material.buy_price]
 	text.add_child(name_label)
+	if material is ConsumableItem:
+		var effects := Label.new()
+		effects.name = "Effects"
+		effects.theme_type_variation = &"ContractDetail"
+		effects.add_theme_color_override(&"font_color", Color(0.2, 0.5, 0.18))
+		effects.text = ", ".join((material as ConsumableItem).get_effect_lines())
+		text.add_child(effects)
+	row.tooltip_text = material.description
 	var count := Label.new()
 	count.theme_type_variation = &"ContractDetail"
 	count.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -396,6 +409,12 @@ func _build_goods_row(material: MaterialItem) -> Control:
 	side.add_child(buy_five)
 	goods_rows[material.material_id] = {"row": row, "buy_one": buy_one, "buy_five": buy_five, "count": count, "material": material}
 	return row
+
+
+func _no_room_text(material: MaterialItem) -> String:
+	if inventory.get_material_count(material.material_id) == 0 and material.is_consumable():
+		return "Your pack is full: %d kinds of provisions at most. Use or sell some first." % CourierInventory.CONSUMABLE_BAG_SLOTS
+	return "No room: you can carry %d %s at most." % [material.get_stack_limit(), material.display_name]
 
 
 ## Sells every carried unit of material. Returns the gold earned.
@@ -560,9 +579,13 @@ func _refresh_rows() -> void:
 	for material_id in goods_rows:
 		var goods := goods_rows[material_id]
 		var material: MaterialItem = goods["material"]
-		(goods["count"] as Label).text = "You carry %d · %s" % [inventory.get_material_count(material_id), material.description]
-		(goods["buy_one"] as Button).disabled = wallet.gold < material.buy_price
-		(goods["buy_five"] as Button).disabled = wallet.gold < material.buy_price * 5
+		var room := inventory.get_room_for(material)
+		var carried := "You carry %d / %d" % [inventory.get_material_count(material_id), material.get_stack_limit()] if material.is_consumable() else "You carry %d" % inventory.get_material_count(material_id)
+		(goods["count"] as Label).text = "%s · %s" % [carried, material.description]
+		for key_amount in [["buy_one", 1], ["buy_five", 5]]:
+			var buy := goods[key_amount[0]] as Button
+			buy.disabled = wallet.gold < material.buy_price * int(key_amount[1]) or room < int(key_amount[1])
+			buy.tooltip_text = _no_room_text(material) if room < int(key_amount[1]) else ""
 	# Materials: only the ones carried are shown.
 	var any_to_sell := false
 	for material_id in sell_rows:

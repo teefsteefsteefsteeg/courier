@@ -2,6 +2,10 @@ class_name IsoCameraRig
 extends Node3D
 ## Fixed-angle orthographic isometric camera. The rig smoothly follows a target;
 ## its rotation never changes at runtime, so camera-relative input stays stable.
+## add_shake() (Phase 8 skill impacts, GroundFx.shake) jitters the camera's screen offset
+## only, so the rig's position and input directions are untouched.
+
+const GROUP := &"iso_camera_rig"
 
 @export var target: Node3D
 
@@ -28,6 +32,14 @@ extends Node3D
 @onready var camera: Camera3D = $Camera3D
 
 var target_zoom_size: float
+var _shake_strength: float = 0.0
+var _shake_left: float = 0.0
+var _shake_total: float = 0.0
+var _shake_rng := RandomNumberGenerator.new()
+
+
+func _enter_tree() -> void:
+	add_to_group(GROUP)
 
 
 func _ready() -> void:
@@ -48,6 +60,27 @@ func _process(delta: float) -> void:
 	if target != null:
 		global_position = global_position.lerp(_focus_point(), 1.0 - exp(-follow_sharpness * delta))
 	camera.size = lerpf(camera.size, target_zoom_size, 1.0 - exp(-zoom_sharpness * delta))
+	if _shake_left > 0.0:
+		_shake_left = maxf(_shake_left - delta, 0.0)
+		var amount := _shake_strength * (_shake_left / maxf(_shake_total, 0.001))
+		camera.h_offset = _shake_rng.randf_range(-amount, amount)
+		camera.v_offset = _shake_rng.randf_range(-amount, amount)
+	elif camera.h_offset != 0.0 or camera.v_offset != 0.0:
+		camera.h_offset = 0.0
+		camera.v_offset = 0.0
+
+
+## Shakes the view by up to strength metres, easing out over seconds. A stronger or longer
+## shake wins over the one running.
+func add_shake(strength: float, seconds: float) -> void:
+	if strength >= _shake_strength * (_shake_left / maxf(_shake_total, 0.001)):
+		_shake_strength = strength
+		_shake_left = seconds
+		_shake_total = seconds
+
+
+func get_shake_remaining() -> float:
+	return _shake_left
 
 
 func _unhandled_input(event: InputEvent) -> void:

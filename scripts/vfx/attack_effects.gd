@@ -19,6 +19,14 @@ extends Node
 ##            impacts +4 arcs, +5 a lightning strike
 ##     staff  the bolt carries +1 motes, +2 a rune ring at launch, +3 droplets, +4/+5
 ##            crystal streams; impacts +3 splash, +4 charge burst, +5 warp and light burst
+## Phase 8 world-space feedback (GroundFx), from the real combat signals:
+##   critical hits     gold "CRITICAL" text, slash flash, sparks and a small camera shake
+##                     (CombatController.critical_hit)
+##   spell casting     a rune circle on the ground at the courier's feet and a hand flash
+##                     whenever a Magic Bolt is cast (staff: in its element's colour)
+##   ground marks      the axe's chop leaves cracks (+3 and up); a +4/+5 sword's hit
+##                     scorches the ground under the target
+##   enemy defeat      dust, sparks and a light burst where an enemy falls
 ## PlayerAnimator times the courier's swing and release poses to the same moments
 ## (KayKitCharacter.play_once_strike). Lives in GameplayServices; finds the player.
 
@@ -73,6 +81,7 @@ func _process(_delta: float) -> void:
 		combat.target_hit.connect(_on_target_hit)
 		combat.melee_resolved.connect(_on_melee_resolved)
 		combat.projectile_launched.connect(_on_projectile_launched)
+		combat.critical_hit.connect(_on_critical_hit)
 
 
 func _on_melee_started(direction: Vector3, heavy: bool) -> void:
@@ -147,6 +156,7 @@ func _remove_swing() -> void:
 
 
 func _on_target_hit(target: Node, _amount: float) -> void:
+	_check_defeat(target)
 	# The Magic Bolt has its own burst; melee and arrows flash here.
 	if combat.get_attack_style() == CombatController.AttackStyle.MAGIC_BOLT:
 		return
@@ -165,6 +175,58 @@ func _on_target_hit(target: Node, _amount: float) -> void:
 	# An arrow shows its element where it lands (_on_projectile_launched), so only once.
 	if weapon_type() != ItemDefinition.WeaponType.BOW:
 		_impact_elements(weapon_type(), weapon_tier(), point, body)
+	if weapon_type() == ItemDefinition.WeaponType.SWORD and weapon_tier() >= 4:
+		effect_spawned.emit(&"sword_scorch", GroundFx.scorch(body.get_parent(), at.global_position, 1.2, 2.5))
+
+
+## A hit that was critical: gold text over the target, a big slash flash, sparks, a shake.
+func _on_critical_hit(target: Node, amount: float) -> void:
+	var at := target as Node3D
+	var body := combat.get_parent() as Node3D
+	if at == null or not at.is_inside_tree() or body == null or body.get_parent() == null:
+		return
+	var root := body.get_parent()
+	var point := impact_point(at, body)
+	_spawn_strip(body, &"critical_flash", &"slash_flash", 2.0, Color(1.0, 0.85, 0.35, 1.0), point)
+	GroundFx.sparks(root, point, Color(1.0, 0.85, 0.4), 26)
+	GroundFx.shake(body, 0.12, 0.2)
+	var text := Label3D.new()
+	text.name = "CriticalText"
+	text.text = "CRITICAL %d" % roundi(amount)
+	text.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	text.no_depth_test = true
+	text.font_size = 56
+	text.outline_size = 12
+	text.pixel_size = 0.006
+	text.modulate = Color(1.0, 0.82, 0.25)
+	text.outline_modulate = Color(0.35, 0.12, 0.02)
+	root.add_child(text)
+	text.global_position = at.global_position + Vector3.UP * 2.1
+	var tween := text.create_tween()
+	tween.tween_property(text, ^"scale", Vector3.ONE * 1.3, 0.08).from(Vector3.ONE * 0.6)
+	tween.tween_property(text, ^"scale", Vector3.ONE, 0.12)
+	tween.parallel().tween_property(text, ^"global_position:y", text.global_position.y + 0.8, 0.9)
+	tween.tween_property(text, ^"modulate:a", 0.0, 0.3)
+	tween.tween_callback(text.queue_free)
+	effect_spawned.emit(&"critical_text", text)
+
+
+## Where an enemy falls: dust, sparks and a light burst (once, on the killing hit).
+func _check_defeat(target: Node) -> void:
+	var at := target as Node3D
+	var health := CombatHealth.find_on(target)
+	if at == null or health == null or not health.is_dead() or at.has_meta(&"defeat_shown") or not at.is_inside_tree():
+		return
+	at.set_meta(&"defeat_shown", true)
+	var root := at.get_parent()
+	GroundFx.dust_ring(root, at.global_position, 0.8, Color(0.85, 0.85, 0.8, 0.7))
+	GroundFx.sparks(root, at.global_position + Vector3.UP * 0.6, Color(1.0, 0.95, 0.7), 18)
+	var burst := VfxStrip.create(&"light_burst", 1.8, Color(1.0, 0.95, 0.8, 1.0), false)
+	burst.name = "Fx_enemy_defeat"
+	burst.free_on_finish = true
+	root.add_child(burst)
+	burst.global_position = at.global_position + Vector3.UP * 0.7
+	effect_spawned.emit(&"enemy_defeat", burst)
 
 
 ## Where a hit on target shows: on its side facing the attacker (not inside its body,
@@ -261,7 +323,14 @@ func _impact_elements(type: ItemDefinition.WeaponType, level: int, point: Vector
 ## The axe's chop marks the ground in front of the courier at +4 and +5 (hit or miss).
 func _on_melee_resolved(_hits: int) -> void:
 	var level := weapon_tier()
-	if weapon_type() != ItemDefinition.WeaponType.AXE or level < 4:
+	if weapon_type() != ItemDefinition.WeaponType.AXE or level < 3:
+		return
+	var chopper := combat.get_parent() as Node3D
+	if chopper == null or chopper.get_parent() == null:
+		return
+	var chop := chopper.global_position + combat.get_aim_direction() * maxf(combat.melee_range * 0.8, 0.8)
+	effect_spawned.emit(&"axe_ground_crack", GroundFx.cracks(chopper.get_parent(), chop, 1.6 + level * 0.3, Color(1.0, 0.6, 0.25), 0.15, 1.6))
+	if level < 4:
 		return
 	var body := combat.get_parent() as Node3D
 	if body == null or body.get_parent() == null:
@@ -269,15 +338,18 @@ func _on_melee_resolved(_hits: int) -> void:
 	var aim := combat.get_aim_direction()
 	var ground := body.global_position + aim * maxf(combat.melee_range * 0.8, 0.8) + Vector3.UP * 0.25
 	_spawn_strip(body, &"axe_ground_ring", &"dust_ring", 2.0 if level == 5 else 1.5, Color.WHITE, ground)
+	GroundFx.debris(body.get_parent(), ground, 6 if level == 5 else 4, 0.3, 0.14)
 	_spawn_strip(body, &"axe_rubble", &"rubble", 1.3, Color(0.75, 0.66, 0.52, 0.95), ground + Vector3.UP * 0.2)
 	if level == 5:
 		_spawn_strip(body, &"axe_quake_blast", &"quake_blast", 1.6, Color.WHITE, ground + Vector3.UP * 0.4)
 
 
 ## Arrows and bolts carry their weapon's element (children of the projectile, freed with it).
-func _on_projectile_launched(projectile: CombatProjectile, _kind: StringName) -> void:
+func _on_projectile_launched(projectile: CombatProjectile, kind: StringName) -> void:
 	var level := weapon_tier()
 	var type := weapon_type()
+	if kind == &"magic_bolt":
+		_cast_circle(type, level)
 	if level <= 0 or not (type in [ItemDefinition.WeaponType.BOW, ItemDefinition.WeaponType.STAFF]):
 		return
 	var body := combat.get_parent() as Node3D
@@ -314,6 +386,18 @@ func _on_projectile_launched(projectile: CombatProjectile, _kind: StringName) ->
 				trail = _trail(projectile, &"staff_crystal_stream", "streak", 20, 0.2, Color(0.8, 0.6, 1.0))
 	if trail != null:
 		effect_spawned.emit(StringName(trail.name), trail)
+
+
+## Spell casting: a small rune circle under the courier and a flash at the casting hand.
+func _cast_circle(type: ItemDefinition.WeaponType, level: int) -> void:
+	var body := combat.get_parent() as Node3D
+	if body == null or body.get_parent() == null:
+		return
+	var color := element_color(type, level) if type == ItemDefinition.WeaponType.STAFF else Color(0.75, 0.55, 1.0)
+	var circle := GroundFx.rune_circle(body.get_parent(), body.global_position, 0.75 + level * 0.08, color, 0.55)
+	circle.name = "FxCastCircle"
+	effect_spawned.emit(&"cast_circle", circle)
+	GroundFx.flash(body.get_parent(), body.global_position + Vector3.UP * 1.1 + combat.get_aim_direction() * 0.4, color, 1.5 + level * 0.4, 3.5, 0.3)
 
 
 ## World-space particles left behind a projectile.

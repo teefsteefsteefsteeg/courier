@@ -8,7 +8,8 @@ extends Node
 ## paid twice, even across sessions), the explored map, discovered locations and activated
 ## portals, depleted harvest nodes, repaired structures and gathering tallies (Phase 5H,
 ## "gathering"), the courier's garden (Phase 7, "farming": plots, crops and the growth
-## clock), and the starting-gold flag. Deliveries in progress are not saved (the carried package is not
+## clock), the courier's vitals (Phase 8, "vitals": health, MP, rage, food and potion
+## buffs), and the starting-gold flag. Deliveries in progress are not saved (the carried package is not
 ## persisted); after a reload such a contract is simply on the board again.
 ##
 ## Loading and autosave run when `enabled`, which defaults to off in headless runs so
@@ -42,6 +43,8 @@ const DEV_STARTING_GOLD := 500
 @export var gathering: GatheringService
 ## Garden plots and their growth clock ("farming" key; saves without it start with empty beds).
 @export var farming: FarmService
+## Health, MP, rage and buffs ("vitals" key; saves without it start full, no rage).
+@export var vitals: CourierVitals
 
 var starting_gold_granted: bool = false
 ## One-time world encounter rewards. Additive field; legacy saves start empty.
@@ -71,6 +74,8 @@ func _ready() -> void:
 		gathering = GatheringService.find(get_tree())
 	if farming == null:
 		farming = FarmService.find(get_tree())
+	if vitals == null:
+		vitals = CourierVitals.find(get_tree())
 	if DisplayServer.get_name() == "headless" and not force_enabled_headless:
 		enabled = false
 	_start.call_deferred()
@@ -122,6 +127,7 @@ func to_dict() -> Dictionary:
 		"exploration": exploration.to_dict() if exploration != null else {},
 		"gathering": gathering.to_dict() if gathering != null else {},
 		"farming": farming.to_dict() if farming != null else {},
+		"vitals": vitals.to_dict() if vitals != null else {},
 		"quests": quests,
 		"flags": {"starting_gold_granted": starting_gold_granted},
 		"world_progress": world_progress.duplicate(true),
@@ -147,6 +153,8 @@ func from_dict(data: Dictionary) -> void:
 		farming.from_dict(data.get("farming", {}))
 	if quest_manager != null:
 		quest_manager.restore_finished_quests(data.get("quests", {}))
+	if vitals != null and data.has("vitals"):
+		vitals.from_dict(data["vitals"])
 	_restoring = false
 	loaded.emit()
 
@@ -197,6 +205,9 @@ func _watch() -> void:
 		exploration.explored_changed.connect(request_save)
 	if quest_manager != null:
 		quest_manager.quest_rewarded.connect(func(_q, _r): request_save())
+	if vitals != null:
+		vitals.consumed.connect(func(_i): request_save())
+		vitals.buffs_changed.connect(request_save)
 
 
 func _exit_tree() -> void:
