@@ -1,5 +1,78 @@
 # Development handoff: Phase 5F integrated
 
+## HANDOFF STATE (2026-10-19, account switch mid Milestone C)
+
+- Worktree `D:\courier-phase5f-integrated`, branch `phase5f-integrated`. Latest commit
+  **`e89d2ba`** (Phase 7 milestone B). Before it: `c3f0268` (milestone A), `d5d4483` (Phase 6
+  baseline). Nothing pushed or merged.
+- **Done and committed:** Milestone A (`c3f0268`), Milestone B (`e89d2ba`); details and
+  validation in `docs/PHASE7_WORLD_AND_SYSTEMS.md`, screenshots `docs/validation/phase7/00-22`.
+- **Milestone C: in progress, NOT committed** (on purpose: unfinished, 6 test checks fail).
+  Uncommitted changes in the worktree:
+  - `scripts/shop/item_definition.gd`: `Slot.ARMOR` appended; `defense` stat (+ stat line).
+  - `data/items/leather_vest.tres` (defense 4, 120 g), `data/items/iron_mail.tres` (defense 8,
+    320 g) (new); `data/items/wooden_shield.tres` defense 2; both armor items added to
+    `data/shops/armory.tres` (also `enhances_items = true`) and to CourierInventory
+    `item_definitions` in `scenes/gameplay/gameplay_services.tscn`.
+  - `scripts/combat/combat_controller.gd`: `defense` export, `DEFENSE_SCALE = 20`,
+    `reduce_by_defense()` applied first in `_intercept_damage` (damage x 20/(20+defense), min 1).
+  - `scripts/inventory/equipment_stats.gd`: sums defense of off-hand + armor items plus
+    `Enhancement.defense_bonus(level)`; main-hand weapon enhancement multiplies melee/arrow
+    damage and (staff only) bolt damage; re-applies on `enhancement_changed`.
+  - `scripts/inventory/enhancement.gd`: `ORE_ID`, `can_enhance`, `gold_cost` (60 x (L+1)),
+    `ore_cost` (L+1).
+  - `scripts/shop/shop_catalog.gd` (`enhances_items`), `scripts/shop/shop_service.gd`
+    (`EnhanceResult`, `can_enhance`, `enhance` all-or-nothing, `enhance_text`),
+    `scripts/gameplay_ui/shop_ui.gd` ("Enhance your gear" section, `enhance_rows`,
+    `enhance_item()`).
+  - `tools/vendor_binbun_vfx.py` (new, ran): vendored Binbun StatusFX + BattleFX (CC0) into
+    `assets/vfx/BinbunVFX_Vol2/` with res:// paths repaired and uids dropped; wrote
+    `.gdignore` into the raw `assets/StatusFXFree/` and `assets/bossEffect/` (they declared
+    duplicate `class_name VFXEmitterBB`/`VFXControllerBB`). Import and a 120-frame boot are clean.
+  - `tools/prep_enhancement_vfx.py` (new, ran): whitened Gigapack strips in
+    `assets/vfx/enhancement/` (sparkle 24 f, aura 16 f, burst 14 f, impact 7 f, 15 fps,
+    `frames.json`).
+- **Test status of the worktree:** 2781 passed, 6 failed. All 6 are tests that still expect the
+  old Armory contents, not regressions in behaviour:
+  `armory_shop_tests` ("seven items for sale", "test prices match the brief": now 9 items) and
+  `equipment_visual_tests` (expects every Armory item to have a held_model / show in the left
+  hand; armor has no model). Update those tests to skip ARMOR items / expect 9 items.
+- **Untracked raw packs: do not commit, do not delete:** `assets/Bestiary - Dungeon Monsters Kit[Standard]/`,
+  `assets/BinbunVFX/`, `assets/KayKit_RPGToolsBits_1.0_FREE/`, `assets/StatusFXFree/`,
+  `assets/Super Pixel Effects Gigapack (Free Version)/`, `assets/__MACOSX/`, `assets/bossEffect/`,
+  `assets/brackeys_vfx_bundle/`, `assets/inventory/`, `assets/newmap/`, **`assets/waternature/`**
+  (added by the user during this session; not used yet). `assets/vfx/` IS meant to be committed
+  with Milestone C. Modified `*.import` files are line-ending noise only.
+- **Next steps for Milestone C, in order:**
+  1. Fix the 6 failing checks (above); add `tests/phase7_enhancement_tests.gd`: defense lowers
+     damage taken (+0 vs +5 armor, numbers), enhancement raises weapon damage, enhance at
+     Brenna costs gold + ore and is all-or-nothing, caps at +5, save/load, armor slot equip.
+  2. `UISettings.SHOW_ENHANCEMENT_VFX` (default true, persisted) + a CheckButton in the
+     inventory window footer ("Show enhancement effects"); bonus stays when hidden.
+  3. `scripts/vfx/enhancement_vfx.gd`: Sprite3D billboards (material_override, additive,
+     unshaded, albedo tinted with `Enhancement.level_color`) using `assets/vfx/enhancement/`
+     strips at 15 fps, placed along the held weapon's longest AABB axis under
+     `KayKitCharacter.get_held_item_node()`; +1 sparkle, +2 more/brighter, +3 adds aura,
+     +4 adds OmniLight, +5 gold + periodic burst.
+  4. Armor aura: instance `assets/vfx/BinbunVFX_Vol2/StatusFX/effects/status/vfx_status_shatter.tscn`
+     on the player body (scale ~0.6, y ~0.9), `primary_color` = level colour, particles_amount
+     and emission by level, streak quad only at +5.
+  5. `EnhancementVisuals` node in GameplayServices: rebuilds both on equipment_changed /
+     enhancement_changed / setting change / after load; children of the player so they
+     survive teleports and region changes (world_router keeps the player).
+  6. Skill VFX synced to hits: BattleFX slash/swing on `melee_started` timed so the arc shows
+     at `melee_windup` (hit = `_resolve_melee`), `impact.png` flash on `target_hit` for melee
+     and arrows; keep the Magic Bolt projectile as is.
+  7. Capture script + screenshots 23+ in `docs/validation/phase7/`, docs (PHASE7 doc section C,
+     ASSET_MANIFEST: Gigapack credit "Super Pixel Effects Gigapack - Will Tice / unTied Games",
+     Binbun CC0), all suites, commit.
+- **Milestone D (dragon boss) not started.** Plan in the session notes: export
+  `assets/Bestiary - Dungeon Monsters Kit[Standard]/blender/Dragon_Baked_Actions.blend`
+  (Armature 136 bones, actions Fly/Idle/Run/Walk only) with bpy, author Bite/Breath/Slam/Death
+  clips, place in `scenes/phase6/sentinel_dungeon.tscn`, BattleFX claw/charge for telegraphs,
+  top-centre HP bar like `scripts/phase6/boss_health_bar.gd`. Credit "BGE Dragon 2.0 by
+  3DHaupt.com" (Blend Swap).
+
 ## Current continuation: Phase 7 (2026-10-19)
 
 Phase 7 is in progress on this branch; `docs/PHASE7_WORLD_AND_SYSTEMS.md` tracks it per
