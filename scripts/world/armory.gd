@@ -10,10 +10,15 @@ signal shop_requested(interactor: Node)
 
 ## The weaponsmith NPC behind the counter.
 @export var merchant: NPC
+## How far in front of the weaponsmith (towards the yard) her interaction point sits. She
+## serves across the counter, so the courier can trade from the yard instead of having to
+## press against the counter to come within reach.
+@export_range(0.0, 2.0, 0.05, "suffix:m") var serve_reach: float = 1.0
 
 
 func _ready() -> void:
 	if merchant != null:
+		merchant.interactable.position.z += serve_reach
 		merchant.interactable.interacted.connect(_on_merchant_interacted)
 
 

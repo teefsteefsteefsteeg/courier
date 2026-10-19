@@ -52,6 +52,8 @@ var animation_player: AnimationPlayer
 var model_root: Node3D
 var skeleton: Skeleton3D
 var current_loop: StringName = &"idle"
+## Playback speed of current_loop (e.g. a faster walk steps faster); one-shots return to it.
+var current_loop_speed: float = 1.0
 var current_clip: StringName = &""
 ## Action of the one-shot playing now (&"" when the base loop is playing).
 var one_shot_action: StringName = &""
@@ -168,6 +170,7 @@ func has_action(action: StringName) -> bool:
 ## Sets the looping base animation (idle/walk/run). A playing one-shot finishes first.
 func play_loop(action: StringName, speed: float = 1.0) -> void:
 	current_loop = action
+	current_loop_speed = speed
 	if _one_shot or _hold:
 		return
 	_play(action, speed, 0.2)
@@ -224,7 +227,7 @@ func _finish_one_shot() -> void:
 	_one_shot = false
 	one_shot_action = &""
 	_one_shot_left = -1.0
-	_play(current_loop, 1.0, 0.2)
+	_play(current_loop, current_loop_speed, 0.2)
 
 
 static func _library(key: StringName) -> AnimationLibrary:

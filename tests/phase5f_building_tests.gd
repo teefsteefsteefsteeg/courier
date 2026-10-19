@@ -16,19 +16,20 @@ const BUILDINGS := "res://scenes/buildings"
 const BELL := "res://assets/models/quaternius/medieval_village/Bell.fbx"
 const MAX_TEXTURE_SIZE := 1024
 ## Node -> [scene, position, yaw (degrees), collider size, collider centre y]. Positions,
-## yaws and colliders are those of Phase 5E (colliders from the Phase 5A/5B scenes).
+## yaws and colliders are those of Phase 5E (colliders from the Phase 5A/5B scenes), except
+## the four buildings the Phase 5H spacing pass moved (Oak, Fern, Blue, the bell tower).
 const EXPECTED := {
 	"Buildings/AlchemyShop": ["alchemy_shop", Vector3(4, 0, 12), 0.0, Vector3(3.0965, 3.2, 4.77), 1.6],
 	"Buildings/CottageRose": ["rose_cottage", Vector3(-8, 0, 13), 0.0, Vector3(3.852, 3.2, 4.788), 1.6],
-	"Buildings/CottageOak": ["oak_house", Vector3(-17, 0, 10), 180.0, Vector3(3.197, 3.2, 4.925), 1.6],
-	"Buildings/CottageFern": ["fern_cottage", Vector3(18, 0, 13), 180.0, Vector3(3.852, 3.2, 4.788), 1.6],
-	"Buildings/CottageBlue": ["blue_house", Vector3(-4, 0, -17), 0.0, Vector3(3.197, 3.2, 4.925), 1.6],
+	"Buildings/CottageOak": ["oak_house", Vector3(-19.6, 0, 10.6), 180.0, Vector3(3.197, 3.2, 4.925), 1.6],
+	"Buildings/CottageFern": ["fern_cottage", Vector3(19.8, 0, 14.2), 180.0, Vector3(3.852, 3.2, 4.788), 1.6],
+	"Buildings/CottageBlue": ["blue_house", Vector3(-8.6, 0, -20.2), 0.0, Vector3(3.197, 3.2, 4.925), 1.6],
 	"Buildings/CottageMill": ["mill", Vector3(25, 0, -6), 0.0, Vector3(3.305, 3.2, 4.423), 1.6],
 	"Buildings/CottageHill": ["blacksmith", Vector3(-26, 0, -4), 0.0, Vector3(5.602, 3.2, 4.723), 1.6],
 	"Buildings/CottageWillow": ["inn", Vector3(-22, 0, 22), 90.0, Vector3(4.896, 3.2, 4.884), 1.6],
 	"Buildings/CottageBrook": ["brook_cottage", Vector3(14, 0, 26), 180.0, Vector3(3.197, 3.2, 4.925), 1.6],
 	"Buildings/CottageMoss": ["moss_cottage", Vector3(-6, 0, 27), 180.0, Vector3(3.852, 3.2, 4.788), 1.6],
-	"VillageDressing/Landmarks/BellTower": ["bell_tower", Vector3(0, 0, -12), 0.0, Vector3(3.1125, 3.0, 3.5811), 1.5],
+	"VillageDressing/Landmarks/BellTower": ["bell_tower", Vector3(-1.4, 0, -10.4), 0.0, Vector3(3.1125, 3.0, 3.5811), 1.5],
 }
 ## One surface per shared material at most (timber, planks, plaster, roof, stone,
 ## uneven brick, brick, iron, glass, embers).
@@ -128,7 +129,7 @@ func _test_placement() -> void:
 			continue
 		var yaw := rad_to_deg(building.global_basis.get_euler().y)
 		_check(building.global_position.is_equal_approx(spec[1]) and absf(angle_difference(deg_to_rad(yaw), deg_to_rad(spec[2]))) < 0.01,
-				"%s keeps its Phase 5E position and facing" % path)
+				"%s keeps its expected position and facing" % path)
 		var shape := building.get_node(^"CollisionShape3D") as CollisionShape3D
 		var box := shape.shape as BoxShape3D
 		_check(box != null and box.size.is_equal_approx(spec[3]) and shape.position.is_equal_approx(Vector3(0, spec[4], 0)),

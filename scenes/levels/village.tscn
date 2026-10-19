@@ -270,17 +270,17 @@ roof_color = Color(0.78, 0.3, 0.28, 1)
 wall_color = Color(0.96, 0.9, 0.8, 1)
 
 [node name="CottageOak" parent="Buildings" instance=ExtResource("61_oak_house")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -17, 0, 10)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -19.6, 0, 10.6)
 roof_color = Color(0.86, 0.52, 0.22, 1)
 wall_color = Color(0.95, 0.86, 0.7, 1)
 
 [node name="CottageFern" parent="Buildings" instance=ExtResource("62_fern_cottage")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 18, 0, 13)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 19.8, 0, 14.2)
 roof_color = Color(0.32, 0.58, 0.34, 1)
 wall_color = Color(0.94, 0.94, 0.82, 1)
 
 [node name="CottageBlue" parent="Buildings" instance=ExtResource("63_blue_house")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -4, 0, -17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.6, 0, -20.2)
 roof_color = Color(0.28, 0.44, 0.78, 1)
 wall_color = Color(0.86, 0.9, 0.96, 1)
 
@@ -406,7 +406,7 @@ transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, 
 transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 7.9, 0, 10)
 
 [node name="Crate3" parent="Props" instance=ExtResource("20_crate")]
-transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -20.5, 0, 12.5)
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -23.1, 0, 13.1)
 
 [node name="Rock1" parent="Props" instance=ExtResource("80_rock2")]
 transform = Transform3D(-0.447444, 0, 0.894312, 0, 1, 0, -0.894312, 0, -0.447444, -9, 0, -14)
@@ -439,7 +439,7 @@ transform = Transform3D(-0.763409, 0, 0.338098, 0, 0.834928, 0, -0.338098, 0, -0
 transform = Transform3D(0.852241, 0, 0.546219, 0, 1.01226, 0, -0.546219, 0, 0.852241, -13.8, 0, 10.2)
 
 [node name="Bush04" parent="Props" instance=ExtResource("90_bush1")]
-transform = Transform3D(0.400205, 0, -0.763354, 0, 0.861901, 0, 0.763354, 0, 0.400205, -20.3, 0, 12.4)
+transform = Transform3D(0.400205, 0, -0.763354, 0, 0.861901, 0, 0.763354, 0, 0.400205, -17.4, 0, 14)
 
 [node name="Bush05" parent="Props" instance=ExtResource("91_bush2")]
 transform = Transform3D(0.186384, 0, 1.09801, 0, 1.11372, 0, -1.09801, 0, 0.186384, 0.5, 0, 9.6)
@@ -451,10 +451,10 @@ transform = Transform3D(1.03032, 0, -0.351248, 0, 1.08855, 0, 0.351248, 0, 1.030
 transform = Transform3D(-1.0261, 0, 0.778712, 0, 1.28813, 0, -0.778712, 0, -1.0261, 14.4, 0, 15.5)
 
 [node name="Bush08" parent="Props" instance=ExtResource("91_bush2")]
-transform = Transform3D(1.17696, 0, 0.354667, 0, 1.22923, 0, -0.354667, 0, 1.17696, 21.4, 0, 11)
+transform = Transform3D(1.17696, 0, 0.354667, 0, 1.22923, 0, -0.354667, 0, 1.17696, 23.4, 0, 12.8)
 
 [node name="Bush09" parent="Props" instance=ExtResource("92_bushberry")]
-transform = Transform3D(-0.214815, 0, 0.845258, 0, 0.872128, 0, -0.845258, 0, -0.214815, -7.2, 0, -14.6)
+transform = Transform3D(-0.214815, 0, 0.845258, 0, 0.872128, 0, -0.845258, 0, -0.214815, -4.2, 0, -15.6)
 
 [node name="Bush10" parent="Props" instance=ExtResource("90_bush1")]
 transform = Transform3D(0.704606, 0, 0.643511, 0, 0.954241, 0, -0.643511, 0, 0.704606, -0.6, 0, -14.4)
@@ -502,7 +502,7 @@ transform = Transform3D(-0.987494, 0, -0.157654, 0, 1, 0, 0.157654, 0, -0.987494
 [node name="Trees" type="Node3D" parent="."]
 
 [node name="Tree01" parent="Trees" instance=ExtResource("70_ctree1")]
-transform = Transform3D(0.862558, 0, 1.13543, 0, 1.4259, 0, -1.13543, 0, 0.862558, -12, 0, -16)
+transform = Transform3D(0.862558, 0, 1.13543, 0, 1.4259, 0, -1.13543, 0, 0.862558, -13.8, 0, -15.2)
 
 [node name="Tree02" parent="Trees" instance=ExtResource("71_ctree2")]
 transform = Transform3D(1.39646, 0, 0.239587, 0, 1.41687, 0, -0.239587, 0, 1.39646, -18, 0, -18)

@@ -9,8 +9,18 @@ signal state_changed(new_state: State, old_state: State)
 enum State { IDLE, WALK, RUN, AIRBORNE }
 
 @export_group("Speed")
-@export_range(0.5, 20.0, 0.1, "suffix:m/s") var walk_speed: float = 4.5
-@export_range(0.5, 30.0, 0.1, "suffix:m/s") var run_speed: float = 7.5
+## Phase 5H: about 11% faster than the original 4.5 m/s.
+@export_range(0.5, 20.0, 0.1, "suffix:m/s") var walk_speed: float = 5.0
+## Phase 5H: 12% faster than the original 7.5 m/s. The dash is separate (CombatController).
+@export_range(0.5, 30.0, 0.1, "suffix:m/s") var run_speed: float = 8.4
+
+@export_group("Animation")
+## Ground speed at which the walk clip plays at 1x (the speed it was tuned for). The clip
+## plays at walk_speed / walk_animation_speed, so a faster walk steps faster rather than
+## sliding further per step.
+@export_range(0.5, 20.0, 0.1, "suffix:m/s") var walk_animation_speed: float = 4.5
+## Ground speed at which the run clip plays at 1x (see walk_animation_speed).
+@export_range(0.5, 30.0, 0.1, "suffix:m/s") var run_animation_speed: float = 7.5
 
 @export_group("Responsiveness")
 ## How quickly the body reaches target speed while input is held.
@@ -55,6 +65,17 @@ func update_state(horizontal_velocity: Vector3, has_input: bool, running: bool, 
 		var old_state := state
 		state = new_state
 		state_changed.emit(new_state, old_state)
+
+
+## Playback speed for the locomotion clip of state: target speed over the speed the clip
+## was tuned for (1 for idle and airborne).
+func get_animation_speed_scale(for_state: State) -> float:
+	match for_state:
+		State.WALK:
+			return walk_speed / walk_animation_speed
+		State.RUN:
+			return run_speed / run_animation_speed
+	return 1.0
 
 
 func get_state_name() -> String:

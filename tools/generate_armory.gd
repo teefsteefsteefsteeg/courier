@@ -23,6 +23,8 @@ const ARMORY := preload("res://scripts/world/armory.gd")
 const SCALE := 0.55
 ## Lying flat on a table, blade along +X.
 const FLAT := Basis(Vector3(0, 0, 1), Vector3(1, 0, 0), Vector3(0, 1, 0))
+## Where the barrel of swords stands (location space).
+const BARREL_SPOT := Vector3(-2.95, 0, 1.0)
 
 var root_node: Node3D
 var model: Node3D
@@ -125,7 +127,9 @@ func _location() -> void:
 	_add(displays, _load_prop("sword_rack"), "SwordRack", Transform3D(Basis.IDENTITY, Vector3(-1.45, 0, 2.0)))
 	_add(displays, _load_prop("display_table"), "DisplayTable", Transform3D(Basis(Vector3.UP, deg_to_rad(6)), Vector3(-1.45, 0, 4.0)))
 	_add(displays, _load_prop("merchant_counter"), "MerchantCounter", Transform3D(Basis.IDENTITY, Vector3(1.5, 0, 2.85)))
-	_add(displays, _load_prop("weapon_barrel"), "WeaponBarrel", Transform3D(Basis.IDENTITY, Vector3(1.85, 0, 4.25)))
+	# At the hall's west front corner, beside the sword rack: clear of the walk up to the
+	# weaponsmith (ShopFront), the forest road and the plaza. It used to block the counter.
+	_add(displays, _load_prop("weapon_barrel"), "WeaponBarrel", Transform3D(Basis.IDENTITY, BARREL_SPOT))
 	# Shields and the sign on the balcony rail, the emblem on the gable that faces the camera.
 	var facade := _group("Facade")
 	_add(facade, _load_prop("armory_emblem"), "GableEmblem", Transform3D(Basis(Vector3.UP, PI / 2), Vector3(2.5, 5.75, 0)))

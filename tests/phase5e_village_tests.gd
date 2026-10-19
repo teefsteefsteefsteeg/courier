@@ -11,11 +11,12 @@ const VILLAGE := "res://scenes/levels/village.tscn"
 const LAYOUT := "res://assets/textures/terrain/village_layout.json"
 const SPLAT_A := "res://assets/textures/terrain/village_splat_a.png"
 const SPLAT_B := "res://assets/textures/terrain/village_splat_b.png"
-## Houses turned to face their lane in Phase 5E, and the lane end they face.
+## Houses turned to face their lane in Phase 5E, and the lane end they face (Oak, Fern and
+## Blue moved in Phase 5H; their lanes were extended to the new doors).
 const FACING := {
-	"CottageOak": Vector2(-17, 5.0), "CottageMoss": Vector2(-6, 21.2), "CottageBrook": Vector2(14, 21.4),
-	"CottageFern": Vector2(17.6, 6.0), "CottageWillow": Vector2(-18, 22.0), "CottageRose": Vector2(-8, 21.0),
-	"CottageBlue": Vector2(-5.6, -10.4), "CottageHill": Vector2(-26, 3.2),
+	"CottageOak": Vector2(-19.6, 4.7), "CottageMoss": Vector2(-6, 21.2), "CottageBrook": Vector2(14, 21.4),
+	"CottageFern": Vector2(18.6, 9.6), "CottageWillow": Vector2(-18, 22.0), "CottageRose": Vector2(-8, 21.0),
+	"CottageBlue": Vector2(-5.8, -13.8), "CottageHill": Vector2(-26, 3.2),
 }
 ## Gameplay positions that must not move (village XZ), from Phase 4/5A.
 const SPOTS := {

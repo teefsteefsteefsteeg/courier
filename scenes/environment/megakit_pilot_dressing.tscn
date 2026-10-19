@@ -110,19 +110,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.7, 0, 15.6)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0, 13.4)
 
 [node name="FernVineLeft" parent="Houses" instance=ExtResource("2_vine_4")]
-transform = Transform3D(-0.95, 0, 0, 0, 0.95, 0, 0, 0, -0.95, 19.62, 2.45, 10.44)
+transform = Transform3D(-0.95, 0, 0, 0, 0.95, 0, 0, 0, -0.95, 21.42, 2.45, 11.64)
 
 [node name="FernVineRight" parent="Houses" instance=ExtResource("2_vine_4")]
-transform = Transform3D(-0.85, 0, 0, 0, 0.85, 0, 0, 0, -0.85, 16.38, 2.4, 10.44)
+transform = Transform3D(-0.85, 0, 0, 0, 0.85, 0, 0, 0, -0.85, 18.18, 2.4, 11.64)
 
 [node name="FernVineSide" parent="Houses" instance=ExtResource("3_vine_2")]
-transform = Transform3D(0, 0, -0.8, 0, 0.8, 0, 0.8, 0, 0, 16.26, 2.5, 13.6)
+transform = Transform3D(0, 0, -0.8, 0, 0.8, 0, 0.8, 0, 0, 18.06, 2.5, 14.8)
 
 [node name="FernBush" parent="Houses" instance=ExtResource("9_flower_bush")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7, 0, 10.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, 0, 11.6)
 
 [node name="FernFlowers" parent="Houses" instance=ExtResource("8_flowers_tall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.8, 0, 12.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.6, 0, 13.8)
 
 [node name="Farm" type="Node3D" parent="."]
 

@@ -39,11 +39,12 @@ func _ready() -> void:
 
 
 func _on_state_changed(new_state: MovementComponent.State, _old_state: MovementComponent.State) -> void:
+	# Walk and run clips follow the movement speed (MovementComponent.get_animation_speed_scale).
 	match new_state:
 		MovementComponent.State.WALK:
-			character.play_loop(&"walk")
+			character.play_loop(&"walk", movement.get_animation_speed_scale(new_state))
 		MovementComponent.State.RUN:
-			character.play_loop(&"run")
+			character.play_loop(&"run", movement.get_animation_speed_scale(new_state))
 		MovementComponent.State.AIRBORNE:
 			character.play_loop(&"airborne")
 		_:
