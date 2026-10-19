@@ -17,12 +17,13 @@ focus and changes the Magic Bolt; the shield strengthens the Package Shield.
 
 | Item | Price | Slot | Effect | Held model |
 |---|---|---|---|---|
-| Wooden Sword | 50 | main hand | +4 bolt damage | KayKit Weapons Bits `sword_A` |
-| Iron Sword | 150 | main hand | +8 bolt damage | `sword_B` |
-| Steel Sword | 300 | main hand | +13 bolt damage, 10% faster casting | `sword_D` |
-| Battle Axe | 400 | main hand | +20 bolt damage, 25% slower casting | `axe_B` |
+| Wooden Sword | 50 | main hand | Sword: fast melee, 14 damage, 0.38 s, 1.7 m | KayKit Weapons Bits `sword_A` |
+| Iron Sword | 150 | main hand | Sword: fast melee, 20 damage, 0.36 s, 1.8 m | `sword_B` |
+| Steel Sword | 300 | main hand | Sword: fast melee, 27 damage, 0.32 s, 1.9 m | `sword_D` |
+| Battle Axe | 400 | main hand | Axe: heavy melee, 45 damage, 0.95 s, 2.2 m, 0.35 s wind-up | `axe_B` |
 | Magic Staff | 500 | main hand | +10 bolt damage, 25% faster casting, +6 m range | staff |
 | Wooden Shield | 100 | off-hand | +25 Package Shield durability | `shield_A` (left hand) |
+| Hunting Bow | 250 | main hand, two-handed | Bow: arrows, 16 damage, 0.6 s, 24 m (added with weapon switching) | `bow_A_withString` |
 
 Base courier stats: bolt damage 20, cooldown 0.45 s, range 18 m, shield 60.
 Icons: `assets/ui/item_icons/*.png`, 16 px placeholder pixel art saved at 32x32 by
@@ -103,8 +104,8 @@ Until the Armory scene adds one, there is no shop in the village.
 the development-mode 500 gold and the sword in hand.
 
 ## Limitations
-- The weapons are spell foci for the Magic Bolt, since there is no melee combat. The axe and
-  shield have no 3D model (none in the KayKit FREE pack).
+- Since the weapon-switching update, swords and the axe attack in melee and the staff (or bare
+  hands) casts the Magic Bolt; see `docs/PHASE5F_WEAPON_SWITCHING.md`.
 - Item icons are simple placeholders.
 - Removing the shield lowers the shield's maximum but not its current durability, so it can
   read above 100% until it is next used.

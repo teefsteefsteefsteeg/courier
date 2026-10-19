@@ -13,7 +13,7 @@ const COUNTER := "res://scenes/gameplay/shop/merchant_counter.tscn"
 const SAVE_PATH := "user://armory_shop_test_save.json"
 const PRICES := {
 	&"wooden_sword": 50, &"iron_sword": 150, &"steel_sword": 300,
-	&"battle_axe": 400, &"magic_staff": 500, &"wooden_shield": 100,
+	&"battle_axe": 400, &"magic_staff": 500, &"wooden_shield": 100, &"hunting_bow": 250,
 }
 const Q1 := &"q001_first_delivery"
 
@@ -107,7 +107,8 @@ func _character() -> KayKitCharacter:
 
 func _test_catalog() -> void:
 	print("[Armory catalog]")
-	_check(catalog != null and catalog.items.size() == 6, "six items for sale")
+	# Six items from the brief plus the Hunting Bow added with weapon switching.
+	_check(catalog != null and catalog.items.size() == 7, "seven items for sale")
 	var prices := {}
 	var missing_icons: PackedStringArray = []
 	for item in catalog.items:
@@ -173,7 +174,7 @@ func _test_shop_window() -> void:
 	await _frames(1)
 	_check(shop.is_open() and shop.merchant == counter.get_node("Merchant"), "interacting opens the shop")
 	_check(not player.input_enabled and shop.is_in_group(QuestJournal.MODAL_GROUP), "shop is modal and pauses the courier")
-	_check(shop.rows.size() == 6, "six rows")
+	_check(shop.rows.size() == catalog.items.size(), "one row per item (%d)" % shop.rows.size())
 	_check(shop.gold_label.text == "Gold: 500", "gold shown '%s'" % shop.gold_label.text)
 	_check((shop.rows[&"battle_axe"]["price"] as Label).text == "400 g", "prices shown")
 	var icon := (shop.rows[&"magic_staff"]["row"] as Control).find_children("*", "TextureRect", true, false)[0] as TextureRect

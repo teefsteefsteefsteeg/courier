@@ -8,10 +8,14 @@
 script = ExtResource("1_item")
 item_id = &"steel_sword"
 display_name = "Steel Sword"
-description = "Balanced steel that keeps a keen focus."
+description = "Balanced steel: the fastest, keenest cuts."
 slot = 0
 price = 300
 icon = ExtResource("2_icon")
 held_model = ExtResource("3_model")
-bolt_damage_bonus = 13.0
-bolt_cooldown_multiplier = 0.9
+weapon_type = 2
+attack_damage = 27.0
+attack_range = 1.9
+attack_cooldown = 0.32
+attack_arc_degrees = 115.0
+attack_windup = 0.1

@@ -275,7 +275,10 @@ func _build_row(item: ItemDefinition) -> Control:
 	var stats := Label.new()
 	stats.theme_type_variation = &"ContractDetail"
 	var stat_lines := item.get_stat_lines()
-	stats.text = "%s  ·  %s" % [ItemDefinition.slot_name(item.slot), ", ".join(stat_lines) if not stat_lines.is_empty() else "no bonuses"]
+	var kind := item.get_attack_summary() if item.is_weapon() else ItemDefinition.slot_name(item.slot)
+	if item.two_handed:
+		kind += " · two-handed"
+	stats.text = "%s  ·  %s" % [kind, ", ".join(stat_lines) if not stat_lines.is_empty() else "no bonuses"]
 	text.add_child(stats)
 	var description := Label.new()
 	description.theme_type_variation = &"ContractDetail"

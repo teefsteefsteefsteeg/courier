@@ -66,15 +66,15 @@ Services are per-level nodes in `scenes/gameplay/gameplay_services.tscn`, found 
 |---|---|---|
 | `QuestManager` | `scripts/quests/quest_manager.gd` | All quest state; one active delivery at a time; idempotent `grant_reward`; `retry_quest`; `restore_finished_quests` |
 | `CourierWallet` | `scripts/quests/courier_wallet.gd` | Gold, reputation, courier rank (Novice to Renowned); `spend_gold`, `restore` |
-| `CourierInventory` | `scripts/inventory/courier_inventory.gd` | Owned items (unique), MAIN_HAND / OFF_HAND equipment |
-| `EquipmentStats` | `scripts/inventory/equipment_stats.gd` | Applies equipped items to the player's `CombatController` and held model |
+| `CourierInventory` | `scripts/inventory/courier_inventory.gd` | Owned items (unique), MAIN_HAND / OFF_HAND equipment, five weapon quick slots (ids of owned weapons) |
+| `EquipmentStats` | `scripts/inventory/equipment_stats.gd` | Applies equipped items to the player's `CombatController` (stats and attack style by weapon type) and the held models |
 | `SaveGame` | `scripts/core/save_game.gd` | `user://savegame.json`; autosave; **off in headless runs** |
 
 Key gameplay scripts:
 - **Player:** `scripts/player/player_controller.gd` (input -> camera-relative movement, `input_enabled`),
   `scripts/components/movement_component.gd` (IDLE/WALK/RUN/AIRBORNE), `interaction_detector.gd`,
   `scripts/characters/player_animator.gd` + `kaykit_character.gd` (animation; one-shots).
-- **Combat:** `scripts/combat/combat_controller.gd` (Magic Bolt, Dash, Package Shield; Space / Shift / Q),
+- **Combat:** `scripts/combat/combat_controller.gd` (primary attack by weapon: Magic Bolt, fast/heavy melee, arrow; Dash, Package Shield; Space / Shift / Q),
   `combat_health.gd`. Enemies `scripts/enemies/` (ForestSlime, FrostWisp) are spawned only during the
   Dragon Egg run in the forest by `scripts/phase4_integration/phase4_delivery_integration.gd`.
 - **Packages:** `scripts/packages/` (carrier, pickups, instances with temperature/instability).
@@ -85,6 +85,7 @@ Key gameplay scripts:
   Potion 90 g), packages in `data/packages/`. `scripts/quests/quest_waypoint.gd` maps the current
   objective to a world node (minimap objective).
 - **UI:** `scripts/gameplay_ui/` (GameplayHUD layout, tracker, wallet, toasts, board, ShopUI,
+  QuickWeaponBar (bottom-right, keys 1-5), EquipmentUI (Tab),
   MovementGuide), `scripts/ui/` (interaction prompt, dialogue box, journal, location banner,
   UISettings, `input_prompts/`), minimap `scripts/phase4_integration_visual/minimap_controller.gd`.
   Modal windows (journal, quest board, shop, expanded map) join group `ui_modal`, pause the
@@ -100,7 +101,7 @@ Key gameplay scripts:
 - **Dev mode:** `scripts/core/dev_mode.gd`: debug build with a window. Override with `-- --dev` / `-- --no-dev`.
 
 Bindings (from `project.godot`): WASD move, Shift run **and** dash, E interact, G drop package,
-Space magic bolt, Q package shield, J journal, M map, mouse wheel or `=` `-` zoom, F3 debug HUD,
+Space attack (bolt / melee / arrow by weapon), 1-5 weapon quick slots, Tab equipment, Q package shield, J journal, M map, mouse wheel or `=` `-` zoom, F3 debug HUD,
 Esc close (`ui_cancel`).
 
 ## Assets
@@ -115,7 +116,7 @@ scenes (`scenes/buildings/*`, `scenes/locations/armory.tscn`, `scenes/props/armo
 **generated**: change the generator, not the scene.
 
 ## Status
-Phase 5F is integrated and every automated check passes (23 suites, 2196 checks, clean boot). It
+Phase 5F is integrated and every automated check passes (25 suites, 2327 checks, clean boot). It
 has **not been played by a person**. See `docs/DEVELOPMENT_HANDOFF.md` for what is complete,
 known issues and next priorities.
 

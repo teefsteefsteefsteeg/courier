@@ -77,7 +77,8 @@ func _run() -> void:
 	await _frames(2)
 	_check(shop.is_open() and shop.merchant == merchant and shop.title_label.text == "Weaponsmith Brenna", "talking to Brenna opens her shop")
 	_check(requests == [player], "Armory.shop_requested still fires for the visual layer")
-	_check(shop.rows.size() == 6 and not player.input_enabled, "six wares, courier paused")
+	var wares := (load("res://data/shops/armory.tres") as ShopCatalog).items.size()
+	_check(shop.rows.size() == wares and not player.input_enabled, "all %d wares listed, courier paused" % wares)
 	var dialogue := level.get_node("DialogueBox") as DialogueBox
 	_check(not dialogue.is_open(), "her dialogue line does not stay under the shop")
 
@@ -92,7 +93,9 @@ func _run() -> void:
 	var base := combat.bolt_damage
 	shop.activate(&"iron_sword")
 	await _frames(1)
-	_check(inventory.is_equipped(&"iron_sword") and is_equal_approx(combat.bolt_damage, base + 8.0), "equipped: bolt damage %.1f -> %.1f" % [base, combat.bolt_damage])
+	# Since weapon switching, a sword is a fast melee weapon (docs/PHASE5F_WEAPON_SWITCHING.md).
+	_check(inventory.is_equipped(&"iron_sword") and combat.get_attack_style() == CombatController.AttackStyle.FAST_MELEE and is_equal_approx(combat.melee_damage, 20.0) and is_equal_approx(combat.bolt_damage, base),
+			"equipped: the iron sword swings for %.1f (bolt stays %.1f)" % [combat.melee_damage, combat.bolt_damage])
 	shop.close()
 	await _frames(2)
 	_check(not shop.is_open() and player.input_enabled, "shop closed, courier moves again")

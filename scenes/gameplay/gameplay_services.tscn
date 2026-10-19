@@ -16,6 +16,7 @@
 [ext_resource type="Resource" path="res://data/items/battle_axe.tres" id="14_battle_axe"]
 [ext_resource type="Resource" path="res://data/items/magic_staff.tres" id="15_magic_staff"]
 [ext_resource type="Resource" path="res://data/items/wooden_shield.tres" id="16_wooden_shield"]
+[ext_resource type="Resource" path="res://data/items/hunting_bow.tres" id="17_hunting_bow"]
 
 [node name="GameplayServices" type="Node"]
 
@@ -29,7 +30,7 @@ wallet = NodePath("../CourierWallet")
 
 [node name="CourierInventory" type="Node" parent="."]
 script = ExtResource("7_inventory")
-item_definitions = Array[ExtResource("10_item")]([ExtResource("11_wooden_sword"), ExtResource("12_iron_sword"), ExtResource("13_steel_sword"), ExtResource("14_battle_axe"), ExtResource("15_magic_staff"), ExtResource("16_wooden_shield")])
+item_definitions = Array[ExtResource("10_item")]([ExtResource("11_wooden_sword"), ExtResource("12_iron_sword"), ExtResource("13_steel_sword"), ExtResource("14_battle_axe"), ExtResource("15_magic_staff"), ExtResource("16_wooden_shield"), ExtResource("17_hunting_bow")])
 
 [node name="EquipmentStats" type="Node" parent="." node_paths=PackedStringArray("inventory")]
 script = ExtResource("8_equipment")

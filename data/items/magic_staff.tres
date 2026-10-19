@@ -13,6 +13,7 @@ slot = 0
 price = 500
 icon = ExtResource("2_icon")
 held_model = ExtResource("3_model")
+weapon_type = 1
 bolt_damage_bonus = 10.0
 bolt_cooldown_multiplier = 0.75
 bolt_range_bonus = 6.0

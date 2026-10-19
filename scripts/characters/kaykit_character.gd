@@ -22,6 +22,11 @@ const ACTIONS := {
 	&"airborne": [&"move/Jump_Idle", &"general/Idle_A"],
 	# No attack or dash clips in the FREE pack: a cast-like throw and a fast run.
 	&"attack": [&"general/Attack", &"general/Throw", &"general/Use_Item"],
+	# No swing or draw clips either: a quick reach for the sword, the overhead throw
+	# (played slowly) for the axe's chop, the use-item motion for the bow.
+	&"melee_fast": [&"general/Melee_1H_Attack_Slice_Horizontal", &"general/Interact", &"general/Throw"],
+	&"melee_heavy": [&"general/Melee_2H_Attack_Chop", &"general/Throw"],
+	&"shoot": [&"general/Ranged_Bow_Release", &"general/Use_Item", &"general/Throw"],
 	&"dash": [&"move/Dash", &"move/Running_B", &"move/Running_A"],
 	&"hit": [&"general/Hit_A"],
 	&"death": [&"general/Death_A"],

@@ -8,9 +8,14 @@
 script = ExtResource("1_item")
 item_id = &"wooden_sword"
 display_name = "Wooden Sword"
-description = "A practice blade. Couriers channel their bolts through it."
+description = "A practice blade: quick, light cuts."
 slot = 0
 price = 50
 icon = ExtResource("2_icon")
 held_model = ExtResource("3_model")
-bolt_damage_bonus = 4.0
+weapon_type = 2
+attack_damage = 14.0
+attack_range = 1.7
+attack_cooldown = 0.38
+attack_arc_degrees = 110.0
+attack_windup = 0.12

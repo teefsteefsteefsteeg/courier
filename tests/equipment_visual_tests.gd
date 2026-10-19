@@ -132,7 +132,8 @@ func _test_save_round_trip() -> void:
 	_check(_shows(character.get_held_item_node(), catalog.get_item(&"battle_axe"), "handslot.r") and _shows(character.get_off_hand_item_node(), catalog.get_item(&"wooden_shield"), "handslot.l"),
 			"a loaded save shows the equipped axe and shield")
 	var axe := catalog.get_item(&"battle_axe")
-	_check(is_equal_approx(combat.bolt_damage, equipment.get_base_stat("bolt_damage") + axe.bolt_damage_bonus), "loaded axe still sets the bolt damage (%.1f)" % combat.bolt_damage)
+	_check(is_equal_approx(combat.melee_damage, axe.attack_damage) and combat.get_attack_style() == CombatController.AttackStyle.HEAVY_MELEE,
+			"loaded axe still sets its heavy melee attack (%.1f)" % combat.melee_damage)
 
 
 func _test_attack_keeps_weapon() -> void:
@@ -141,7 +142,8 @@ func _test_attack_keeps_weapon() -> void:
 	character.play_once(&"attack")
 	await _frames(5)
 	_check(character.get_held_item_node() == held and held != null and held.is_visible_in_tree(), "the attack animation keeps the axe in hand")
-	_check(combat.try_magic_bolt(Vector3.RIGHT), "a bolt can still be cast with the axe equipped")
+	await _frames(40)
+	_check(combat.try_attack(Vector3.RIGHT), "the axe can still attack after the animation")
 
 
 func _test_npc_props() -> void:

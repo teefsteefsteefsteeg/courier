@@ -16,6 +16,10 @@ const GAP := 12.0
 var onboarding: Label
 ## WASD (actual bindings) guide, bottom-left above the combat panel.
 var movement_guide: MovementGuide
+## Weapon quick slots (keys 1-5), bottom-right under the package panels.
+var quick_weapon_bar: QuickWeaponBar
+## Equipment window (Tab): owned gear and quick-slot assignment.
+var equipment_ui: EquipmentUI
 var _combat_panel: Control = null
 var _combat_scan_left: float = 0.0
 
@@ -34,8 +38,16 @@ func _ready() -> void:
 	movement_guide = MovementGuide.new()
 	movement_guide.name = "MovementGuide"
 	add_child(movement_guide)
+	quick_weapon_bar = QuickWeaponBar.new()
+	quick_weapon_bar.name = "QuickWeaponBar"
+	quick_weapon_bar.player = player
+	add_child(quick_weapon_bar)
+	quick_weapon_bar.add_to_group(QuestJournal.HIDDEN_WHILE_OPEN_GROUP)
+	equipment_ui = EquipmentUI.new()
+	equipment_ui.name = "EquipmentUI"
+	add_child(equipment_ui)
 	# World-anchored input prompts stay clear of these panels.
-	for widget: Control in [quest_tracker, wallet_display, package_indicator, quest_notification.panel, package_status_hud.get_node("Panel"), onboarding, movement_guide]:
+	for widget: Control in [quest_tracker, wallet_display, package_indicator, quest_notification.panel, package_status_hud.get_node("Panel"), onboarding, movement_guide, quick_weapon_bar]:
 		widget.add_to_group(InputPrompt.AVOID_GROUP)
 	if player == null:
 		return
@@ -57,10 +69,14 @@ func _process(_delta: float) -> void:
 	_place(onboarding, Vector2.ZERO, Vector2(MARGIN, MARGIN), Vector2(width, maxf(100, onboarding.get_combined_minimum_size().y)))
 	onboarding.visible = not quest_tracker.visible
 	_place(wallet_display, Vector2(1, 0), Vector2(-width - MARGIN, MARGIN), Vector2(width, maxf(46, wallet_display.get_combined_minimum_size().y)))
+	# Bottom-right column, from the bottom: weapon quick slots, package status, package.
+	var bar_height := quick_weapon_bar.get_combined_minimum_size().y
+	_place(quick_weapon_bar, Vector2.ONE, Vector2(-width - MARGIN, -MARGIN - bar_height), Vector2(width, bar_height))
+	var bar_space := bar_height + GAP if quick_weapon_bar.visible else 0.0
 	var status_height := maxf(110, package_status_hud.get_node("Panel").get_combined_minimum_size().y)
-	_place(package_status_hud, Vector2.ONE, Vector2(-width - MARGIN, -MARGIN - status_height), Vector2(width, status_height))
+	_place(package_status_hud, Vector2.ONE, Vector2(-width - MARGIN, -MARGIN - bar_space - status_height), Vector2(width, status_height))
 	var indicator_height := maxf(100, package_indicator.get_combined_minimum_size().y)
-	var below := status_height + GAP if package_status_hud.visible else 0.0
+	var below := bar_space + (status_height + GAP if package_status_hud.visible else 0.0)
 	_place(package_indicator, Vector2.ONE, Vector2(-width - MARGIN, -MARGIN - below - indicator_height), Vector2(width, indicator_height))
 	var map := get_node_or_null("Minimap")
 	if map != null and map.get("compact") != null:

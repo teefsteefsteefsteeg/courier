@@ -92,14 +92,14 @@ Uncommitted state left in the role worktrees, intentionally not part of any comm
 | HUD | Complete | Tracker, wallet and rank, toasts, package panels, combat HUD, minimap, WASD guide |
 | Input prompts | Complete | Keyboard/mouse keycaps from the InputMap; gamepad icons cropped but unused (no gamepad bindings) |
 | Journal, quest board | Complete | Modal, keyboard focus |
-| Shop, inventory, equipment, gold | Complete for MVP | Weapons modify the Magic Bolt; no melee combat |
+| Shop, inventory, equipment, gold | Complete for MVP | Weapon types: sword fast melee, axe heavy melee, staff bolts, bow arrows (Hunting Bow, 250 g). Quick slots 1-5, Equipment window (Tab). See `PHASE5F_WEAPON_SWITCHING.md` |
 | Save/load | Partial | Gold, rep, items, equipment, finished quests, starting-gold flag. **Deliveries in progress are not saved.** No title/continue menu |
 | Settings menu | Not built | `UISettings` API exists (`show_movement_guide`); no UI |
 | Gamepad | Not supported | No bindings |
 | Human playtest | **Not done** | All checks are automated or scripted rendered runs |
 
-## 4. Test results (integrated, 2026-10-18)
-All 23 suites in `tests/*_tests.gd` pass, **2196 checks, 0 failures**. No exit-time leak
+## 4. Test results (integrated, 2026-10-19)
+All 25 suites in `tests/*_tests.gd` pass, **2327 checks, 0 failures**. No exit-time leak
 reports in any suite. `--quit-after 300` village boot logs no ERROR/WARNING lines. Import
 complete (332 sidecars, all resolved).
 
@@ -107,7 +107,7 @@ complete (332 sidecars, all resolved).
 |---|---|---|---|
 | phase1 | 52 | phase5a_asset | 198 |
 | phase2 | 105 | phase5b_environment | 43 |
-| phase3 | 79 | phase5c_character | 73 |
+| phase3 | 79 | phase5c_character | 76 |
 | phase3_demo | 14 | phase5d_megakit | 64 |
 | phase3_visual | 123 | phase5e_village | 68 |
 | phase4_gameplay | 183 | phase5f_building | 138 |
@@ -116,7 +116,8 @@ complete (332 sidecars, all resolved).
 | phase4_hud_polish | 170 | input_prompt | 75 |
 | village_quest | 95 | armory_shop | 70 |
 | world_ui | 127 | player_animation | 38 |
-| | | phase5f_integration | 17 |
+| equipment_visual | 34 | phase5f_integration | 17 |
+| weapon_quick_switch | 94 | | |
 
 Rendered check at 1600x900 (`capture_phase5f_integrated_screenshots.gd`):
 - Brenna's prompt and keycap show.
@@ -145,7 +146,8 @@ and `capture_armory_screenshots.gd`.
   - There's no in-game New Game; use `-- --new-game`.
   - In normal windowed play the save file is real, so playtests carry progress between launches.
 - **Economy and gear:**
-  - Weapons are Magic Bolt foci (the game has no melee).
+  - The FREE animation pack has no swing clips: melee reuses Interact (sword) and Throw (axe).
+  - The Phase 4 combat panel still labels the primary attack "Bolt" for every weapon.
   - Item icons are placeholders.
   - Unequipping the shield can leave current shield durability above the new max until used.
   - Ranks gate nothing yet.

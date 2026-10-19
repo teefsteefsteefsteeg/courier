@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ItemDefinition" format=3]
+
+[ext_resource type="Script" path="res://scripts/shop/item_definition.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://assets/ui/item_icons/hunting_bow.png" id="2_icon"]
+[ext_resource type="PackedScene" path="res://assets/models/kaykit_weapons/bow_A_withString.gltf" id="3_model"]
+
+[resource]
+script = ExtResource("1_item")
+item_id = &"hunting_bow"
+display_name = "Hunting Bow"
+description = "Two-handed: arrows fly far and true, but there is no hand left for a shield."
+slot = 0
+price = 250
+icon = ExtResource("2_icon")
+held_model = ExtResource("3_model")
+weapon_type = 4
+two_handed = true
+attack_damage = 16.0
+attack_range = 24.0
+attack_cooldown = 0.6

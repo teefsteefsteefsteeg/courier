@@ -5,6 +5,7 @@
 Writes assets/ui/item_icons/<item_id>.png for the Armory catalog. Shapes are rasterised
 on a 16 px grid and get a dark 1 px outline, matching the input prompt keycaps' palette.
 """
+import math
 from pathlib import Path
 
 from PIL import Image
@@ -103,6 +104,24 @@ def shield():
     return draw([((140, 146, 158, 255), rim), (WOOD, wood), (WOOD_DARK, plank), (GOLD, boss), (GOLD_DARK, {(8, 8)})])
 
 
+def bow():
+    limb, grip, string, shaft, head, fletch = set(), set(), set(), set(), set(), set()
+    # Quarter-circle limb bulging to the upper left, string corner to corner, and an
+    # arrow nocked on the string pointing out past the limb.
+    for step in range(40):
+        angle = math.radians(180 + step * 90 / 39)
+        limb.add((round(13 + 11.5 * math.cos(angle)), round(13 + 11.5 * math.sin(angle))))
+    for p in list(limb):
+        if 4 <= p[0] <= 6 and 4 <= p[1] <= 6:
+            grip.add(p)
+    line(string, 2, 13, 13, 2)
+    line(shaft, 9, 9, 3, 3)
+    head.update({(2, 2), (2, 3), (3, 2)})
+    fletch.update({(10, 9), (9, 10), (10, 10)})
+    return draw([(WOOD, limb), (LEATHER, grip), ((226, 220, 200, 255), string), ((176, 128, 80, 255), shaft),
+            ((200, 206, 216, 255), head), ((80, 150, 220, 255), fletch)])
+
+
 ICONS = {
     "wooden_sword": lambda: sword((182, 132, 78, 255), WOOD_DARK, WOOD_DARK, LEATHER),
     "iron_sword": lambda: sword((178, 184, 194, 255), (122, 128, 140, 255), GOLD, GOLD_DARK),
@@ -110,6 +129,7 @@ ICONS = {
     "battle_axe": axe,
     "magic_staff": staff,
     "wooden_shield": shield,
+    "hunting_bow": bow,
 }
 
 

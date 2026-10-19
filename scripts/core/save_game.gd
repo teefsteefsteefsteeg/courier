@@ -151,6 +151,7 @@ func _watch() -> void:
 	if inventory != null:
 		inventory.item_added.connect(func(_i): request_save())
 		inventory.equipment_changed.connect(func(_s, _i): request_save())
+		inventory.quick_slots_changed.connect(request_save)
 	if quest_manager != null:
 		quest_manager.quest_rewarded.connect(func(_q, _r): request_save())
 

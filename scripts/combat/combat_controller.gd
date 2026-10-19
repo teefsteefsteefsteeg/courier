@@ -1,7 +1,15 @@
 class_name CombatController
 extends Node
 ## Courier combat abilities, added as the "Combat" child of a CharacterBody3D:
-## - Magic Bolt: ranged projectile along the aim direction, on a cooldown.
+## - Primary attack (try_attack, the combat_magic_bolt action), chosen by the attack style
+##   EquipmentStats sets from the equipped weapon's type:
+##   MAGIC_BOLT (bare hands or a staff): ranged projectile along the aim direction.
+##   FAST_MELEE (sword) / HEAVY_MELEE (axe): a swing that, after melee_windup seconds,
+##   damages every enemy within melee_range and melee_arc_degrees in front.
+##   ARROW (bow): a faster, longer-range projectile with the arrow model.
+##   All share one cooldown (the "bolt" cooldown the HUD shows), which switching weapons
+##   never shortens. A switch cancels a swing that has not landed yet; switch_delay (off by
+##   default) can add a minimum wait before the next attack.
 ## - Dash: short burst of movement; the body takes no damage while dashing.
 ## - Package Shield: while a package is carried, absorbs incoming damage until its
 ##   durability runs out. It cannot be raised without a package and drops automatically
@@ -18,6 +26,13 @@ extends Node
 ## so tests can drive the controller with exact deltas.
 
 signal magic_bolt_fired(origin: Vector3, direction: Vector3)
+## A melee swing started (heavy: axe). Its hit lands melee_windup seconds later.
+signal melee_started(direction: Vector3, heavy: bool)
+## A swing landed; hits = enemies damaged (0 for a miss).
+signal melee_resolved(hits: int)
+## A swing was cut short before landing (weapon switched, knocked out).
+signal melee_cancelled
+signal arrow_fired(origin: Vector3, direction: Vector3)
 signal dash_started
 signal dash_finished
 ## Emitted when the shield is raised/lowered/broken and whenever its durability changes.
@@ -25,7 +40,7 @@ signal shield_changed(active: bool, durability: float)
 ## A Magic Bolt damaged target (the body hit) by amount.
 signal target_hit(target: Node, amount: float)
 signal shield_broken
-## An ability request was refused. ability: &"magic_bolt", &"dash", &"package_shield".
+## An ability request was refused. ability: &"magic_bolt", &"melee", &"arrow", &"dash", &"package_shield".
 ## reason: &"cooldown", &"dashing", &"dead", &"no_body", &"no_package", &"shield_depleted".
 signal ability_blocked(ability: StringName, reason: StringName)
 
@@ -37,6 +52,9 @@ const PLAYER_LAYER := 2
 const ENEMY_LAYER := 16
 
 const MAGIC_BOLT_SCENE := preload("res://scenes/gameplay/combat/magic_bolt.tscn")
+const ARROW_SCENE := preload("res://scenes/gameplay/combat/arrow.tscn")
+
+enum AttackStyle { MAGIC_BOLT, FAST_MELEE, HEAVY_MELEE, ARROW }
 
 @export var health: CombatHealth
 ## Handle the combat input actions. A PlayerController parent's input_enabled also applies.
@@ -55,6 +73,25 @@ const MAGIC_BOLT_SCENE := preload("res://scenes/gameplay/combat/magic_bolt.tscn"
 @export var bolt_spawn_height: float = 0.8
 @export var bolt_spawn_forward: float = 0.3
 @export_flags_3d_physics var bolt_collision_mask: int = WORLD_LAYER | ENEMY_LAYER
+
+@export_group("Melee")
+@export var melee_damage: float = 20.0
+@export_range(0.1, 10.0, 0.05, "suffix:m") var melee_range: float = 1.8
+@export_range(0.0, 10.0, 0.01, "suffix:s") var melee_cooldown: float = 0.36
+@export_range(10.0, 360.0, 5.0, "suffix:°") var melee_arc_degrees: float = 110.0
+@export_range(0.0, 2.0, 0.01, "suffix:s") var melee_windup: float = 0.12
+
+@export_group("Arrow")
+@export var arrow_scene: PackedScene
+@export var arrow_damage: float = 18.0
+@export_range(0.1, 100.0, 0.1, "suffix:m/s") var arrow_speed: float = 28.0
+@export_range(0.1, 100.0, 0.1, "suffix:m") var arrow_range: float = 26.0
+@export_range(0.0, 10.0, 0.05, "suffix:s") var arrow_cooldown: float = 0.7
+
+@export_group("Weapon Switch")
+## Minimum wait before the next attack after a weapon switch (0 = none). The shared
+## cooldown is never shortened by a switch either way.
+@export_range(0.0, 2.0, 0.01, "suffix:s") var switch_delay: float = 0.0
 
 @export_group("Dash")
 @export_range(0.1, 60.0, 0.1, "suffix:m/s") var dash_speed: float = 16.0
@@ -84,6 +121,12 @@ var _dash_direction: Vector3 = Vector3.ZERO
 var _shield_active: bool = false
 var _shield_durability: float = -1.0
 var _shield_regen_wait: float = 0.0
+var _attack_style: AttackStyle = AttackStyle.MAGIC_BOLT
+var _melee_windup_left: float = -1.0
+var _melee_direction: Vector3 = Vector3.ZERO
+var _melee_heavy: bool = false
+## Length of the primary cooldown last started (for the HUD's cooldown bar).
+var _attack_cooldown_total: float = 0.45
 
 
 func _ready() -> void:
@@ -125,7 +168,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not _accepts_input():
 		return
 	if event.is_action_pressed(&"combat_magic_bolt"):
-		try_magic_bolt()
+		try_attack()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"combat_dash"):
 		try_dash()
@@ -141,9 +184,160 @@ func advance(delta: float) -> void:
 		return
 	_bolt_cooldown_left = maxf(_bolt_cooldown_left - delta, 0.0)
 	_dash_cooldown_left = maxf(_dash_cooldown_left - delta, 0.0)
+	if _melee_windup_left >= 0.0:
+		_melee_windup_left -= delta
+		if _melee_windup_left <= 0.0:
+			_resolve_melee()
 	if _dash_time_left > 0.0:
 		_step_dash(delta)
 	_step_shield_regen(delta)
+
+
+# --- Primary attack ---------------------------------------------------------------
+
+## Attacks with the current style along direction (or the aim direction when zero).
+func try_attack(direction := Vector3.ZERO) -> bool:
+	match _attack_style:
+		AttackStyle.FAST_MELEE, AttackStyle.HEAVY_MELEE:
+			return try_melee(direction)
+		AttackStyle.ARROW:
+			return try_arrow(direction)
+	return try_magic_bolt(direction)
+
+
+func get_attack_style() -> AttackStyle:
+	return _attack_style
+
+
+## Sets the primary attack (EquipmentStats calls this from the equipped weapon). A
+## different style counts as a weapon switch (see switch_weapon).
+func set_attack_style(style: AttackStyle) -> void:
+	if style == _attack_style:
+		return
+	_attack_style = style
+	switch_weapon()
+
+
+## The weapon in hand changed: a swing still winding up is cancelled (it never lands with
+## the new weapon's stats). The running cooldown is kept; switch_delay can extend it.
+func switch_weapon() -> void:
+	cancel_melee()
+	if switch_delay > _bolt_cooldown_left:
+		_bolt_cooldown_left = switch_delay
+		_attack_cooldown_total = switch_delay
+
+
+## Seconds until the primary attack (any style) is ready. The combat HUD polls this.
+func get_bolt_cooldown_remaining() -> float:
+	return _bolt_cooldown_left
+
+
+## Length of the primary cooldown now running, for the HUD's cooldown bar.
+func get_bolt_cooldown() -> float:
+	return _attack_cooldown_total
+
+
+# --- Melee -----------------------------------------------------------------------
+
+## Starts a swing (fast for a sword, heavy for an axe). The hit lands after melee_windup.
+func try_melee(direction := Vector3.ZERO) -> bool:
+	if _is_dead():
+		return _block(&"melee", &"dead")
+	if _bolt_cooldown_left > 0.0 or is_melee_pending():
+		return _block(&"melee", &"cooldown")
+	if _body == null or not _body.is_inside_tree():
+		return _block(&"melee", &"no_body")
+	var aim := _flatten(direction)
+	_melee_direction = aim if aim != Vector3.ZERO else get_aim_direction()
+	_melee_heavy = _attack_style == AttackStyle.HEAVY_MELEE
+	_bolt_cooldown_left = melee_cooldown
+	_attack_cooldown_total = melee_cooldown
+	_melee_windup_left = melee_windup
+	melee_started.emit(_melee_direction, _melee_heavy)
+	if melee_windup <= 0.0:
+		_resolve_melee()
+	return true
+
+
+func is_melee_pending() -> bool:
+	return _melee_windup_left >= 0.0
+
+
+func cancel_melee() -> void:
+	if is_melee_pending():
+		_melee_windup_left = -1.0
+		melee_cancelled.emit()
+
+
+## Enemies (CombatHealth on the enemy layer) inside a swing along direction, nearest first.
+func get_melee_targets(direction: Vector3) -> Array[Node]:
+	var targets: Array[Node] = []
+	if _body == null or not _body.is_inside_tree():
+		return targets
+	var sphere := SphereShape3D.new()
+	sphere.radius = melee_range
+	var query := PhysicsShapeQueryParameters3D.new()
+	query.shape = sphere
+	query.transform = Transform3D(Basis.IDENTITY, _body.global_position + Vector3.UP * bolt_spawn_height)
+	query.collision_mask = ENEMY_LAYER
+	query.collide_with_areas = false
+	query.exclude = [_body.get_rid()]
+	var half_arc := deg_to_rad(melee_arc_degrees) * 0.5
+	var origin := _body.global_position
+	for result: Dictionary in _body.get_world_3d().direct_space_state.intersect_shape(query, 32):
+		var target := result.collider as Node3D
+		if target == null or targets.has(target) or CombatHealth.find_on(target) == null:
+			continue
+		var to_target := _flatten(target.global_position - origin)
+		if to_target == Vector3.ZERO or absf(direction.angle_to(to_target)) <= half_arc:
+			targets.append(target)
+	targets.sort_custom(func(a: Node3D, b: Node3D) -> bool:
+		return a.global_position.distance_squared_to(origin) < b.global_position.distance_squared_to(origin))
+	return targets
+
+
+func _resolve_melee() -> void:
+	_melee_windup_left = -1.0
+	var hits := 0
+	if not _is_dead():
+		for target in get_melee_targets(_melee_direction):
+			var health := CombatHealth.find_on(target)
+			if health.apply_damage(melee_damage, _body.global_position):
+				hits += 1
+				target_hit.emit(target, health.last_damage_taken)
+	melee_resolved.emit(hits)
+
+
+# --- Arrow -----------------------------------------------------------------------
+
+## Fires an arrow along direction (or the aim direction when zero). Returns the result.
+func try_arrow(direction := Vector3.ZERO) -> bool:
+	if _is_dead():
+		return _block(&"arrow", &"dead")
+	if _bolt_cooldown_left > 0.0:
+		return _block(&"arrow", &"cooldown")
+	if _body == null or not _body.is_inside_tree() or _body.get_parent() == null:
+		return _block(&"arrow", &"no_body")
+	var aim := _flatten(direction)
+	if aim == Vector3.ZERO:
+		aim = get_aim_direction()
+	var origin := _body.global_position + Vector3.UP * bolt_spawn_height + aim * bolt_spawn_forward
+	var arrow := (arrow_scene if arrow_scene != null else ARROW_SCENE).instantiate() as CombatProjectile
+	arrow.damage = arrow_damage
+	arrow.speed = arrow_speed
+	arrow.max_distance = arrow_range
+	arrow.collision_mask = bolt_collision_mask
+	arrow.direction = aim
+	arrow.source = _body
+	_body.get_parent().add_child(arrow)
+	arrow.global_position = origin
+	arrow.look_at(origin + aim, Vector3.UP)
+	arrow.reset_physics_interpolation()
+	arrow.hit.connect(_on_bolt_hit)
+	_bolt_cooldown_left = arrow_cooldown
+	_attack_cooldown_total = arrow_cooldown
+	arrow_fired.emit(origin, aim)
+	return true
 
 
 # --- Magic Bolt ------------------------------------------------------------------
@@ -173,6 +367,7 @@ func try_magic_bolt(direction := Vector3.ZERO) -> bool:
 	bolt.reset_physics_interpolation()
 	bolt.hit.connect(_on_bolt_hit)
 	_bolt_cooldown_left = bolt_cooldown
+	_attack_cooldown_total = bolt_cooldown
 	magic_bolt_fired.emit(origin, aim)
 	return true
 
@@ -343,6 +538,7 @@ func _on_damaged(amount: float, _source_position: Vector3) -> void:
 
 
 func _on_died() -> void:
+	cancel_melee()
 	if is_dashing():
 		_end_dash()
 	set_package_shield_enabled(false)
