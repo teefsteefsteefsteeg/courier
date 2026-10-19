@@ -21,6 +21,7 @@
 [ext_resource type="Resource" path="res://data/packages/pkg_potion_crate.tres" id="19_pkg_potion"]
 [ext_resource type="PackedScene" path="res://scenes/gameplay/phase3_visual/phase3_showcase.tscn" id="20_phase3_showcase"]
 [ext_resource type="PackedScene" path="res://scenes/environment/post_office_dressing.tscn" id="30_dressing"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="90_world_location"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
 size = Vector2(11.6, 9.6)
@@ -591,7 +592,16 @@ script = ExtResource("1_zone")
 display_name = "Willowmere Post Office"
 subtitle = "Courier Guild Hall"
 zone_priority = 10
+location_id = &"post_office"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 shape = SubResource("BoxShape3D_zone")
+
+[node name="Location" type="Marker3D" parent="."]
+script = ExtResource("90_world_location")
+location_id = &"post_office"
+display_name = "Willowmere Post Office"
+subtitle = "Courier Guild Hall"
+kind = 1
+discover_radius = 0.0

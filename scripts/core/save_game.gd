@@ -3,9 +3,9 @@ extends Node
 ## Minimal save file (the project had none): wallet, inventory and equipment, finished
 ## quests, and one-time grants. JSON at `path`. Lives in GameplayServices.
 ##
-## What is saved: gold, reputation, owned and equipped items, every quest that reached
-## REWARDED (so a reward is never paid twice, even across sessions), and the
-## starting-gold flag. Deliveries in progress are not saved (the carried package is not
+## What is saved: gold, reputation, owned and equipped items and quick slots, every quest
+## that reached REWARDED (so a reward is never paid twice, even across sessions), the
+## explored map, discovered locations and activated portals, and the starting-gold flag. Deliveries in progress are not saved (the carried package is not
 ## persisted); after a reload such a contract is simply on the board again.
 ##
 ## Loading and autosave run when `enabled`, which defaults to off in headless runs so
@@ -31,6 +31,9 @@ const DEV_STARTING_GOLD := 500
 @export var wallet: CourierWallet
 @export var inventory: CourierInventory
 @export var quest_manager: QuestManager
+## Explored map, discovered locations and activated portals ("exploration" key; saves
+## without it start unexplored).
+@export var exploration: ExplorationService
 
 var starting_gold_granted: bool = false
 var _save_left: float = -1.0
@@ -52,6 +55,8 @@ func _ready() -> void:
 		inventory = CourierInventory.find(get_tree())
 	if quest_manager == null:
 		quest_manager = QuestManager.find(get_tree())
+	if exploration == null:
+		exploration = ExplorationService.find(get_tree())
 	if DisplayServer.get_name() == "headless" and not force_enabled_headless:
 		enabled = false
 	_start.call_deferred()
@@ -100,6 +105,7 @@ func to_dict() -> Dictionary:
 		"version": VERSION,
 		"wallet": {"gold": wallet.gold, "reputation": wallet.reputation} if wallet != null else {},
 		"inventory": inventory.to_dict() if inventory != null else {},
+		"exploration": exploration.to_dict() if exploration != null else {},
 		"quests": quests,
 		"flags": {"starting_gold_granted": starting_gold_granted},
 	}
@@ -114,6 +120,8 @@ func from_dict(data: Dictionary) -> void:
 		wallet.restore(int(saved_wallet.get("gold", 0)), int(saved_wallet.get("reputation", 0)))
 	if inventory != null:
 		inventory.from_dict(data.get("inventory", {}))
+	if exploration != null:
+		exploration.from_dict(data.get("exploration", {}))
 	if quest_manager != null:
 		quest_manager.restore_finished_quests(data.get("quests", {}))
 	_restoring = false
@@ -152,6 +160,10 @@ func _watch() -> void:
 		inventory.item_added.connect(func(_i): request_save())
 		inventory.equipment_changed.connect(func(_s, _i): request_save())
 		inventory.quick_slots_changed.connect(request_save)
+	if exploration != null:
+		exploration.location_discovered.connect(func(_l): request_save())
+		exploration.portal_activated.connect(func(_p): request_save())
+		exploration.explored_changed.connect(request_save)
 	if quest_manager != null:
 		quest_manager.quest_rewarded.connect(func(_q, _r): request_save())
 

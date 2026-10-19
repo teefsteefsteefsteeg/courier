@@ -14,12 +14,14 @@ extends CanvasLayer
 const MARGIN := 16.0
 const GAP := 12.0
 var onboarding: Label
-## WASD (actual bindings) guide, bottom-left above the combat panel.
+## Keyboard guide (actual bindings, keycaps only), bottom-left.
 var movement_guide: MovementGuide
 ## Weapon quick slots (keys 1-5), bottom-right under the package panels.
 var quick_weapon_bar: QuickWeaponBar
 ## Equipment window (Tab): owned gear and quick-slot assignment.
 var equipment_ui: EquipmentUI
+## Fast-travel destinations, opened by an active TeleportPortal.
+var teleport_menu: TeleportMenu
 var _combat_panel: Control = null
 var _combat_scan_left: float = 0.0
 
@@ -46,6 +48,9 @@ func _ready() -> void:
 	equipment_ui = EquipmentUI.new()
 	equipment_ui.name = "EquipmentUI"
 	add_child(equipment_ui)
+	teleport_menu = TeleportMenu.new()
+	teleport_menu.name = "TeleportMenu"
+	add_child(teleport_menu)
 	# World-anchored input prompts stay clear of these panels.
 	for widget: Control in [quest_tracker, wallet_display, package_indicator, quest_notification.panel, package_status_hud.get_node("Panel"), onboarding, movement_guide, quick_weapon_bar]:
 		widget.add_to_group(InputPrompt.AVOID_GROUP)

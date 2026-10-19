@@ -24,6 +24,8 @@
 [ext_resource type="Material" path="res://assets/materials/environment/forest_path.tres" id="41_path"]
 [ext_resource type="Material" path="res://assets/materials/environment/clearing_moss.tres" id="42_moss"]
 [ext_resource type="PackedScene" path="res://scenes/environment/forest_dressing.tscn" id="43_dressing"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="90_world_location"]
+[ext_resource type="PackedScene" path="res://scenes/world/teleport_portal.tscn" id="91_portal"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
 size = Vector2(32, 26)
@@ -470,6 +472,7 @@ script = ExtResource("1_zone")
 display_name = "Whisperwood Edge"
 subtitle = "Stay on the path, courier"
 zone_priority = 5
+location_id = &"whisperwood_edge"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ForestZone"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 2, 0)
@@ -483,7 +486,34 @@ script = ExtResource("1_zone")
 display_name = "Moonstone Clearing"
 subtitle = "Whisperwood"
 zone_priority = 6
+location_id = &"moonstone_clearing"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ClearingZone"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 2, 0)
 shape = SubResource("BoxShape3D_clearing_zone")
+
+[node name="Locations" type="Node3D" parent="."]
+
+[node name="WhisperwoodEdge" type="Marker3D" parent="Locations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+script = ExtResource("90_world_location")
+location_id = &"whisperwood_edge"
+display_name = "Whisperwood Edge"
+subtitle = "Stay on the path, courier"
+kind = 3
+discover_radius = 0.0
+
+[node name="MoonstoneClearing" type="Marker3D" parent="Locations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14)
+script = ExtResource("90_world_location")
+location_id = &"moonstone_clearing"
+display_name = "Moonstone Clearing"
+subtitle = "Whisperwood"
+kind = 4
+discover_radius = 0.0
+
+[node name="ForestPortal" parent="." instance=ExtResource("91_portal")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 7, 0, -9)
+portal_id = &"whisperwood_portal"
+display_name = "Whisperwood Portal"
+subtitle = "Moonstone Clearing, Whisperwood"

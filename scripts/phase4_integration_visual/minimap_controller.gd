@@ -9,6 +9,11 @@ extends CanvasLayer
 ## - NPCs (group "npcs") are labelled with their display names.
 ## - The objective marker follows any contract in progress (QuestWaypoint); the Phase 4
 ##   Dragon Egg integration's route target still takes precedence when it has one.
+##
+## Phase 5G: both views draw the baked world map, the ExplorationService fog of war and
+## the discovered locations / active portals from the shared registry. The expanded map
+## (M) is the full world map: north-up, the whole village and Whisperwood, with names and
+## a legend; the compact map keeps following the courier for local navigation.
 
 signal expanded_changed(is_expanded: bool)
 
@@ -19,11 +24,18 @@ const HIDDEN_BY_JOURNAL_GROUP := &"hidden_by_journal"
 const OBJECTIVE_ID := &"objective"
 const REFRESH_INTERVAL := 0.2
 const NPC_SCAN_INTERVAL := 1.0
+const Legend = preload("res://scripts/phase4_integration_visual/map_legend.gd")
+const WORLD_MAP := preload("res://assets/textures/map/world_map.png")
+## Full map framing: world X/Z centre and half-extent (village and Whisperwood).
+const FULL_MAP_CENTER := Vector2(0.0, -4.0)
+const FULL_MAP_RADIUS := 50.0
 
 var model = Model.new()
 var compact: Control
 var expanded: Control
 var expanded_hint: Label
+var legend: Control
+var exploration: ExplorationService = null
 
 var _player: Node = null
 var _player_input_was: bool = true
@@ -52,6 +64,23 @@ func _ready():
 	expanded_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	expanded.add_child(expanded_hint)
 	InputPromptLabel.attach(expanded_hint)
+	expanded.follow_player = false
+	expanded.align_to_camera = false
+	expanded.fixed_center = FULL_MAP_CENTER
+	expanded.world_radius = FULL_MAP_RADIUS
+	expanded.marker_scale = 1.15
+	legend = Legend.new()
+	legend.name = "Legend"
+	expanded.add_child(legend)
+	legend.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	legend.offset_top = -legend.custom_minimum_size.y - 10.0
+	legend.offset_bottom = -10.0
+	legend.offset_left = -legend.custom_minimum_size.x * 0.5
+	legend.offset_right = legend.custom_minimum_size.x * 0.5
+	for view in [compact, expanded]:
+		view.map_texture = WORLD_MAP
+		view.map_world_rect = ExplorationService.WORLD_RECT
+		view.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	compact.add_to_group(InputPrompt.AVOID_GROUP)
 	expanded.add_to_group(InputPrompt.AVOID_GROUP)
 	var p=get_tree().get_first_node_in_group(&"combat_player"); if p: model.set_player(p)
@@ -61,6 +90,11 @@ func _ready():
 
 func _process(delta):
 	model.update_player_heading()
+	if exploration == null:
+		exploration = ExplorationService.find(get_tree())
+		if exploration != null:
+			compact.exploration = exploration
+			expanded.exploration = exploration
 	_npc_scan_left -= delta
 	if _npc_scan_left <= 0.0:
 		_npc_scan_left = NPC_SCAN_INTERVAL

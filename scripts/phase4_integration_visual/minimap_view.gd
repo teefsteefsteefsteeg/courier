@@ -4,6 +4,12 @@ extends Control
 ## NPC dots, enemy triangles), a north tick and optional labels.
 ## Purely visual: give it a model, then call update_view() each frame (or leave
 ## auto_update on). Several views can share one model.
+##
+## Phase 5G exploration layer (when `exploration` is set): the baked terrain image
+## (`map_texture` over `map_world_rect`) under the markers, the ExplorationService fog
+## over ground not explored yet, and every discovered location from the shared registry
+## with a kind icon (labels when show_labels is on). Undiscovered places and inactive
+## portals are not drawn. The fog is map-only; it never touches the 3D view.
 
 const MinimapProjection := preload("res://scripts/phase4_integration_visual/minimap_projection.gd")
 const Model := preload("res://scripts/phase4_integration_visual/minimap_model.gd")
@@ -22,6 +28,9 @@ const BORDER := Color(0.55, 1.0, 0.35, 0.75)
 const GRID := Color(0.6, 0.9, 0.6, 0.09)
 const ROUTE_START := Color(0.55, 1.0, 0.35, 0.9)
 const ROUTE_END := Color(1.0, 0.85, 0.3, 0.9)
+## Location icon colours by WorldLocation.Kind (town, guild, shop, forest, clearing, portal).
+const LOCATION_COLORS := [Color(1.0, 0.86, 0.5), Color(0.95, 0.75, 0.45), Color(0.98, 0.8, 0.35),
+		Color(0.55, 0.85, 0.45), Color(0.7, 0.95, 0.6), Color(0.72, 0.55, 1.0)]
 
 @export var auto_update := true
 @export var circular := true
@@ -44,6 +53,11 @@ const ROUTE_END := Color(1.0, 0.85, 0.3, 0.9)
 
 var model: Model
 var projection := MinimapProjection.new()
+## Phase 5G exploration layer (see the class doc); all optional.
+var exploration: ExplorationService = null
+var map_texture: Texture2D = null
+var map_world_rect := Rect2()
+@export var show_locations := true
 ## id -> {point: Vector2 (map px), inside: bool, pinned: bool}
 var placements: Dictionary = {}
 var _time := 0.0
@@ -126,7 +140,14 @@ func _draw() -> void:
 		draw_circle(half, radius, BACKGROUND)
 	else:
 		draw_rect(Rect2(Vector2.ZERO, projection.map_size), BACKGROUND)
-	_draw_grid()
+	if map_texture != null and map_world_rect.has_area():
+		_draw_world_texture(map_texture, Color.WHITE)
+	else:
+		_draw_grid()
+	if exploration != null and map_world_rect.has_area():
+		_draw_world_texture(exploration.get_fog_texture(), Color.WHITE)
+	if exploration != null and show_locations:
+		_draw_locations()
 	if show_route and model != null:
 		_draw_route()
 	if model != null:
@@ -141,6 +162,68 @@ func _draw() -> void:
 		draw_rect(Rect2(Vector2.ONE, projection.map_size - Vector2(2, 2)), BORDER, false, 2.0)
 	if show_north:
 		_draw_north()
+
+
+## Draws a texture that covers map_world_rect, clipped to the map outline (circle or box):
+## the outline polygon with each point's UV taken from its world position.
+func _draw_world_texture(texture: Texture2D, tint: Color) -> void:
+	var outline := projection.get_outline(1.0)
+	var uvs := PackedVector2Array()
+	for point in outline:
+		var world := projection.map_to_world(point)
+		uvs.append((Vector2(world.x, world.z) - map_world_rect.position) / map_world_rect.size)
+	draw_polygon(outline, PackedColorArray([tint]), uvs, texture)
+
+
+## Discovered locations (and active portals) with their kind icon.
+func _draw_locations() -> void:
+	for location in exploration.get_locations():
+		var id := location.location_id
+		if location.kind == WorldLocation.Kind.PORTAL:
+			if not exploration.is_portal_active(id):
+				continue
+		elif location.hidden_until_discovered and not exploration.is_discovered(id):
+			continue
+		var p := projection.world_xz_to_map(location.get_map_position())
+		if not projection.is_inside(p, edge_margin * 0.5):
+			continue
+		var s := 6.0 * marker_scale
+		draw_location_icon(self, location.kind, p, s, _time)
+		if show_labels:
+			_draw_label(p + Vector2(0, -s - 6.0), location.display_name, LOCATION_COLORS[location.kind])
+
+
+## Map icon for a WorldLocation.Kind at p (size s), shared with the map legend.
+static func draw_location_icon(canvas: CanvasItem, kind: int, p: Vector2, s: float, time := 0.0) -> void:
+	var color: Color = LOCATION_COLORS[kind]
+	var ink := Color(0.06, 0.04, 0.03, 0.95)
+	match kind:
+		WorldLocation.Kind.TOWN:
+			var house := PackedVector2Array([p + Vector2(-s, s * 0.8), p + Vector2(-s, -s * 0.1), p + Vector2(0, -s), p + Vector2(s, -s * 0.1), p + Vector2(s, s * 0.8)])
+			canvas.draw_colored_polygon(house, color)
+			house.append(house[0])
+			canvas.draw_polyline(house, ink, 1.5, true)
+		WorldLocation.Kind.GUILD:
+			canvas.draw_rect(Rect2(p - Vector2(s, s * 0.7), Vector2(s * 2.0, s * 1.4)), color)
+			canvas.draw_rect(Rect2(p - Vector2(s, s * 0.7), Vector2(s * 2.0, s * 1.4)), ink, false, 1.5)
+			canvas.draw_polyline(PackedVector2Array([p + Vector2(-s, -s * 0.7), p + Vector2(0, s * 0.15), p + Vector2(s, -s * 0.7)]), ink, 1.2, true)
+		WorldLocation.Kind.SHOP:
+			canvas.draw_circle(p, s + 1.5, ink)
+			canvas.draw_circle(p, s, color)
+			canvas.draw_circle(p, s * 0.4, ink)
+		WorldLocation.Kind.FOREST, WorldLocation.Kind.CLEARING:
+			var tree := PackedVector2Array([p + Vector2(0, -s * 1.1), p + Vector2(s, s * 0.6), p + Vector2(-s, s * 0.6)])
+			canvas.draw_colored_polygon(tree, color)
+			tree.append(tree[0])
+			canvas.draw_polyline(tree, ink, 1.5, true)
+			canvas.draw_line(p + Vector2(0, s * 0.6), p + Vector2(0, s * 1.1), ink, 2.0)
+		WorldLocation.Kind.PORTAL:
+			var pulse := 1.0 + 0.15 * sin(time * 3.0)
+			canvas.draw_arc(p, s * 1.35 * pulse, 0.0, TAU, 24, Color(color, 0.5), 2.0, true)
+			canvas.draw_circle(p, s + 1.5, ink)
+			canvas.draw_circle(p, s, color)
+			var star := PackedVector2Array([p + Vector2(0, -s * 0.75), p + Vector2(s * 0.25, 0), p + Vector2(0, s * 0.75), p + Vector2(-s * 0.25, 0)])
+			canvas.draw_colored_polygon(star, Color(1, 1, 1, 0.9))
 
 
 func _draw_grid() -> void:

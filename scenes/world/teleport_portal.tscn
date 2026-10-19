@@ -1,0 +1,139 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/teleport_portal.gd" id="1_portal"]
+[ext_resource type="PackedScene" path="res://assets/models/quaternius/modular_ruins/Arch_Round.fbx" id="2_arch"]
+[ext_resource type="Script" path="res://scripts/world/model_tint.gd" id="3_tint"]
+[ext_resource type="Shader" path="res://assets/shaders/portal_swirl.gdshader" id="4_swirl"]
+[ext_resource type="PackedScene" path="res://scenes/props/env/crystal_cluster.tscn" id="5_crystals"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="6_interact"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="7_location"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pillar"]
+size = Vector3(0.7, 3.0, 0.8)
+
+[sub_resource type="QuadMesh" id="QuadMesh_swirl"]
+size = Vector2(2.4, 2.6)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_swirl"]
+render_priority = 0
+shader = ExtResource("4_swirl")
+shader_parameter/power = 0.0
+shader_parameter/swirl = 1.0
+shader_parameter/ring_radius = 0.38
+
+[sub_resource type="QuadMesh" id="QuadMesh_runes"]
+size = Vector2(3.6, 3.6)
+orientation = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_runes"]
+render_priority = 0
+shader = ExtResource("4_swirl")
+shader_parameter/power = 0.18
+shader_parameter/swirl = 0.0
+shader_parameter/rune_speed = -0.2
+shader_parameter/rune_count = 18.0
+shader_parameter/ring_radius = 0.42
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_motes"]
+emission_shape = 3
+emission_box_extents = Vector3(1.1, 1.2, 0.3)
+direction = Vector3(0, 1, 0)
+spread = 25.0
+initial_velocity_min = 0.2
+initial_velocity_max = 0.5
+gravity = Vector3(0, 0.25, 0)
+scale_min = 0.6
+scale_max = 1.2
+color = Color(0.7, 0.6, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mote"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.75, 0.65, 1, 0.9)
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_mote"]
+material = SubResource("StandardMaterial3D_mote")
+size = Vector2(0.09, 0.09)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_interact"]
+radius = 1.3
+
+[node name="TeleportPortal" type="Node3D"]
+script = ExtResource("1_portal")
+
+[node name="Arch" parent="." instance=ExtResource("2_arch")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0.14)
+
+[node name="Tint" type="Node" parent="Arch"]
+script = ExtResource("3_tint")
+colors = {"Main": Color(0.5, 0.53, 0.6, 1), "Highlights": Color(0.64, 0.66, 0.76, 1)}
+
+[node name="Body" type="StaticBody3D" parent="."]
+
+[node name="PillarWest" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.62, 1.5, 0.12)
+shape = SubResource("BoxShape3D_pillar")
+
+[node name="PillarEast" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.62, 1.5, 0.12)
+shape = SubResource("BoxShape3D_pillar")
+
+[node name="Swirl" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0.14)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_swirl")
+material_override = SubResource("ShaderMaterial_swirl")
+
+[node name="Runes" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0.5)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_runes")
+material_override = SubResource("ShaderMaterial_runes")
+
+[node name="CrystalsWest" parent="." instance=ExtResource("5_crystals")]
+transform = Transform3D(0.45, 0, 0.12, 0, 0.47, 0, -0.12, 0, 0.45, -1.95, 0, 0.75)
+
+[node name="CrystalsEast" parent="." instance=ExtResource("5_crystals")]
+transform = Transform3D(-0.4, 0, 0.2, 0, 0.45, 0, -0.2, 0, -0.4, 1.95, 0, 0.7)
+
+[node name="Motes" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0.2)
+emitting = false
+amount = 24
+lifetime = 2.2
+visibility_aabb = AABB(-2, -1.5, -1, 4, 4, 2)
+process_material = SubResource("ParticleProcessMaterial_motes")
+draw_pass_1 = SubResource("QuadMesh_mote")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0.7)
+visible = false
+light_color = Color(0.58, 0.48, 1, 1)
+light_energy = 1.1
+omni_range = 5.0
+
+[node name="Interactable" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0.9)
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("6_interact")
+prompt_verb = "Activate"
+display_name = "Portal"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+shape = SubResource("SphereShape3D_interact")
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.3)
+
+[node name="Location" type="Marker3D" parent="."]
+script = ExtResource("7_location")
+kind = 5
+discover_radius = 9.0

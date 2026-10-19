@@ -448,6 +448,12 @@ func is_dashing() -> bool:
 	return _dash_time_left > 0.0
 
 
+## Stops a dash in progress now (teleport, cutscene). Its cooldown keeps running.
+func cancel_dash() -> void:
+	if is_dashing():
+		_end_dash()
+
+
 func get_dash_cooldown_remaining() -> float:
 	return _dash_cooldown_left
 

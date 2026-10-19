@@ -170,7 +170,9 @@ func _test_clearances() -> void:
 			if mine.intersects(rect):
 				overlaps.append(str(level.get_path_to(body)))
 	_check(overlaps.is_empty(), "no armory collider overlaps another solid (%s)" % [overlaps])
-	var spots := level.find_children("*", "Marker3D", true, false).filter(func(m: Node) -> bool: return not armory.is_ancestor_of(m))
+	# WorldLocation markers are map-icon anchors placed on the building itself, not places
+	# the courier stands, so they are exempt.
+	var spots := level.find_children("*", "Marker3D", true, false).filter(func(m: Node) -> bool: return not armory.is_ancestor_of(m) and not m is WorldLocation)
 	spots += level.get_node("NPCs").get_children()
 	var near: Array[String] = []
 	for spot in spots:

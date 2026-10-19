@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" path="res://scenes/locations/post_office.tscn" id="8_post"]
 [ext_resource type="PackedScene" path="res://scenes/locations/forest_entrance.tscn" id="9_forest"]
 [ext_resource type="PackedScene" path="res://scenes/locations/armory.tscn" id="9_armory"]
+[ext_resource type="Script" path="res://scripts/world/world_location.gd" id="9_world_location"]
+[ext_resource type="PackedScene" path="res://scenes/world/teleport_portal.tscn" id="9_portal"]
 [ext_resource type="PackedScene" path="res://scenes/buildings/alchemy_shop.tscn" id="10_alchemy"]
 [ext_resource type="PackedScene" path="res://scenes/props/well.tscn" id="11_well"]
 [ext_resource type="PackedScene" path="res://scenes/props/lamp_post.tscn" id="12_lamp"]
@@ -150,6 +152,10 @@ size = Vector3(12, 4, 7)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_alchemy_zone"]
 size = Vector3(10, 4, 6)
+
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_armory_zone"]
+size = Vector3(7, 4, 6.5)
 
 [node name="Village" type="Node3D"]
 
@@ -747,6 +753,7 @@ script = ExtResource("26_zone")
 display_name = "Willowmere Village"
 subtitle = "Home of the Courier Guild"
 zone_priority = 0
+location_id = &"willowmere_village"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/VillageZone"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 2, 0)
@@ -760,6 +767,7 @@ script = ExtResource("26_zone")
 display_name = "Village Market"
 subtitle = "Fresh goods daily"
 zone_priority = 3
+location_id = &"village_market"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/MarketZone"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 2, 0)
@@ -773,10 +781,68 @@ script = ExtResource("26_zone")
 display_name = "Village Alchemy Shop"
 subtitle = "Corvin's Curious Concoctions"
 zone_priority = 3
+location_id = &"alchemy_shop"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/AlchemyZone"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 2, 0)
 shape = SubResource("BoxShape3D_alchemy_zone")
+
+[node name="ArmoryZone" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4, 0, -14.8)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("26_zone")
+display_name = "Willowmere Armory"
+subtitle = "Weaponsmith Brenna"
+zone_priority = 4
+location_id = &"armory"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/ArmoryZone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("BoxShape3D_armory_zone")
+
+[node name="Locations" type="Node3D" parent="."]
+
+[node name="WillowmereVillage" type="Marker3D" parent="Locations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("9_world_location")
+location_id = &"willowmere_village"
+display_name = "Willowmere Village"
+subtitle = "Home of the Courier Guild"
+discover_radius = 0.0
+
+[node name="VillageMarket" type="Marker3D" parent="Locations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.5, 0, -1.5)
+script = ExtResource("9_world_location")
+location_id = &"village_market"
+display_name = "Village Market"
+subtitle = "Fresh goods daily"
+kind = 2
+discover_radius = 0.0
+
+[node name="AlchemyShop" type="Marker3D" parent="Locations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 13)
+script = ExtResource("9_world_location")
+location_id = &"alchemy_shop"
+display_name = "Village Alchemy Shop"
+subtitle = "Corvin's Curious Concoctions"
+kind = 2
+discover_radius = 0.0
+
+[node name="Armory" type="Marker3D" parent="Locations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4, 0, -15.5)
+script = ExtResource("9_world_location")
+location_id = &"armory"
+display_name = "Willowmere Armory"
+subtitle = "Weaponsmith Brenna"
+kind = 2
+discover_radius = 0.0
+
+[node name="VillagePortal" parent="." instance=ExtResource("9_portal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.2, 0, 9)
+portal_id = &"willowmere_portal"
+display_name = "Willowmere Portal"
+subtitle = "Willowmere Village, by the south road"
 
 [node name="Markers" type="Node3D" parent="."]
 
