@@ -200,13 +200,13 @@ func _test_post_office_walls() -> void:
 
 func _test_forest_entrance() -> void:
 	print("[Forest entrance]")
-	_reset_player(Vector3(14, 0, -16.5))
+	_reset_player(Vector3(14, 0, -86.5))  # Phase 7: the forest gate is at z = -90
 	await _frames(5)
 	await _walk([&"move_forward", &"move_right"], 140)  # world -Z through the gate
-	_check(player.global_position.z < -26.0, "player passes through the Whisperwood gate (z=%.2f)" % player.global_position.z)
+	_check(player.global_position.z < -96.0, "player passes through the Whisperwood gate (z=%.2f)" % player.global_position.z)
 	_check(banner.current_zone != null and banner.current_zone.display_name == "Whisperwood Edge",
 			"banner announces Whisperwood Edge (got %s)" % (banner.current_zone.display_name if banner.current_zone else "none"))
-	_reset_player(Vector3(14, 0, -30.4))
+	_reset_player(Vector3(14, 0, -100.4))
 	await _frames(8)
 	_check(banner.current_zone != null and banner.current_zone.display_name == "Moonstone Clearing", "nested clearing zone takes priority")
 
@@ -215,7 +215,7 @@ func _test_occlusion_fading() -> void:
 	print("[Occlusion fading]")
 	var occluders := get_nodes_in_group(CameraOccluder.GROUP)
 	_check(occluders.size() > 100, "trees and cottages register as occluders (%d)" % occluders.size())
-	_reset_player(Vector3(15.4, 0, -30.9))  # in the clearing, behind the camera-side tree wall
+	_reset_player(Vector3(15.4, 0, -100.9))  # in the clearing, behind the camera-side tree wall
 	await create_timer(0.6).timeout  # fades run on real time
 	var faded: Array[CameraOccluder] = []
 	for node in occluders:

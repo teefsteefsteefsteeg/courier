@@ -64,10 +64,10 @@ func _run() -> void:
 	await _goto(Vector3(6, 0, 18.4))
 	_save(out_dir, "05_alchemy_shop.png")
 
-	await _goto(Vector3(14, 0, -18), 16.0)
+	await _goto(Vector3(14, 0, -86), 16.0)
 	_save(out_dir, "06_forest_gate.png")
 
-	await _goto(Vector3(17.6, 0, -32.8))
+	await _goto(Vector3(17.6, 0, -102.8))
 	await _wait(30)  # let occluding trees fade
 	_interact()
 	await _wait(80)

@@ -20,7 +20,8 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	if merchant != null:
-		merchant.interactable.position.z += serve_reach
+		# In front of the shopkeeper: NPCs face their local -Z.
+		merchant.interactable.position.z -= serve_reach
 
 
 ## Where the courier stands to trade.

@@ -32,5 +32,7 @@ render_priority = 0
 shader = ExtResource("1_shader")
 shader_parameter/splat_a = ExtResource("2_splat_a")
 shader_parameter/splat_b = ExtResource("3_splat_b")
+shader_parameter/splat_origin = Vector2(-96, -128)
+shader_parameter/splat_size = 192.0
 shader_parameter/noise_large = SubResource("NoiseTexture2D_large")
 shader_parameter/noise_detail = SubResource("NoiseTexture2D_detail")

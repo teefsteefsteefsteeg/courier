@@ -89,8 +89,9 @@ func _test_post_office() -> void:
 		_check(left.is_empty(), "post office %s shows no primitive placeholders (%s)" % [part, _names(left)])
 	_check(_model_count(office.get_node("Dressing")) > 100, "post office is built from >100 model pieces (%d)" % _model_count(office.get_node("Dressing")))
 	# Gameplay pieces stay where quests expect them.
-	for path in ["Markers/QuestBoardSpot/QuestBoard", "Markers/ParcelPickupSpot/DragonEggPickup", "Phase3Showcase", "Mailbox", "Building/WallEastAShape"]:
+	for path in ["Markers/QuestBoardSpot/QuestBoard", "Markers/ParcelPickupSpot/DragonEggPickup", "Mailbox", "Building/WallEastAShape"]:
 		_check(office.has_node(path), "post office keeps %s" % path)
+	_check(not office.has_node("Phase3Showcase"), "the decorative cargo exhibit was removed (Phase 7)")
 	var fader := level.get_node("OccluderFader") as OccluderFader
 	_check(fader.interior_root == office, "post office interior still fades for the camera")
 
@@ -151,14 +152,16 @@ func _test_forest() -> void:
 	var env := (level.get_node("WorldEnvironment") as WorldEnvironment).environment
 	_check(env.volumetric_fog_enabled and is_zero_approx(env.volumetric_fog_density), "fog is local to the forest (global density 0)")
 	# Since Phase 5E the forest floor is a channel of the village terrain splat, blended softly into the meadow.
-	_check(_splat_weight(Vector2(14, -31), 0, "b") > 0.9 and _splat_weight(Vector2(-20, 10), 0, "b") < 0.1, "forest floor has its own darker ground")
+	_check(_splat_weight(Vector2(6, -66), 0, "b") > 0.9 and _splat_weight(Vector2(-20, 10), 0, "b") < 0.1, "forest floor has its own darker ground")
 
 
 ## Weight of one splat channel (0 = R .. 3 = A) of the village terrain at a village XZ position.
 func _splat_weight(at: Vector2, channel: int, map := "a") -> float:
 	var image := Image.load_from_file(ProjectSettings.globalize_path("res://assets/textures/terrain/village_splat_%s.png" % map))
-	var px := Vector2i(((at + Vector2(64, 64)) / 128.0 * image.get_width()).floor())
-	return image.get_pixelv(px)[channel]
+	var material := load("res://assets/materials/environment/village_ground.tres") as ShaderMaterial
+	var origin: Vector2 = material.get_shader_parameter(&"splat_origin")
+	var size: float = material.get_shader_parameter(&"splat_size")
+	return image.get_pixelv(Vector2i(((at - origin) / size * image.get_width()).floor()))[channel]
 
 
 func _test_clearances() -> void:

@@ -20,7 +20,12 @@ func _run() -> void:
 	var post_office := village.get_node("PostOffice") as Node3D
 	var egg_pickup := post_office.get_node("Markers/ParcelPickupSpot/DragonEggPickup") as PackagePickup
 	var potion_pickup := post_office.get_node("Markers/ParcelPickupSpot/PotionCratePickup") as PackagePickup
-	var showcase := post_office.get_node("Phase3Showcase") as Phase3Showcase
+	# Phase 7 removed the exhibit from the post office; the reusable scene is still tested here.
+	_check(not post_office.has_node("Phase3Showcase"), "the Arcane Cargo Exhibit is no longer in the post office")
+	var showcase := (load("res://scenes/gameplay/phase3_visual/phase3_showcase.tscn") as PackedScene).instantiate() as Phase3Showcase
+	village.add_child(showcase)
+	showcase.position = Vector3(30, 0, 30)
+	await process_frame
 
 	_check(manager != null, "village has the quest manager")
 	_check(manager.get_definition(&"q002_dragon_egg") != null and manager.get_definition(&"q003_unstable_potion") != null, "board missions are registered")

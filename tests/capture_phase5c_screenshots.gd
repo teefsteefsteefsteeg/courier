@@ -35,8 +35,8 @@ func _run() -> void:
 	await _shot(out_dir, "04_alchemist_corvin", Vector3(5.6, 0, 18.2), 7.0)
 	await _face_npc("VillagerPip", Vector3(3.9, 0, 3.9))
 	await _shot(out_dir, "05_villager_pip", Vector3(3.9, 0, 3.9), 7.0)
-	await _face_npc("MageElowen", Vector3(15.0, 0, -31.0))
-	await _shot(out_dir, "06_mage_elowen", Vector3(15.0, 0, -31.0), 7.0)
+	await _face_npc("MageElowen", Vector3(15.0, 0, -101.0))
+	await _shot(out_dir, "06_mage_elowen", Vector3(15.0, 0, -101.0), 7.0)
 	# Walking through the square (input held, so movement and animation are live).
 	player.teleport_to(Vector3(-3, 0, 2))
 	rig.set_zoom(8.0); rig.camera.size = 8.0; rig.snap_to_target()
@@ -50,7 +50,7 @@ func _run() -> void:
 	Input.action_release(&"run")
 	Input.action_release(&"move_right")
 	# Casting a magic bolt in the forest.
-	player.teleport_to(Vector3(13, 0, -24))
+	player.teleport_to(Vector3(13, 0, -94))
 	rig.snap_to_target()
 	await _wait(40)
 	var combat := CombatController.find_on(player)

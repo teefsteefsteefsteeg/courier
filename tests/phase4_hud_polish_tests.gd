@@ -35,7 +35,11 @@ func _run() -> void:
 	var presentation: Node = integration.get_visual_layer()
 	var combat: Control = presentation.get_node("CombatVisualLayer/CombatHUD").panel
 	var minimap: Node = hud.get_node("Minimap")
-	var sample := village.get_node("PostOffice/Phase3Showcase") as Phase3Showcase
+	# The exhibit left the post office in Phase 7; its reusable scene is placed for this check.
+	var sample := (load("res://scenes/gameplay/phase3_visual/phase3_showcase.tscn") as PackedScene).instantiate() as Phase3Showcase
+	village.add_child(sample)
+	sample.position = Vector3(30, 0, 30)
+	await process_frame
 	check(integration.player == player, "F5 integration uses the real player")
 	check(manager.quest_state_changed.is_connected(integration._on_quest_state_changed), "preassigned player does not skip quest signal wiring")
 	check(minimap.model.get_player_world().is_equal_approx(player.global_position), "minimap binds the village player")
@@ -57,7 +61,7 @@ func _run() -> void:
 	sample.interactable.interact(player)
 	check(hud.package_status_hud.get_bound_package() == carrier.get_package(), "exhibit switch cannot hijack carried package HUD")
 	var old_position: Vector3 = minimap.model.get_player_world()
-	player.teleport_to(Vector3(14, 0, -26))
+	player.teleport_to(Vector3(14, 0, -96))
 	rig.snap_to_target()
 	integration.simulate_enemies = false
 	await settle()
@@ -93,7 +97,7 @@ func _run() -> void:
 		minimap._unhandled_input(key)
 		check(not minimap.expanded.visible, "M closes map")
 	carrier.get_package().set_temperature(50)
-	player.teleport_to(Vector3(14, 0, -31.2))
+	player.teleport_to(Vector3(14, 0, -101.2))
 	await settle()
 	check(integration.get_route_target() == village.get_node("NPCs/MageElowen"), "clearing updates live objective to Elowen")
 	check(minimap.model.get_marker_world(&"objective").is_equal_approx(village.get_node("NPCs/MageElowen").global_position), "map objective follows delivery progression")

@@ -1,6 +1,17 @@
 # Development handoff: Phase 5F integrated
 
-## Current continuation: Phase 6 new map and dungeon (2026-10-19)
+## Current continuation: Phase 7 (2026-10-19)
+
+Phase 7 is in progress on this branch; `docs/PHASE7_WORLD_AND_SYSTEMS.md` tracks it per
+milestone with verified results. **Milestone A is done**: the Blender-built Courier Guild
+board stands on the plaza by the post-office gate (no beam or duplicate label), the cargo
+exhibit is gone from the post office, NPCs turn smoothly to the courier they talk to and back,
+the main roads are wider, and the Whisperwood moved 70 m north (`ForestEntrance` at
+(14, 0, -90)) into a dense generated forest (`scenes/environment/whisperwood_forest.tscn`,
+`tools/generate_whisperwood.gd`) reached by a trail through the outskirts. Milestones B
+(inventory and farming), C (enhancement and skill VFX) and D (dragon boss) are not started.
+
+## Phase 6 new map and dungeon (2026-10-19)
 
 The user's current Phase 6 scope is **a new outdoor map, separate dungeon and functional
 Bestiary boss**, excluding tools, fishing, village remodeling and gear/inventory work.

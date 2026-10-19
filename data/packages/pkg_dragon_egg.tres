@@ -17,5 +17,5 @@ impact_sensitivity = 2.0
 starting_temperature = 60.0
 ideal_temperature_min = 45.0
 ideal_temperature_max = 75.0
-temperature_change_rate = 0.5
+temperature_change_rate = 0.3
 temperature_damage_per_second = 2.0

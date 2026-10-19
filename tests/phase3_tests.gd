@@ -110,11 +110,12 @@ func _test_egg_cooling() -> void:
 	_check(egg.uses_temperature() and is_equal_approx(egg.get_temperature(), 60.0) and egg.get_temperature_state() == T.SAFE, "egg starts warm (60) and SAFE")
 	var temp_events := [0]
 	egg.temperature_changed.connect(func(_n, _o): temp_events[0] += 1)
-	_ticks(egg, 30, 1.0, 0.0, 20.0)
-	_check(is_equal_approx(egg.temperature, 45.0) and is_equal_approx(egg.integrity, 100.0), "30 s at 20 degrees: 45, no damage (band inclusive)")
-	_check(temp_events[0] == 30, "temperature_changed each tick")
+	# 0.3 degrees/s since Phase 7 (0.5 before): the Whisperwood is 70 m further from the post office.
+	_ticks(egg, 50, 1.0, 0.0, 20.0)
+	_check(is_equal_approx(egg.temperature, 45.0) and is_equal_approx(egg.integrity, 100.0), "50 s at 20 degrees: 45, no damage (band inclusive)")
+	_check(temp_events[0] == 50, "temperature_changed each tick")
 	_ticks(egg, 10, 1.0, 0.0, 20.0)
-	_check(is_equal_approx(egg.temperature, 40.0) and egg.get_temperature_state() == T.TOO_COLD, "40 s: 40 degrees, TOO_COLD")
+	_check(is_equal_approx(egg.temperature, 42.0) and egg.get_temperature_state() == T.TOO_COLD, "60 s: 42 degrees, TOO_COLD")
 	_check(is_equal_approx(egg.integrity, 80.0), "10 cold seconds cost 20 integrity (got %.2f)" % egg.integrity)
 	_check(egg.get_condition() == C.GOOD, "condition GOOD at 80%")
 	_ticks(egg, 10, 1.0, 0.0, 60.0)
@@ -127,7 +128,7 @@ func _test_egg_cooling() -> void:
 func _test_egg_warming_and_overheat() -> void:
 	print("[Dragon egg: overheating]")
 	var egg := _new(EGG)
-	_ticks(egg, 30, 1.0, 0.0, 100.0)
+	_ticks(egg, 50, 1.0, 0.0, 100.0)  # 0.3 degrees/s
 	_check(is_equal_approx(egg.temperature, 75.0) and is_equal_approx(egg.integrity, 100.0), "heats to 75, still SAFE")
 	_ticks(egg, 5, 1.0, 0.0, 100.0)
 	_check(egg.get_temperature_state() == T.TOO_HOT and is_equal_approx(egg.integrity, 90.0), "5 hot seconds: TOO_HOT, 90 integrity")
@@ -287,7 +288,7 @@ func _test_carrier_integration() -> void:
 	carrier.pick_up(egg)
 	for i in 10:
 		carrier.advance_package(1.0)
-	_check(is_equal_approx(egg.temperature, 55.0), "carried egg cools toward carrier ambient (got %.2f)" % egg.temperature)
+	_check(is_equal_approx(egg.temperature, 57.0), "carried egg cools toward carrier ambient (got %.2f)" % egg.temperature)
 	carrier.drop_impact_force = 5.0
 	carrier.drop_package()
 	_check(not carrier.is_carrying() and is_equal_approx(egg.integrity, 90.0), "drop impact 5 costs the egg 10 integrity")

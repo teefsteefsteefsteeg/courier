@@ -9,7 +9,7 @@ const VIEWS := [
 	["03_house_rose", Vector3(-8, 0, 15), 9.0],
 	["04_house_fern", Vector3(18, 0, 15), 9.0],
 	["05_farm_edge", Vector3(24, 0, -12.5), 12.0],
-	["06_forest_path", Vector3(14, 0, -24), 11.0],
+	["06_forest_path", Vector3(16, 0, -66), 11.0],
 ]
 
 var level: Node3D

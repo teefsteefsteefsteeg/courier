@@ -18,16 +18,19 @@ const FACING := {
 	"CottageFern": Vector2(18.6, 9.6), "CottageWillow": Vector2(-18, 22.0), "CottageRose": Vector2(-8, 21.0),
 	"CottageBlue": Vector2(-5.8, -13.8), "CottageHill": Vector2(-26, 3.2),
 }
-## Gameplay positions that must not move (village XZ), from Phase 4/5A.
+## Gameplay positions that must not move (village XZ), from Phase 4/5A. Phase 7 moved the
+## Whisperwood (ForestEntrance and Elowen) 70 m north.
 const SPOTS := {
 	"Markers/MarketDeliverySpot": Vector2(11, 0.4), "Markers/AlchemyDeliverySpot": Vector2(6, 18.6),
 	"NPCs/MerchantMira": Vector2(11, -1.3), "NPCs/AlchemistCorvin": Vector2(6.4, 16.9), "NPCs/VillagerPip": Vector2(2.6, 2.6),
-	"NPCs/PostmasterBram": Vector2(-15, -8.3), "NPCs/MageElowen": Vector2(16.2, -32.4),
-	"ForestEntrance/Markers/ForestClearingSpot": Vector2(14, -31.2),
+	"NPCs/PostmasterBram": Vector2(-15, -8.3), "NPCs/MageElowen": Vector2(16.2, -102.4),
+	"ForestEntrance/Markers/ForestClearingSpot": Vector2(14, -101.2),
 }
 ## Solid things allowed in a road core by design: Corvin waits at the end of the
 ## road outside his shop, and the forest gate posts frame the forest path.
 const ROAD_EXCEPTIONS := ["NPCs/AlchemistCorvin", "ForestEntrance/Gate"]
+## The Whisperwood annex north of the walls (Phase 7), as Rect2(x, z, width, depth).
+const ANNEX := Rect2(-20, -124, 64, 80)
 ## The south road ends at the alchemy shop behind Corvin; walks stop in front of him.
 const WALK_ENDS := {"south": Vector2(8.6, 17.0)}
 
@@ -79,10 +82,17 @@ func _frames(count: int) -> void:
 		await physics_frame
 
 
+## The splat maps' world rectangle, from the ground material (192 m from (-96, -128) since Phase 7).
+func _splat_px(image: Image, at: Vector2) -> Vector2i:
+	var material := load("res://assets/materials/environment/village_ground.tres") as ShaderMaterial
+	var origin: Vector2 = material.get_shader_parameter(&"splat_origin")
+	var size: float = material.get_shader_parameter(&"splat_size")
+	var px := Vector2i(((at - origin) / size * image.get_width()).floor())
+	return px.clamp(Vector2i.ZERO, Vector2i(image.get_width() - 1, image.get_height() - 1))
+
+
 func _splat(image: Image, at: Vector2) -> Color:
-	var px := Vector2i(((at + Vector2(64, 64)) / 128.0 * image.get_width()).floor())
-	px = px.clamp(Vector2i.ZERO, Vector2i(image.get_width() - 1, image.get_height() - 1))
-	return image.get_pixelv(px)
+	return image.get_pixelv(_splat_px(image, at))
 
 
 func _points(name: String) -> Array[Vector2]:
@@ -108,7 +118,22 @@ func _test_terrain() -> void:
 		for z in range(-43, 44, 3):
 			flat = flat and is_zero_approx(terrain.height_at(x, z))
 	_check(flat, "terrain is perfectly flat across the walkable village (|x|, |z| <= 43)")
-	_check(terrain.height_at(66, 0) > 1.5 and terrain.height_at(0, -66) > 1.5 and terrain.height_at(-62, 62) > 1.5, "hills rise outside the boundary walls")
+	var annex_flat := true
+	for x in range(-18, 43, 4):
+		for z in range(-122, -43, 4):
+			annex_flat = annex_flat and is_zero_approx(terrain.height_at(x, z))
+	_check(annex_flat, "terrain is flat across the Whisperwood annex (x -18..42, z -122..-44)")
+	# Regression (Phase 7): the Ground box only covered |x|, |z| <= 60, so the courier fell
+	# through the world in the relocated forest.
+	var space := level.get_world_3d().direct_space_state
+	var grounded := 0
+	var samples := [Vector2(14, -66), Vector2(14, -100), Vector2(-14, -118), Vector2(40, -60), Vector2(35, -90), Vector2(-2, -80)]
+	for at: Vector2 in samples:
+		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(at.x, 3, at.y), Vector3(at.x, -3, at.y)))
+		if not hit.is_empty() and hit["collider"] == level.get_node("Ground") and absf((hit["position"] as Vector3).y) < 0.05:
+			grounded += 1
+	_check(grounded == samples.size(), "ground collision covers the Whisperwood annex (%d/%d)" % [grounded, samples.size()])
+	_check(terrain.height_at(66, 0) > 1.5 and terrain.height_at(0, -140) > 1.5 and terrain.height_at(-62, -80) > 1.5 and terrain.height_at(-62, 62) > 1.5, "hills rise outside the boundary walls")
 	var trees := terrain.get_node_or_null("HillTrees")
 	var outside := trees != null and trees.get_children().all(func(t: Node3D) -> bool: return maxf(absf(t.position.x), absf(t.position.z)) > 44.0)
 	_check(trees != null and trees.get_child_count() >= 50 and outside, "hill tree line stays outside the walls (%d trees)" % (trees.get_child_count() if trees else 0))
@@ -135,8 +160,8 @@ func _test_surfaces() -> void:
 		_check(_splat(splat_a, mid).r > 0.9, "%s is a dirt lane" % name)
 	for rect in layout["soil"]:
 		_check(_splat(splat_a, Vector2((rect[0] + rect[2]) * 0.5, (rect[1] + rect[3]) * 0.5)).a > 0.9, "field at %s has tilled soil" % [rect])
-	_check(_splat(splat_b, Vector2(14, -31)).r > 0.9 and _splat(splat_b, Vector2(0, 0)).r < 0.05, "forest floor blends in only around Whisperwood")
-	_check(_splat(splat_b, Vector2(14, -34)).g > 0.9, "clearing has moss")
+	_check(_splat(splat_b, Vector2(6, -66)).r > 0.9 and _splat(splat_b, Vector2(0, 0)).r < 0.05, "forest floor blends in only around Whisperwood")
+	_check(_splat(splat_b, Vector2(14, -104)).g > 0.9, "clearing has moss")
 	var meadow := 0
 	for x in range(-40, 41, 4):
 		for z in range(-40, 41, 4):
@@ -167,7 +192,8 @@ func _test_roads_clear() -> void:
 		if path.begins_with("Terrain/") or ROAD_EXCEPTIONS.any(func(e: String) -> bool: return path.begins_with(e)):
 			continue
 		var at := (shape as Node3D).global_position
-		if maxf(absf(at.x), absf(at.z)) > 44.0:
+		# The walled village, and since Phase 7 the Whisperwood annex north of it.
+		if maxf(absf(at.x), absf(at.z)) > 44.0 and not ANNEX.has_point(Vector2(at.x, at.z)):
 			continue
 		checked += 1
 		var s := _splat(splat_a, Vector2(at.x, at.z))

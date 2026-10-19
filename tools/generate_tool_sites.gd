@@ -411,7 +411,8 @@ func _stall() -> void:
 	_instance(TOOLS + "bucket_metal.gltf", dressing, "Bucket").transform = Transform3D(Basis.IDENTITY.scaled(Vector3.ONE * 0.5), Vector3(-2.0, 0, -0.2))
 	_instance(TOOLS + "torch.gltf", dressing, "Torch").transform = Transform3D(Basis.IDENTITY.scaled(Vector3.ONE * 0.8), Vector3(-1.3, 0.15, 1.75))
 	var merchant := (load(NPC_SCENE) as PackedScene).instantiate() as Node3D
-	_add(root_node, merchant, "Merchant", Transform3D(Basis.IDENTITY, Vector3(0, 0, -0.25)))
+	# NPCs face their local -Z; turned round so Hobb faces his customers over the counter.
+	_add(root_node, merchant, "Merchant", Transform3D(Basis(Vector3.UP, PI), Vector3(0, 0, -0.25)))
 	root_node.set(&"merchant", merchant)
 	var markers := _group(root_node, "Markers")
 	_add(markers, Marker3D.new(), "ShopFront", Transform3D(Basis.IDENTITY, Vector3(0, 0, 1.75)))

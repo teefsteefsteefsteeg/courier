@@ -175,7 +175,9 @@ func _test_placement() -> void:
 	print("[Placement]")
 	var spot := level.get_node("PostOffice/Markers/QuestBoardSpot") as Node3D
 	_check(board.is_in_group(QuestBoard.GROUP) and board.global_position.is_equal_approx(spot.global_position), "quest board stands on QuestBoardSpot")
-	_check(_inside_post_office(board.global_position), "quest board is inside the post office")
+	# Phase 7: the guild board stands on the plaza just outside the post-office gate.
+	var gate := Vector2(-8.0, -6.0)
+	_check(not _inside_post_office(board.global_position) and Vector2(board.global_position.x, board.global_position.z).distance_to(gate) < 6.0, "quest board stands on the plaza by the post-office gate")
 	for package_id in [&"pkg_ordinary_parcel", &"pkg_dragon_egg", &"pkg_potion_crate"]:
 		var pickup := _pickup_for(package_id)
 		_check(pickup != null and _inside_post_office(pickup.global_position), "%s pickup placed in the post office" % package_id)

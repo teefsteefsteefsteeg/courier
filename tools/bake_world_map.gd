@@ -9,8 +9,8 @@ extends SceneTree
 const OUT := "res://assets/textures/map/world_map.png"
 const SPLAT_A := "res://assets/textures/terrain/village_splat_a.png"
 const SPLAT_B := "res://assets/textures/terrain/village_splat_b.png"
-const SPLAT_ORIGIN := Vector2(-64.0, -64.0)
-const SPLAT_SIZE := 128.0
+const SPLAT_ORIGIN := Vector2(-96.0, -128.0)
+const SPLAT_SIZE := 192.0
 const PIXELS_PER_METRE := 4
 
 const GRASS := Color(0.47, 0.6, 0.33)
@@ -61,6 +61,11 @@ func _run() -> void:
 func _paint_ground() -> void:
 	var a := Image.load_from_file(ProjectSettings.globalize_path(SPLAT_A))
 	var b := Image.load_from_file(ProjectSettings.globalize_path(SPLAT_B))
+	# The splats cover a larger square than the map: crop them to the map's rect first.
+	var per_metre := a.get_width() / SPLAT_SIZE
+	var crop := Rect2i(Vector2i(((rect.position - SPLAT_ORIGIN) * per_metre).round()), Vector2i((rect.size * per_metre).round()))
+	a = a.get_region(crop)
+	b = b.get_region(crop)
 	a.resize(size.x, size.y, Image.INTERPOLATE_BILINEAR)
 	b.resize(size.x, size.y, Image.INTERPOLATE_BILINEAR)
 	for y in size.y:

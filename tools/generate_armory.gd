@@ -148,7 +148,8 @@ func _location() -> void:
 	_add(facade, label, "SignText", Transform3D(Basis.IDENTITY, label.position))
 	# Weaponsmith behind the counter, facing the yard.
 	var merchant := (load(MERCHANT) as PackedScene).instantiate() as Node3D
-	_add(root_node, merchant, "Merchant", Transform3D(Basis.IDENTITY, Vector3(1.5, 0, 2.05)))
+	# NPCs face their local -Z; turned round so the weaponsmith faces the yard over her counter.
+	_add(root_node, merchant, "Merchant", Transform3D(Basis(Vector3.UP, PI), Vector3(1.5, 0, 2.05)))
 	root_node.set("merchant", merchant)
 	var markers := _group("Markers")
 	for spec in [["MerchantSpot", Vector3(1.5, 0, 2.05)], ["ShopFront", Vector3(1.5, 0, 3.75)], ["Entrance", Vector3(0, 0, 2.0)]]:

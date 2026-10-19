@@ -10,7 +10,7 @@ const VIEWS := [
 	["04_alchemy_shop", Vector3(5, 0, 16), 14.0],
 	["05_west_houses", Vector3(-17, 0, 8), 16.0],
 	["06_forest_gate", Vector3(14, 0, -18), 16.0],
-	["07_forest_clearing", Vector3(14, 0, -30), 16.0],
+	["07_forest_clearing", Vector3(14, 0, -100), 16.0],
 	["08_village_overview", Vector3(2, 0, -2.5), 22.0],
 ]
 

@@ -281,7 +281,10 @@ func _test_world_badge() -> void:
 
 	var board := level.get_node("PostOffice/Markers/QuestBoardSpot/QuestBoard") as Node3D
 	await _stand_near(board, board.global_position + Vector3(0, 0, 2))
-	_check(badge.visible and is_equal_approx(prompt.get_badge_anchor(prompt._focused).y - prompt._focused.get_parent().global_position.y, prompt.object_badge_height), "objects use the object anchor height")
+	# Objects use the object anchor height unless they set their own: the Phase 7 guild board
+	# is taller than the old one, so its badge sits at the board's "prompt_anchor_height".
+	var expected_height := float(prompt._focused.get_meta(&"prompt_anchor_height", prompt.object_badge_height))
+	_check(badge.visible and is_equal_approx(prompt.get_badge_anchor(prompt._focused).y - prompt._focused.get_parent().global_position.y, expected_height), "objects use their anchor height (%.1f m)" % expected_height)
 
 
 func _test_badge_hides() -> void:

@@ -174,6 +174,11 @@ func set_destination(world_position: Vector3, label := "Drop-off") -> void:
 	_update_route_progress()
 
 
+## Hides the destination beacon (the quest board needs none: it has its own prompt).
+func clear_destination() -> void:
+	route.call(&"clear_destination")
+
+
 func set_quest(title: String, objective: String) -> void:
 	delivery_hud.call(&"set_quest", title, objective)
 

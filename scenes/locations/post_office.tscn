@@ -19,7 +19,6 @@
 [ext_resource type="Resource" path="res://data/packages/pkg_ordinary_parcel.tres" id="17_pkg_parcel"]
 [ext_resource type="Resource" path="res://data/packages/pkg_dragon_egg.tres" id="18_pkg_egg"]
 [ext_resource type="Resource" path="res://data/packages/pkg_potion_crate.tres" id="19_pkg_potion"]
-[ext_resource type="PackedScene" path="res://scenes/gameplay/phase3_visual/phase3_showcase.tscn" id="20_phase3_showcase"]
 [ext_resource type="PackedScene" path="res://scenes/environment/post_office_dressing.tscn" id="30_dressing"]
 [ext_resource type="Script" path="res://scripts/world/world_location.gd" id="90_world_location"]
 
@@ -562,7 +561,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -0.3)
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -1, 0, -2.3)
 
 [node name="QuestBoardSpot" type="Marker3D" parent="Markers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0, -4.3)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 11, 0, 2)
 
 [node name="QuestBoard" parent="Markers/QuestBoardSpot" instance=ExtResource("15_board")]
 board_name = "Courier Guild Board"
@@ -581,9 +580,6 @@ package_definition = ExtResource("18_pkg_egg")
 [node name="PotionCratePickup" parent="Markers/ParcelPickupSpot" instance=ExtResource("16_pickup")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0, 0)
 package_definition = ExtResource("19_pkg_potion")
-
-[node name="Phase3Showcase" parent="." instance=ExtResource("20_phase3_showcase")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, 0, 2.8)
 
 [node name="Zone" type="Area3D" parent="."]
 collision_layer = 0

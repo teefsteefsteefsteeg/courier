@@ -54,7 +54,7 @@ process_frame` resumes *before* that frame's `_process` callbacks, so UI updated
 needs one more frame.
 
 ## Architecture
-`village.tscn` top level: `GameplayServices` (first child), `PostOffice`, `ForestEntrance`,
+`village.tscn` top level: `GameplayServices` (first child), `PostOffice`, `WhisperwoodForest`, `ForestEntrance`,
 `Armory`, `VillageDressing`, `MegaKitPilotDressing`, `Player`, `IsoCameraRig`, `DebugHUD`,
 `LocationBanner`, `InteractionPrompt`, `DialogueBox`, `GameplayHUD`, `QuestJournal`, `QuestBoardUI`,
 `Phase4DeliveryIntegration`. NPCs live under `NPCs/` (Bram, Mira, Corvin, Elowen, Pip; Brenna is
@@ -123,13 +123,19 @@ cropped icons), `assets/ui/item_icons/` (placeholder shop icons), `assets/materi
 asset and its licence is in `ASSET_MANIFEST.md`; keep it updated. Generators:
 `tools/crop_input_prompts.py`, `tools/make_item_icons.py`, `tools/prep_megakit_buildings.py`
 (Python), and `tools/generate_buildings.gd`, `tools/generate_armory.gd`, `tools/generate_tool_sites.gd`,
-`tools/bake_world_map.gd` (Godot, headless). Some scenes (`scenes/buildings/*`,
+`tools/generate_whisperwood.gd`, `tools/bake_world_map.gd` (Godot, headless), and
+`tools/build_phase7_props.py` (Blender 5.2.2, `blender --background --factory-startup --python`).
+Some scenes (`scenes/buildings/*`,
 `scenes/locations/armory.tscn`, `scenes/props/armory/*`, `scenes/world/tools/*`,
-`scenes/locations/willowmere_pond.tscn`, `scenes/locations/tool_stall.tscn`) are **generated**:
+`scenes/locations/willowmere_pond.tscn`, `scenes/locations/tool_stall.tscn`,
+`scenes/environment/whisperwood_forest.tscn`) are **generated**:
 change the generator, not the scene. The terrain splat maps have no generator; edit them with
 `tools/edit_village_splat.py` and record lanes in `village_layout.json`, then re-bake the world map.
 
 ## Status
+**Phase 7 in progress** (`docs/PHASE7_WORLD_AND_SYSTEMS.md`): Milestone A (guild board on the
+plaza, exhibit removed, NPCs face the courier, wider roads, Whisperwood moved to (14, 0, -90)
+inside a generated forest annex north of the village) is done; B-D are not started.
 Phases 5G (map, portals) and 5H (village spacing, faster courier, RPG tools) are committed on
 `phase5f-integrated`, and every automated check passes on the committed tree (30 suites, 2614
 checks, clean boot). It has **not been played by a person**. See `docs/DEVELOPMENT_HANDOFF.md` for what is complete,

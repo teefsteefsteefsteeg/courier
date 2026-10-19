@@ -10,7 +10,7 @@ extends SceneTree
 ## Points walked (teleported along, a few metres apart) to explore part of the map.
 const EXPLORE := [Vector3(-15, 0, -2), Vector3(-6, 0, 2), Vector3(2, 0, 2), Vector3(8, 0, -1), Vector3(14, 0, 0),
 		Vector3(10, 0, 8), Vector3(12, 0, 14), Vector3(6, 0, 18), Vector3(6, 0, -8), Vector3(9, 0, -13), Vector3(12, 0, -18),
-		Vector3(14, 0, -22), Vector3(14, 0, -27), Vector3(15, 0, -31)]
+		Vector3(14, 0, -22), Vector3(14, 0, -27), Vector3(13, 0, -36)]
 
 var level: Node3D
 var player: PlayerController

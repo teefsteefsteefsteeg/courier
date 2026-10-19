@@ -18,7 +18,8 @@ signal shop_requested(interactor: Node)
 
 func _ready() -> void:
 	if merchant != null:
-		merchant.interactable.position.z += serve_reach
+		# In front of the shopkeeper: NPCs face their local -Z.
+		merchant.interactable.position.z -= serve_reach
 		merchant.interactable.interacted.connect(_on_merchant_interacted)
 
 

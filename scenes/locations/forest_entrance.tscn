@@ -88,7 +88,7 @@ height = 1.6
 radius = 0.6
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_forest_zone"]
-size = Vector3(32, 4, 24)
+size = Vector3(62, 4, 72)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_clearing_zone"]
 size = Vector3(11, 4, 11)
@@ -465,7 +465,7 @@ display_name = "Forest Clearing"
 transform = Transform3D(-0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, -0.939693, 2.2, 0, -12.4)
 
 [node name="ForestZone" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 0, -12)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 3)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("1_zone")
@@ -495,7 +495,7 @@ shape = SubResource("BoxShape3D_clearing_zone")
 [node name="Locations" type="Node3D" parent="."]
 
 [node name="WhisperwoodEdge" type="Marker3D" parent="Locations"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
 script = ExtResource("90_world_location")
 location_id = &"whisperwood_edge"
 display_name = "Whisperwood Edge"

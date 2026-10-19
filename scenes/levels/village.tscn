@@ -76,6 +76,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/tools/crumbled_wall.tscn" id="h5_wall"]
 [ext_resource type="PackedScene" path="res://scenes/phase6/village_gateway.tscn" id="blender_region"]
 [ext_resource type="Script" path="res://scripts/phase6/world_router.gd" id="phase6_router"]
+[ext_resource type="PackedScene" path="res://scenes/environment/whisperwood_forest.tscn" id="p7_whisperwood"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -102,6 +103,9 @@ size = Vector2(120, 120)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
 size = Vector3(120, 1, 120)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground_annex"]
+size = Vector3(70, 1, 72)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bound_x"]
 size = Vector3(89, 4, 0.5)
@@ -174,6 +178,18 @@ size = Vector3(10, 4, 9)
 [sub_resource type="BoxShape3D" id="BoxShape3D_stall_zone"]
 size = Vector3(7, 4, 5)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_bound_nw"]
+size = Vector3(24.5, 4, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bound_east"]
+size = Vector3(0.5, 4, 168.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_annex_west"]
+size = Vector3(0.5, 4, 80.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_annex_north"]
+size = Vector3(64.5, 4, 0.5)
+
 [node name="Village" type="Node3D"]
 
 [node name="GameplayServices" parent="." instance=ExtResource("34_services")]
@@ -199,11 +215,17 @@ surface_material_override/0 = ExtResource("50_meadow")
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, -0.5, 0)
 shape = SubResource("BoxShape3D_ground")
 
+[node name="AnnexCollisionShape3D" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, -0.5, -93)
+shape = SubResource("BoxShape3D_ground_annex")
+
 [node name="Terrain" type="MeshInstance3D" parent="."]
 script = ExtResource("60_terrain")
 ground_material = ExtResource("61_ground")
+mesh_rect = Rect2(-80, -144, 160, 224)
+flat_rects = Array[Rect2]([Rect2(-44, -44, 88, 88), Rect2(-20, -124, 64, 80)])
 tree_scenes = Array[PackedScene]([ExtResource("70_ctree1"), ExtResource("71_ctree2"), ExtResource("72_ctree3"), ExtResource("73_ctree4"), ExtResource("74_ptree1"), ExtResource("75_ptree2"), ExtResource("76_ptree3")])
-tree_count = 70
+tree_count = 110
 
 [node name="Paths" type="Node3D" parent="."]
 
@@ -252,8 +274,8 @@ surface_material_override/0 = ExtResource("51_dirt")
 [node name="Boundary" type="StaticBody3D" parent="."]
 
 [node name="North" type="CollisionShape3D" parent="Boundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 2, -44)
-shape = SubResource("BoxShape3D_bound_x")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, 2, -44)
+shape = SubResource("BoxShape3D_bound_nw")
 
 [node name="South" type="CollisionShape3D" parent="Boundary"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 0, 2, 44)
@@ -264,14 +286,24 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -44, 2, 0)
 shape = SubResource("BoxShape3D_bound_z")
 
 [node name="East" type="CollisionShape3D" parent="Boundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 44, 2, 0)
-shape = SubResource("BoxShape3D_bound_z")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, 2, -40)
+shape = SubResource("BoxShape3D_bound_east")
+
+[node name="AnnexWest" type="CollisionShape3D" parent="Boundary"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 2, -84)
+shape = SubResource("BoxShape3D_annex_west")
+
+[node name="AnnexNorth" type="CollisionShape3D" parent="Boundary"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2, -124)
+shape = SubResource("BoxShape3D_annex_north")
 
 [node name="PostOffice" parent="." instance=ExtResource("8_post")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -14, 0, -6)
 
+[node name="WhisperwoodForest" parent="." instance=ExtResource("p7_whisperwood")]
+
 [node name="ForestEntrance" parent="." instance=ExtResource("9_forest")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 14, 0, -20)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -90)
 
 [node name="Armory" parent="." instance=ExtResource("9_armory")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4, 0, -16.6)
@@ -356,7 +388,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 16, 0, -2.6)
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -4.6, 0, -3.6)
 
 [node name="Lamp2" parent="Props" instance=ExtResource("12_lamp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 5.6, 0, 4.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 4.3, 0, 7.6)
 
 [node name="Lamp3" parent="Props" instance=ExtResource("12_lamp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -5.6, 0, 4.6)
@@ -365,7 +397,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -5.6, 0, 4.6)
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 6.6, 0, -1.6)
 
 [node name="Lamp5" parent="Props" instance=ExtResource("12_lamp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 13.2, 0, -14.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 14.2, 0, -13.9)
 
 [node name="Lamp6" parent="Props" instance=ExtResource("12_lamp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -9, 0, 2.4)
@@ -417,7 +449,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, 7.9, 0, 12.6)
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -0.4, 0, 15.2)
 
 [node name="Crate1" parent="Props" instance=ExtResource("20_crate")]
-transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, 18.8, 0, -0.9)
+transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, 18.8, 0, -2.3)
 
 [node name="Crate2" parent="Props" instance=ExtResource("20_crate")]
 transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 7.9, 0, 10)
@@ -755,7 +787,7 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, -0, 0, -1, 11, 0, -1.3)
 transform = Transform3D(-0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, -0.939693, 6.4, 0, 16.9)
 
 [node name="MageElowen" parent="NPCs" instance=ExtResource("24_elowen")]
-transform = Transform3D(-0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, -0.939693, 16.2, 0, -32.4)
+transform = Transform3D(-0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, -0.939693, 16.2, 0, -102.4)
 
 [node name="VillagerPip" parent="NPCs" instance=ExtResource("25_pip")]
 transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, 2.6, 0, 2.6)

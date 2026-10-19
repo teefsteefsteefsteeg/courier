@@ -19,15 +19,20 @@ const REPLACED_HOUSES := ["CottageRose", "CottageOak", "CottageFern", "CottageBl
 		"CottageHill", "CottageWillow", "CottageBrook", "CottageMoss"]
 ## Walk targets, each reached from the village square by steering straight at it
 ## through the listed waypoints (roads, not across lawns).
+## Since Phase 7 the Whisperwood is 70 m north: the forest road, then the Whisperwood trail
+## (assets/textures/terrain/village_layout.json) through the edge gate and the forest gate.
+const FOREST_ROUTE := [Vector3(2, 0, 0), Vector3(4.8, 0, -5.2), Vector3(11.4, 0, -15.6), Vector3(14, 0, -24), Vector3(14, 0, -28.6),
+		Vector3(12.6, 0, -36), Vector3(15.5, 0, -45), Vector3(14.2, 0, -53), Vector3(18.5, 0, -62), Vector3(13.5, 0, -71),
+		Vector3(16.5, 0, -80), Vector3(14, 0, -90), Vector3(14, 0, -96)]
 const ROUTES := {
 	"NPCs/MerchantMira": [Vector3(2, 0, 0)],
 	"NPCs/AlchemistCorvin": [Vector3(2, 0, 0), Vector3(5, 0, 3), Vector3(9.5, 0, 6), Vector3(9.5, 0, 17)],
 	"NPCs/VillagerPip": [Vector3(2, 0, 0)],
 	"Markers/MarketDeliverySpot": [Vector3(2, 0, 0)],
 	"Markers/AlchemyDeliverySpot": [Vector3(2, 0, 0), Vector3(5, 0, 3), Vector3(9.5, 0, 6), Vector3(9.5, 0, 17)],
-	"PostOffice/Markers/QuestBoardSpot": [Vector3(2, 0, 0), Vector3(-3, 0, -5.6), Vector3(-9, 0, -5.6)],
-	"ForestEntrance/Markers/ForestClearingSpot": [Vector3(2, 0, 0)],
-	"NPCs/MageElowen": [Vector3(2, 0, 0)],
+	"PostOffice/Markers/QuestBoardSpot": [Vector3(2, 0, 0)],  # Phase 7: on the plaza, outside the post office
+	"ForestEntrance/Markers/ForestClearingSpot": FOREST_ROUTE,
+	"NPCs/MageElowen": FOREST_ROUTE,
 }
 
 var _failures: int = 0

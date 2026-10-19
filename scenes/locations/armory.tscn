@@ -77,7 +77,7 @@ font_size = 64
 outline_size = 0
 
 [node name="Merchant" type="StaticBody3D" parent="." unique_id=1613990544 instance=ExtResource("14_2wfef")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 2.05)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.5, 0, 2.05)
 collision_layer = 4
 collision_mask = 0
 script = ExtResource("15_br26x")

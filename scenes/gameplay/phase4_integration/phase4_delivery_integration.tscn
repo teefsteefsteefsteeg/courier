@@ -35,13 +35,13 @@ script = ExtResource("1_integration")
 [node name="SpawnPoints" type="Node3D" parent="."]
 
 [node name="ForestSlimePoint" type="Marker3D" parent="SpawnPoints"]
-position = Vector3(10.8, 0.0, -27.0)
+position = Vector3(10.8, 0.0, -97.0)
 script = ExtResource("2_spawn")
 enemy_scene = ExtResource("3_slime")
 respawn_delay = 14.0
 
 [node name="FrostWispPoint" type="Marker3D" parent="SpawnPoints"]
-position = Vector3(17.5, 0.0, -35.5)
+position = Vector3(17.5, 0.0, -105.5)
 script = ExtResource("2_spawn")
 enemy_scene = ExtResource("4_wisp")
 respawn_delay = 18.0

@@ -516,7 +516,10 @@ func _update_route_marker() -> void:
 		_sync_presentation()
 	if _route_marker == null:
 		return
-	var show := show_route_marker and target != null and target.is_inside_tree() and is_inside_tree()
+	# No world marker over the quest board (Phase 7): it is a landmark in the post office with its
+	# own interaction prompt, and the beam and floating label cluttered it. The minimap objective
+	# and the tracker still point there.
+	var show := show_route_marker and target != null and target != board_target and target.is_inside_tree() and is_inside_tree()
 	_route_marker.visible = show
 	if not show:
 		return
@@ -657,7 +660,9 @@ func _sync_presentation() -> void:
 		elif _run_state == RunState.FAILED:
 			state = &"failed"
 		_visual_layer.call(&"set_quest_state", state)
-	if _visual_layer.has_method(&"set_destination") and _route_target != null:
+	if _route_target == board_target and _visual_layer.has_method(&"clear_destination"):
+		_visual_layer.call(&"clear_destination")
+	elif _visual_layer.has_method(&"set_destination") and _route_target != null:
 		_visual_layer.call(&"set_destination", _route_target.global_position, _route_label_text(_route_target))
 
 

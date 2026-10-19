@@ -15,8 +15,11 @@ signal portal_activated(portal_id: StringName)
 signal explored_changed
 
 const GROUP := &"exploration_service"
-## World X/Z area the map and fog cover (the village terrain is 128 m across).
-const WORLD_RECT := Rect2(-64.0, -64.0, 128.0, 128.0)
+## World X/Z area the map and fog cover: the village terrain (128 m across) plus, since Phase 7,
+## the Whisperwood annex to the north (z down to -128).
+const WORLD_RECT := Rect2(-64.0, -128.0, 128.0, 192.0)
+## The area saves before Phase 7 covered; their fog grids are remapped into WORLD_RECT.
+const LEGACY_RECT := Rect2(-64.0, -64.0, 128.0, 128.0)
 const CELL_SIZE := 2.0
 const SCAN_INTERVAL := 0.2
 ## Fog texel colours: unexplored parchment-dark, explored clear.
@@ -217,12 +220,9 @@ func from_dict(data: Dictionary) -> void:
 	_discovered.clear()
 	_portals.clear()
 	_cells.fill(0)
-	var size: Array = data.get("explored_size", [])
-	if size.size() == 2 and int(size[0]) == _grid.x and int(size[1]) == _grid.y:
-		var raw := Marshalls.base64_to_raw(String(data.get("explored", "")))
-		var cells := raw.decompress(_grid.x * _grid.y, FileAccess.COMPRESSION_DEFLATE) if not raw.is_empty() else PackedByteArray()
-		if cells.size() == _cells.size():
-			_cells = cells
+	var cells := _decode_cells(String(data.get("explored", "")))
+	if cells.size() == _cells.size():
+		_cells = cells
 	for id in data.get("discovered", []):
 		_discovered[StringName(id)] = true
 	for id in data.get("portals", []):
@@ -242,15 +242,39 @@ func set_region(next: StringName) -> void:
 	_region_fog[String(region_id)] = Marshalls.raw_to_base64(_cells.compress(FileAccess.COMPRESSION_DEFLATE))
 	region_id = next
 	_cells.fill(0)
-	var encoded: String = _region_fog.get(String(next),"")
-	if not encoded.is_empty():
-		var raw := Marshalls.base64_to_raw(encoded)
-		var restored := raw.decompress(_grid.x*_grid.y,FileAccess.COMPRESSION_DEFLATE) if not raw.is_empty() else PackedByteArray()
-		if restored.size() == _cells.size():
-			_cells = restored
+	var restored := _decode_cells(String(_region_fog.get(String(next),"")))
+	if restored.size() == _cells.size():
+		_cells = restored
 	for y in _grid.y:
 		for x in _grid.x:
 			_fog_image.set_pixel(x,y,FOG_CLEAR if _cells[y*_grid.x+x] else FOG_HIDDEN)
 	_fog_texture.update(_fog_image)
 	_last_reveal = Vector2.INF
 	explored_changed.emit()
+
+
+## Decodes a saved fog grid. Grids saved over LEGACY_RECT (before Phase 7 grew the world) are
+## remapped cell for cell into WORLD_RECT, so explored areas survive the change. Returns an
+## empty array for anything unreadable.
+func _decode_cells(encoded: String) -> PackedByteArray:
+	if encoded.is_empty():
+		return PackedByteArray()
+	var raw := Marshalls.base64_to_raw(encoded)
+	if raw.is_empty():
+		return PackedByteArray()
+	var cells := raw.decompress_dynamic(-1, FileAccess.COMPRESSION_DEFLATE)
+	if cells.size() == _grid.x * _grid.y:
+		return cells
+	var legacy := Vector2i(ceili(LEGACY_RECT.size.x / CELL_SIZE), ceili(LEGACY_RECT.size.y / CELL_SIZE))
+	if cells.size() != legacy.x * legacy.y:
+		return PackedByteArray()
+	var offset := Vector2i(((LEGACY_RECT.position - WORLD_RECT.position) / CELL_SIZE).round())
+	var out := PackedByteArray()
+	out.resize(_grid.x * _grid.y)
+	out.fill(0)
+	for y in legacy.y:
+		for x in legacy.x:
+			var target := Vector2i(x, y) + offset
+			if target.x >= 0 and target.y >= 0 and target.x < _grid.x and target.y < _grid.y:
+				out[target.y * _grid.x + target.x] = cells[y * legacy.x + x]
+	return out
