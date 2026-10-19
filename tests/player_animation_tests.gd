@@ -76,9 +76,9 @@ func _frames(count: int) -> void:
 	await process_frame
 
 
-## Waits until the cooldown allows another dash.
+## Waits until another dash is allowed (cooldown over and enough stamina).
 func _cooldown() -> void:
-	while combat.get_dash_cooldown_remaining() > 0.0 or combat.is_dashing():
+	while combat.get_dash_cooldown_remaining() > 0.0 or combat.is_dashing() or not combat.has_dash_stamina():
 		await physics_frame
 	await _frames(1)
 

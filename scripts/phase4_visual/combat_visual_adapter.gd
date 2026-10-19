@@ -14,7 +14,8 @@ extends Node
 ##
 ## Optional polling (used when present, never required):
 ##   controller.get_bolt_cooldown_remaining() / get_bolt_cooldown()
-##   controller.get_dash_cooldown_remaining() / get_dash_cooldown()
+##   controller.get_dash_cooldown_remaining() / get_dash_cooldown() / is_dashing()
+##   controller.get_stamina() / max_stamina / dash_stamina_cost -> HUD stamina
 
 signal binding_changed(preview_mode: bool)
 signal effect_spawned(kind: StringName, effect: Node)
@@ -339,8 +340,12 @@ func _poll_cooldowns() -> void:
 	if controller.has_method(&"get_dash_cooldown_remaining") and hud.has_method(&"set_dash_state"):
 		var dash_total := float(controller.call(&"get_dash_cooldown")) if controller.has_method(&"get_dash_cooldown") else dash_cooldown_estimate
 		var remaining := float(controller.call(&"get_dash_cooldown_remaining"))
-		var is_dashing := bool(hud.get(&"dashing"))
+		# The controller's own dashing state. Reading the HUD's flag back (as before) kept it
+		# "Dashing" forever once a dash had started, so the dash bar never refilled.
+		var is_dashing := bool(controller.call(&"is_dashing")) if controller.has_method(&"is_dashing") else bool(hud.get(&"dashing"))
 		hud.call(&"set_dash_state", remaining <= 0.0, is_dashing, remaining, dash_total)
+	if controller.has_method(&"get_stamina") and hud.has_method(&"set_stamina"):
+		hud.call(&"set_stamina", float(controller.call(&"get_stamina")), float(controller.get(&"max_stamina")), float(controller.get(&"dash_stamina_cost")))
 
 
 func _controller_has(method: StringName) -> bool:

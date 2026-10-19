@@ -58,6 +58,9 @@ var dash_ready := true
 var dashing := false
 var dash_remaining := 0.0
 var dash_total := 1.0
+var stamina := -1.0
+var stamina_max := 100.0
+var stamina_cost := 0.0
 var shield_active := false
 var shield_durability := 0.0
 var rank := 0
@@ -144,6 +147,20 @@ func set_dash_state(is_ready: bool, is_dashing := false, remaining := 0.0, total
 func start_dash_cooldown(total: float) -> void:
 	set_dash_state(false, false, total, total)
 	_local_dash_timer = true
+
+
+## Real dash stamina from the CombatController. Once known, the Dash chip's bar shows it
+## and the label reads "Dash: Tired" while a dash cannot be afforded.
+func set_stamina(current: float, maximum: float, dash_cost: float = 0.0) -> void:
+	_ensure_built()
+	stamina_max = maxf(maximum, 0.001)
+	stamina = clampf(current, 0.0, stamina_max)
+	stamina_cost = dash_cost
+	_refresh()
+
+
+func has_dash_stamina() -> bool:
+	return stamina < 0.0 or stamina >= stamina_cost
 
 
 ## durability: 0..1 ratio, or the controller's raw durability (above 1). Raw values are
@@ -289,14 +306,19 @@ func _refresh() -> void:
 	if dashing:
 		dash_bar.value = 0.0
 		dash_label.text = "Dash: Dashing"
-	elif dash_ready:
-		dash_bar.value = 1.0
-		dash_label.text = "Dash: Ready"
-	else:
+	elif not dash_ready:
 		dash_bar.value = 1.0 - dash_remaining / dash_total
 		dash_label.text = "Dash: %.1fs" % dash_remaining
-	_dash_fill.bg_color = DASH_COLOR if dash_ready else DASH_COLOR.lerp(DIM_COLOR, 0.5)
-	dash_label.add_theme_color_override(&"font_color", IVORY if dash_ready else Color(0.72, 0.7, 0.68))
+	elif not has_dash_stamina():
+		dash_label.text = "Dash: Tired"
+	else:
+		dash_bar.value = 1.0
+		dash_label.text = "Dash: Ready"
+	if stamina >= 0.0:
+		dash_bar.value = stamina / stamina_max
+	var can_dash := dash_ready and has_dash_stamina()
+	_dash_fill.bg_color = DASH_COLOR if can_dash else DASH_COLOR.lerp(DIM_COLOR, 0.5)
+	dash_label.add_theme_color_override(&"font_color", IVORY if can_dash else Color(0.72, 0.7, 0.68))
 
 	name_label.text = display_name if not display_name.is_empty() else rank_title
 	level_label.text = str(rank + 1)

@@ -10,7 +10,10 @@ extends Node
 ##   All share one cooldown (the "bolt" cooldown the HUD shows), which switching weapons
 ##   never shortens. A switch cancels a swing that has not landed yet; switch_delay (off by
 ##   default) can add a minimum wait before the next attack.
-## - Dash: short burst of movement; the body takes no damage while dashing.
+## - Dash: short burst of movement; the body takes no damage while dashing. Each dash costs
+##   dash_stamina_cost stamina (and starts dash_cooldown); stamina regenerates at
+##   stamina_regen_per_second once stamina_regen_delay has passed since the last dash ended.
+##   Below the cost the dash is refused ("no_stamina") while stamina keeps regenerating.
 ## - Package Shield: while a package is carried, absorbs incoming damage until its
 ##   durability runs out. It cannot be raised without a package and drops automatically
 ##   when the package leaves the carrier.
@@ -34,6 +37,8 @@ signal melee_resolved(hits: int)
 signal melee_cancelled
 signal arrow_fired(origin: Vector3, direction: Vector3)
 signal dash_started
+## Stamina changed (spent by a dash or regenerating).
+signal stamina_changed(current: float, maximum: float)
 signal dash_finished
 ## Emitted when the shield is raised/lowered/broken and whenever its durability changes.
 signal shield_changed(active: bool, durability: float)
@@ -41,7 +46,8 @@ signal shield_changed(active: bool, durability: float)
 signal target_hit(target: Node, amount: float)
 signal shield_broken
 ## An ability request was refused. ability: &"magic_bolt", &"melee", &"arrow", &"dash", &"package_shield".
-## reason: &"cooldown", &"dashing", &"dead", &"no_body", &"no_package", &"shield_depleted".
+## reason: &"cooldown", &"dashing", &"dead", &"no_body", &"no_package", &"shield_depleted",
+## &"no_stamina".
 signal ability_blocked(ability: StringName, reason: StringName)
 
 ## Group the owning body joins so enemies can find the courier.
@@ -100,6 +106,14 @@ enum AttackStyle { MAGIC_BOLT, FAST_MELEE, HEAVY_MELEE, ARROW }
 @export_range(0.0, 10.0, 0.05, "suffix:s") var dash_cooldown: float = 0.9
 @export var dash_invulnerable: bool = true
 
+@export_group("Stamina")
+@export var max_stamina: float = 100.0
+## Stamina each dash costs; a dash needs at least this much.
+@export var dash_stamina_cost: float = 25.0
+@export_range(0.0, 500.0, 1.0, "suffix:/s") var stamina_regen_per_second: float = 60.0
+## Seconds after the last dash ends before stamina starts regenerating.
+@export_range(0.0, 5.0, 0.05, "suffix:s") var stamina_regen_delay: float = 0.7
+
 @export_group("Package Shield")
 @export var shield_max_durability: float = 60.0
 ## Durability required to raise the shield (after breaking it or lowering it).
@@ -121,6 +135,8 @@ var _dash_direction: Vector3 = Vector3.ZERO
 var _shield_active: bool = false
 var _shield_durability: float = -1.0
 var _shield_regen_wait: float = 0.0
+var _stamina: float = -1.0
+var _stamina_regen_wait: float = 0.0
 var _attack_style: AttackStyle = AttackStyle.MAGIC_BOLT
 var _melee_windup_left: float = -1.0
 var _melee_direction: Vector3 = Vector3.ZERO
@@ -132,6 +148,8 @@ var _attack_cooldown_total: float = 0.45
 func _ready() -> void:
 	if _shield_durability < 0.0:
 		_shield_durability = shield_max_durability
+	if _stamina < 0.0:
+		_stamina = max_stamina
 	_body = get_parent() as CharacterBody3D
 	if health == null:
 		health = CombatHealth.find_on(self)
@@ -190,6 +208,7 @@ func advance(delta: float) -> void:
 			_resolve_melee()
 	if _dash_time_left > 0.0:
 		_step_dash(delta)
+	_step_stamina(delta)
 	_step_shield_regen(delta)
 
 
@@ -410,6 +429,11 @@ func try_dash(direction := Vector3.ZERO) -> bool:
 		return _block(&"dash", &"cooldown")
 	if _body == null:
 		return _block(&"dash", &"no_body")
+	if get_stamina() < dash_stamina_cost:
+		return _block(&"dash", &"no_stamina")
+	_stamina = get_stamina() - dash_stamina_cost
+	_stamina_regen_wait = stamina_regen_delay
+	stamina_changed.emit(_stamina, max_stamina)
 	var dash_direction := _flatten(direction)
 	if dash_direction == Vector3.ZERO:
 		dash_direction = get_aim_direction()
@@ -430,6 +454,34 @@ func get_dash_cooldown_remaining() -> float:
 
 func get_dash_direction() -> Vector3:
 	return _dash_direction
+
+
+func get_stamina() -> float:
+	return _stamina if _stamina >= 0.0 else max_stamina
+
+
+func get_max_stamina() -> float:
+	return max_stamina
+
+
+## True when stamina covers another dash.
+func has_dash_stamina() -> bool:
+	return get_stamina() >= dash_stamina_cost
+
+
+## Regenerates stamina (delta-based) once the delay after the last dash has passed. The
+## delay holds while a dash is still moving, and every new dash restarts it.
+func _step_stamina(delta: float) -> void:
+	if is_dashing():
+		_stamina_regen_wait = stamina_regen_delay
+		return
+	if get_stamina() >= max_stamina:
+		return
+	if _stamina_regen_wait > 0.0:
+		_stamina_regen_wait = maxf(_stamina_regen_wait - delta, 0.0)
+		return
+	_stamina = clampf(get_stamina() + stamina_regen_per_second * delta, 0.0, max_stamina)
+	stamina_changed.emit(_stamina, max_stamina)
 
 
 func _step_dash(delta: float) -> void:
