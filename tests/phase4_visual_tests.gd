@@ -386,7 +386,8 @@ func _test_hud() -> void:
 	hud.set(&"auto_animate", false)
 	await process_frame
 	var panel: PanelContainer = hud.get(&"panel")
-	_check(panel != null and is_equal_approx(panel.anchor_top, 1.0) and is_equal_approx(panel.anchor_left, 0.0), "HUD panel anchored bottom-left")
+	# Since the status HUD redesign the panel is the top-left courier status panel.
+	_check(panel != null and is_equal_approx(panel.anchor_top, 0.0) and is_equal_approx(panel.anchor_left, 0.0), "HUD panel anchored top-left")
 	hud.call(&"set_health", 80.0, 100.0)
 	var health_bar: ProgressBar = hud.get(&"health_bar")
 	_check(is_equal_approx(health_bar.value, 80.0) and (hud.get(&"health_label") as Label).text == "HP 80 / 100", "health row shows 80 / 100")

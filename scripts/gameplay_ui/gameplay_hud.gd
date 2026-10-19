@@ -65,8 +65,13 @@ func _process(_delta: float) -> void:
 	# Corner anchors follow the viewport. Heights come from current content,
 	# including wrapped objectives and conditional package warning rows.
 	var width := clampf(get_viewport().get_visible_rect().size.x * 0.25, 300.0, 380.0)
-	_place(quest_tracker, Vector2.ZERO, Vector2(MARGIN, MARGIN), Vector2(width, maxf(100, quest_tracker.get_combined_minimum_size().y)))
-	_place(onboarding, Vector2.ZERO, Vector2(MARGIN, MARGIN), Vector2(width, maxf(100, onboarding.get_combined_minimum_size().y)))
+	# Top-left column: the courier status panel (Phase 4 combat HUD), then the tracker.
+	var left_top := MARGIN
+	var status := _find_combat_panel(_delta)
+	if status != null and status.is_visible_in_tree():
+		left_top = status.get_global_rect().end.y + GAP
+	_place(quest_tracker, Vector2.ZERO, Vector2(MARGIN, left_top), Vector2(width, maxf(100, quest_tracker.get_combined_minimum_size().y)))
+	_place(onboarding, Vector2.ZERO, Vector2(MARGIN, left_top), Vector2(width, maxf(100, onboarding.get_combined_minimum_size().y)))
 	onboarding.visible = not quest_tracker.visible
 	_place(wallet_display, Vector2(1, 0), Vector2(-width - MARGIN, MARGIN), Vector2(width, maxf(46, wallet_display.get_combined_minimum_size().y)))
 	# Bottom-right column, from the bottom: weapon quick slots, package status, package.
@@ -88,15 +93,15 @@ func _process(_delta: float) -> void:
 	_place_movement_guide(_delta)
 
 
-## Bottom-left, stacked above the Phase 4 combat panel when it is on screen. Hidden when
-## the UI setting is off, or when there is no room clear of the other HUD panels (very
-## short windows, or the dialogue box reaching the left edge).
+## Bottom-left (stacked above the courier status panel if that is ever at the bottom).
+## Hidden when the UI setting is off, or when there is no room clear of the other HUD
+## panels (very short windows, or the dialogue box reaching the left edge).
 func _place_movement_guide(delta: float) -> void:
 	var guide_size := movement_guide.get_combined_minimum_size()
 	var view := get_viewport().get_visible_rect().size
 	var bottom := view.y - MARGIN
 	var combat := _find_combat_panel(delta)
-	if combat != null and combat.is_visible_in_tree():
+	if combat != null and combat.is_visible_in_tree() and combat.get_global_rect().position.y > view.y * 0.5:
 		bottom = minf(bottom, combat.get_global_rect().position.y - GAP)
 	_place(movement_guide, Vector2.ZERO, Vector2(MARGIN, bottom - guide_size.y), guide_size)
 	var rect := Rect2(Vector2(MARGIN, bottom - guide_size.y), guide_size)

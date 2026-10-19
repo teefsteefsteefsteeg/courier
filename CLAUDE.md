@@ -86,7 +86,8 @@ Key gameplay scripts:
   objective to a world node (minimap objective).
 - **UI:** `scripts/gameplay_ui/` (GameplayHUD layout, tracker, wallet, toasts, board, ShopUI,
   QuickWeaponBar (bottom-right, keys 1-5), EquipmentUI (Tab),
-  MovementGuide), `scripts/ui/` (interaction prompt, dialogue box, journal, location banner,
+  MovementGuide), courier status panel `scripts/phase4_visual/combat_hud.gd` (top-left: portrait,
+  rank badge, HP, shield energy, reputation; pushed by the combat visual adapter), `scripts/ui/` (interaction prompt, dialogue box, journal, location banner,
   UISettings, `input_prompts/`), minimap `scripts/phase4_integration_visual/minimap_controller.gd`.
   Modal windows (journal, quest board, shop, expanded map) join group `ui_modal`, pause the
   player, and refuse to open over each other.
@@ -116,7 +117,7 @@ scenes (`scenes/buildings/*`, `scenes/locations/armory.tscn`, `scenes/props/armo
 **generated**: change the generator, not the scene.
 
 ## Status
-Phase 5F is integrated and every automated check passes (25 suites, 2327 checks, clean boot). It
+Phase 5F is integrated and every automated check passes (26 suites, 2368 checks, clean boot). It
 has **not been played by a person**. See `docs/DEVELOPMENT_HANDOFF.md` for what is complete,
 known issues and next priorities.
 

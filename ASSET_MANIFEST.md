@@ -158,6 +158,7 @@ I, O, P, T, U, Y, 0 or 7-9 keys. See `docs/PHASE5F_INPUT_PROMPTS.md`.
 ### Phase 5F (2026-10-18): Armory item icons
 | Asset | Path | Type | Source / License | Status |
 |---|---|---|---|---|
+| HUD courier portrait | `assets/ui/hud/courier_portrait.png` | 256x256 render of the KayKit Ranger (CC0, KayKit Adventurers) | Rendered in-repo by `tools/render_courier_portrait.gd`; circle-masked by `assets/shaders/circle_mask.gdshader` (authored) | FINAL |
 | Shop item icons (7, incl. the Hunting Bow) | `assets/ui/item_icons/*.png` | 16 px pixel art saved at 32x32 | Authored in-repo by `tools/make_item_icons.py` | PLACEHOLDER |
 Swords and the Magic Staff show the existing KayKit `sword_1handed.gltf` / `staff.gltf` in the
 courier's hand when equipped; the Battle Axe and Wooden Shield have no model.

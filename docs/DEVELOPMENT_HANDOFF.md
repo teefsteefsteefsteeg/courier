@@ -80,6 +80,17 @@ Uncommitted state left in the role worktrees, intentionally not part of any comm
 - New `phase5f_integration_tests` (17) and a rendered walkthrough
   (`tests/capture_phase5f_integrated_screenshots.gd`).
 
+### On the integrated branch since (see the per-feature docs)
+- `1ac4219`: equipped weapons visible. Every item has a KayKit held model, and the shield shows
+  in the left hand (`docs/PHASE5F_ARMORY_SHOP.md`, fix section).
+- `1731061`: weapon types (sword fast melee, axe heavy melee, staff and bare-hand bolts, bow
+  arrows), the Hunting Bow, five quick slots (keys 1-5, HUD bar) and the Equipment window (Tab)
+  (`docs/PHASE5F_WEAPON_SWITCHING.md`).
+- Courier status HUD redesign: a top-left panel with portrait, rank badge, ruby HP, sapphire
+  shield energy, gold reputation (EXP) bar, Bolt/Dash chips, animated changes and responsive
+  scaling (`docs/PHASE5F_STATUS_HUD.md`). The game has no mana or EXP; those bars bind to shield
+  energy and rank progress.
+
 ## 3. Feature status (integrated build)
 | Area | Status | Notes |
 |---|---|---|
@@ -89,7 +100,7 @@ Uncommitted state left in the role worktrees, intentionally not part of any comm
 | Combat | Complete for MVP | Magic Bolt, Dash, Package Shield; Slime and Wisp only during the Dragon Egg forest run |
 | NPC interaction and dialogue | Complete | Dialogue box, quest lines, giver lines; no branching dialogue data |
 | Quests and deliveries | Complete for 3 contracts | Q1 to Q3, failure and retry, one delivery at a time |
-| HUD | Complete | Tracker, wallet and rank, toasts, package panels, combat HUD, minimap, WASD guide |
+| HUD | Complete | Top-left courier status panel (portrait, rank, HP, shield energy, reputation), tracker, wallet and rank, toasts, package panels, weapon quick bar, minimap, WASD guide |
 | Input prompts | Complete | Keyboard/mouse keycaps from the InputMap; gamepad icons cropped but unused (no gamepad bindings) |
 | Journal, quest board | Complete | Modal, keyboard focus |
 | Shop, inventory, equipment, gold | Complete for MVP | Weapon types: sword fast melee, axe heavy melee, staff bolts, bow arrows (Hunting Bow, 250 g). Quick slots 1-5, Equipment window (Tab). See `PHASE5F_WEAPON_SWITCHING.md` |
@@ -99,7 +110,7 @@ Uncommitted state left in the role worktrees, intentionally not part of any comm
 | Human playtest | **Not done** | All checks are automated or scripted rendered runs |
 
 ## 4. Test results (integrated, 2026-10-19)
-All 25 suites in `tests/*_tests.gd` pass, **2327 checks, 0 failures**. No exit-time leak
+All 26 suites in `tests/*_tests.gd` pass, **2368 checks, 0 failures**. No exit-time leak
 reports in any suite. `--quit-after 300` village boot logs no ERROR/WARNING lines. Import
 complete (332 sidecars, all resolved).
 
@@ -117,7 +128,7 @@ complete (332 sidecars, all resolved).
 | village_quest | 95 | armory_shop | 70 |
 | world_ui | 127 | player_animation | 38 |
 | equipment_visual | 34 | phase5f_integration | 17 |
-| weapon_quick_switch | 94 | | |
+| weapon_quick_switch | 94 | status_hud | 41 |
 
 Rendered check at 1600x900 (`capture_phase5f_integrated_screenshots.gd`):
 - Brenna's prompt and keycap show.
