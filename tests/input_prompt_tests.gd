@@ -239,7 +239,7 @@ func _test_hud_hints() -> void:
 	_check(journal.hint_label.text == "[J] Journal" and _overlay_keys(journal.hint_label) == PackedStringArray(["key_j"]), "journal hint keeps its text and shows J")
 	_check(_overlay_keys(journal.close_hint) == PackedStringArray(["key_j"]), "journal close hint shows J")
 	var map := hud.get_node("Minimap")
-	_check(_overlay_keys(map.expanded_hint) == PackedStringArray(["key_m", "key_esc"]), "map close hint: %s" % _overlay_keys(map.expanded_hint))
+	_check(_overlay_keys(map.expanded_hint) == PackedStringArray(["key_tab", "key_esc"]), "map close hint: %s" % _overlay_keys(map.expanded_hint))
 
 	var bram := level.get_node("NPCs/PostmasterBram") as NPC
 	await _stand_near(bram, bram.global_position + Vector3(0, 0, 1.4))

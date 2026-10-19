@@ -41,6 +41,9 @@ var _quick_slots: Array[StringName] = [&"", &"", &"", &"", &""]
 var _material_definitions: Dictionary[StringName, MaterialItem] = {}
 var _materials: Dictionary[StringName, int] = {}
 var _enhancements: Dictionary[StringName, int] = {}
+## The weapon and the tool most recently taken in hand (Phase 8 quick switch, saved).
+var last_weapon: StringName = &""
+var last_tool: StringName = &""
 
 
 func _enter_tree() -> void:
@@ -110,10 +113,40 @@ func equip(item_id: StringName) -> bool:
 	if _equipped.get(item.slot, &"") == item_id:
 		return true
 	_equipped[item.slot] = item_id
+	if item.is_tool():
+		last_tool = item_id
+	elif item.is_weapon():
+		last_weapon = item_id
 	equipment_changed.emit(item.slot, item)
 	if item.two_handed:
 		unequip(ItemDefinition.Slot.OFF_HAND)
 	return true
+
+
+## Phase 8 quick switch (quick_switch_tool, T): with a tool in hand, takes up the weapon
+## used last; otherwise takes up the tool used last. When the remembered item is gone (or
+## none was used yet) the first owned weapon / tool is taken. Enhancement levels belong to
+## the items and are untouched. Returns the item now in hand, or null when there is
+## nothing to switch to (no owned weapon or no owned tool).
+func toggle_tool_weapon() -> ItemDefinition:
+	var target := get_switch_target()
+	if target == null or not equip(target.item_id):
+		return null
+	return target
+
+
+## What toggle_tool_weapon() would take up now (null: nothing to switch to).
+func get_switch_target() -> ItemDefinition:
+	var main := get_equipped(ItemDefinition.Slot.MAIN_HAND)
+	var want_tool := main == null or not main.is_tool()
+	var target := get_definition(last_tool if want_tool else last_weapon)
+	if target != null and has_item(target.item_id) and target.is_tool() == want_tool:
+		return target
+	for id in _owned:
+		var item := get_definition(id)
+		if item != null and item.is_quick_slottable() and item.is_tool() == want_tool:
+			return item
+	return null
 
 
 func unequip(slot: ItemDefinition.Slot) -> void:
@@ -320,6 +353,8 @@ func to_dict() -> Dictionary:
 		"quick_slots": _quick_slots.map(func(id: StringName) -> String: return String(id)),
 		"materials": materials,
 		"enhancements": enhancements,
+		"last_weapon": String(last_weapon),
+		"last_tool": String(last_tool),
 	}
 
 
@@ -350,6 +385,8 @@ func from_dict(data: Dictionary) -> void:
 	var enhancements: Dictionary = data.get("enhancements", {})
 	for id in enhancements:
 		set_enhancement(StringName(id), int(enhancements[id]))
+	last_weapon = StringName(data.get("last_weapon", ""))
+	last_tool = StringName(data.get("last_tool", ""))
 	var equipped: Dictionary = data.get("equipped", {})
 	# Main hand first, so a two-handed weapon's rule applies to the saved off-hand item.
 	for slot_name in ItemDefinition.Slot.keys():

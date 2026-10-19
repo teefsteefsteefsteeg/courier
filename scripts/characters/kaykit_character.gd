@@ -20,6 +20,8 @@ const ACTIONS := {
 	&"walk": [&"move/Walking_A"],
 	&"run": [&"move/Running_A"],
 	&"airborne": [&"move/Jump_Idle", &"general/Idle_A"],
+	&"jump_start": [&"move/Jump_Start"],
+	&"jump_land": [&"move/Jump_Land"],
 	# No attack or dash clips in the FREE pack: a cast-like throw and a fast run.
 	&"attack": [&"general/Attack", &"general/Throw", &"general/Use_Item"],
 	# No swing or draw clips either: a quick reach for the sword, the overhead throw

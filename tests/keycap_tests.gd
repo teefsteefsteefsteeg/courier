@@ -68,7 +68,7 @@ func _test_layout() -> void:
 	for action in [&"move_forward", &"move_left", &"move_back", &"move_right", &"toggle_map", &"toggle_journal", &"interact"]:
 		var face := guide.keycaps[action] as TextureRect
 		icons.append(face.texture.resource_path.get_file().get_basename() if face != null else "?")
-	_check(icons == ["key_w", "key_a", "key_s", "key_d", "key_m", "key_j", "key_e"], "keys follow the InputMap %s" % [icons])
+	_check(icons == ["key_w", "key_a", "key_s", "key_d", "key_tab", "key_j", "key_e"], "keys follow the InputMap %s" % [icons])
 	var w := _key(&"move_forward").get_global_rect()
 	var s := _key(&"move_back").get_global_rect()
 	var a := _key(&"move_left").get_global_rect()
@@ -107,8 +107,8 @@ func _test_tap() -> void:
 	print("[Short tap]")
 	var m := _key(&"toggle_map")
 	var down := InputEventKey.new()
-	down.physical_keycode = KEY_M
-	down.keycode = KEY_M
+	down.physical_keycode = KEY_TAB
+	down.keycode = KEY_TAB
 	down.pressed = true
 	var up := down.duplicate() as InputEventKey
 	up.pressed = false
@@ -117,7 +117,7 @@ func _test_tap() -> void:
 	Input.parse_input_event(up)
 	Input.flush_buffered_events()
 	await _frames(1)
-	_check(m.pressed, "a same-frame tap still shows M pressed")
+	_check(m.pressed, "a same-frame tap still shows Tab (map) pressed")
 	await _until(func() -> bool: return not m.pressed, 1.0)
 	_check(not m.pressed, "and it does not stay stuck")
 	# Close the map the tap opened.

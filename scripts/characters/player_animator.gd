@@ -18,6 +18,13 @@ func _ready() -> void:
 		return
 	if movement != null:
 		movement.state_changed.connect(_on_state_changed)
+		# Phase 8 jump: a quick take-off, the airborne loop, then a short landing crouch.
+		var body := movement.get_parent() as PlayerController
+		if body != null:
+			body.jumped.connect(func() -> void: character.play_once(&"jump_start", 2.0))
+			body.landed.connect(func(_air: float) -> void:
+				if not _knocked_out and (not character.is_playing_one_shot() or character.one_shot_action == &"jump_start"):
+					character.play_once(&"jump_land", 2.4))
 	if combat != null:
 		# Attack poses meet the gameplay hit (Phase 7): a swing reaches its strike when the
 		# hit lands (melee_windup after melee_started; a quick slice for a sword, a slower

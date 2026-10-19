@@ -1,8 +1,8 @@
 class_name EquipmentUI
 extends CanvasLayer
-## Inventory window (toggle_equipment, Tab). Phase 7 redesign: a slate frame and parchment
+## Inventory window (toggle_equipment, Q since Phase 8). Phase 7 redesign: a slate frame and parchment
 ## page (Humble Pixel inventory pack, assets/ui/inventory/) with two views, switched with
-## the side tabs or [Q] (package_shield; the courier's shield cannot fire while the window
+## the side tabs or [T] (quick_switch_tool; the courier's tool switch cannot fire while the window
 ## is open, so the key is free here):
 ##   Weapons & Gear  weapons, then off-hand and armor, as a grid of item cells
 ##   Tools & Goods   tools, then seeds, produce and gathered materials with their counts
@@ -135,7 +135,7 @@ func set_view(value: int) -> void:
 		tab_buttons[index].set_pressed_no_signal(index == view)
 		tab_buttons[index].add_theme_stylebox_override(&"normal", _cell_styles["tab_on"] if index == view else _cell_styles["tab_off"])
 	title_label.text = VIEW_TITLES[view]
-	switch_hint.text = "[%s] %s" % [InputHints.key_for(&"package_shield"), "Tools & Goods" if view == View.WEAPONS else "Weapons & Gear"]
+	switch_hint.text = "[%s] %s" % [InputHints.key_for(&"quick_switch_tool"), "Tools & Goods" if view == View.WEAPONS else "Weapons & Gear"]
 	# Keep the selection in the view on screen.
 	var selected: Dictionary = rows.get(selected_id, {})
 	if selected.is_empty() or _view_of(selected["item"]) != view:
@@ -149,14 +149,15 @@ func toggle_view() -> void:
 
 
 ## Closing runs in _input: a focused button would otherwise take Tab for focus navigation.
-## [Q] switches the view while the window is open, before the shield could see it.
+## [T] (quick_switch_tool) switches the view while the window is open, before the
+## tool/weapon switch could see it.
 func _input(event: InputEvent) -> void:
 	if not is_open():
 		return
 	if event.is_action_pressed(&"toggle_equipment") or event.is_action_pressed(&"ui_cancel"):
 		close()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed(&"package_shield"):
+	elif event.is_action_pressed(&"quick_switch_tool"):
 		toggle_view()
 		get_viewport().set_input_as_handled()
 
@@ -313,7 +314,7 @@ func _build() -> void:
 		tab.pressed.connect(set_view.bind(index))
 		tabs.add_child(tab)
 		tab_buttons.append(tab)
-	var tab_hint := _label("[%s]" % InputHints.key_for(&"package_shield"), 16, Color(0.85, 0.82, 0.95))
+	var tab_hint := _label("[%s]" % InputHints.key_for(&"quick_switch_tool"), 16, Color(0.85, 0.82, 0.95))
 	tab_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	tabs.add_child(tab_hint)
 	InputPromptLabel.attach(tab_hint)
@@ -368,7 +369,7 @@ func _build() -> void:
 	var footer := HBoxContainer.new()
 	footer.add_theme_constant_override(&"separation", 16)
 	body.add_child(footer)
-	var close_hint := _label("[%s] Switch view   [%s] Close" % [InputHints.key_for(&"package_shield"), InputHints.key_for(&"toggle_equipment")], 16, INK_SOFT)
+	var close_hint := _label("[%s] Switch view   [%s] Close" % [InputHints.key_for(&"quick_switch_tool"), InputHints.key_for(&"toggle_equipment")], 16, INK_SOFT)
 	close_hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	footer.add_child(close_hint)
 	InputPromptLabel.attach(close_hint)

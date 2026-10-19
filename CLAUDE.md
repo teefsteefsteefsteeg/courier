@@ -113,7 +113,7 @@ Key gameplay scripts:
 - **Dev mode:** `scripts/core/dev_mode.gd`: debug build with a window. Override with `-- --dev` / `-- --no-dev`.
 
 Bindings (from `project.godot`): WASD move, Shift run **and** dash, E interact, G drop package,
-Space attack (bolt / melee / arrow by weapon; with a tool in hand: use the tool), 1-5 weapon/tool quick slots, Tab equipment, Q package shield (switches inventory views while the inventory is open), J journal, M map, mouse wheel or `=` `-` zoom, F3 debug HUD,
+Space attack (bolt / melee / arrow by weapon; with a tool in hand: use the tool), Ctrl jump, 1-5 weapon/tool quick slots, T tool/weapon quick switch (switches inventory views while the inventory is open), Q inventory, Tab world map, R package shield, J journal, M free (Phase 8 layout, `docs/PHASE8.md`), mouse wheel or `=` `-` zoom, F3 debug HUD,
 Esc close (`ui_cancel`).
 
 ## Assets
@@ -135,6 +135,8 @@ change the generator, not the scene. The terrain splat maps have no generator; e
 `tools/edit_village_splat.py` and record lanes in `village_layout.json`, then re-bake the world map.
 
 ## Status
+**Phase 8 in progress** (`docs/PHASE8.md`, ten milestones tracked there): milestone 1 (controls) done.
+
 **Phase 7 in progress** (`docs/PHASE7_WORLD_AND_SYSTEMS.md`): Milestone A (guild board on the
 plaza, exhibit removed, NPCs face the courier, wider roads, Whisperwood moved to (14, 0, -90)
 inside a generated forest annex north of the village) and Milestone B (two-view inventory

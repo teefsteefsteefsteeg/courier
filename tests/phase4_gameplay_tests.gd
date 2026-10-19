@@ -208,9 +208,9 @@ func _test_input_actions() -> void:
 		_check(InputMap.has_action(action), "action %s exists" % action)
 	_check(_has_physical_key(&"combat_magic_bolt", KEY_SPACE), "Magic Bolt bound to Space")
 	_check(_has_physical_key(&"combat_dash", KEY_SHIFT), "Dash bound to Shift")
-	_check(_has_physical_key(&"package_shield", KEY_Q), "Package Shield bound to Q")
+	_check(_has_physical_key(&"package_shield", KEY_R), "Package Shield bound to R (Phase 8; Q opens the inventory)")
 	_check(InputMap.event_is_action(_key_event(KEY_SPACE), &"combat_magic_bolt"), "Space event triggers combat_magic_bolt")
-	_check(InputMap.event_is_action(_key_event(KEY_Q), &"package_shield") and not InputMap.event_is_action(_key_event(KEY_Q), &"interact"), "Q triggers package_shield only")
+	_check(InputMap.event_is_action(_key_event(KEY_R), &"package_shield") and not InputMap.event_is_action(_key_event(KEY_R), &"interact"), "R triggers package_shield only")
 	var existing := {
 		&"move_forward": KEY_W, &"move_back": KEY_S, &"move_left": KEY_A, &"move_right": KEY_D,
 		&"run": KEY_SHIFT, &"interact": KEY_E, &"toggle_journal": KEY_J, &"drop_package": KEY_G,

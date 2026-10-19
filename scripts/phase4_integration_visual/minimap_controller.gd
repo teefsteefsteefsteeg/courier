@@ -106,11 +106,16 @@ func _process(delta):
 	for n in get_tree().get_nodes_in_group(&"phase4_encounter_enemy"): model.set_marker(Model.id_for_node(n,"enemy"),Model.KIND_ENEMY,n)
 
 
+## The map key is Tab since Phase 8. Tab is also the GUI's focus-next key, so the map reads
+## it here, before a focused button can take it; it only consumes the key when the map
+## actually opens or closes (another window may use Tab to move focus).
+func _input(e):
+	if e.is_action_pressed(&"toggle_map") and toggle_expanded():
+		get_viewport().set_input_as_handled()
+
+
 func _unhandled_input(e):
-	if e.is_action_pressed(&"toggle_map"):
-		if toggle_expanded() or is_expanded():
-			get_viewport().set_input_as_handled()
-	elif is_expanded() and e.is_action_pressed(&"ui_cancel"):
+	if is_expanded() and e.is_action_pressed(&"ui_cancel"):
 		set_expanded(false)
 		get_viewport().set_input_as_handled()
 

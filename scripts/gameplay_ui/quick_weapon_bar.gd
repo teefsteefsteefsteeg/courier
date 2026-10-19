@@ -3,8 +3,10 @@ extends PanelContainer
 ## HUD bar with the five quick slots (CourierInventory quick slots; weapons and, since Phase
 ## 5H, tools). Each slot shows its item's icon and key (quick_slot_1..5, keys 1-5 by default); the equipped weapon is
 ## outlined in gold and empty slots are dim. Above the slots: the weapon in hand, how it
-## attacks and its stats. A key press or a click equips the slot's weapon, except while a
-## modal window (group ui_modal) or a dialogue line is open, or the courier's input is off.
+## attacks and its stats, with WEAPON MODE / TOOL MODE beside the name (Phase 8). A key
+## press or a click equips the slot's weapon, and [T] (quick_switch_tool) swaps the last
+## weapon and the last tool, except while a modal window (group ui_modal) or a dialogue
+## line is open, or the courier's input is off.
 
 ## A quick slot was used; ok is false when it was empty or switching was not allowed.
 signal slot_selected(index: int, ok: bool)
@@ -16,6 +18,8 @@ const GOLD := Color(1, 0.84, 0.3)
 @export var inventory: CourierInventory
 @export var player: PlayerController
 
+## "WEAPON MODE" / "TOOL MODE" and what [T] switches to (Phase 8).
+var mode_label: Label
 var info_label: Label
 var stats_label: Label
 ## One Button per slot (read by tests).
@@ -67,7 +71,25 @@ func select(index: int) -> bool:
 	return ok
 
 
+## Phase 8: [T] swaps between the last weapon and the last tool (CourierInventory).
+## Returns the item now in hand, or null when the switch was refused or impossible.
+func quick_switch() -> ItemDefinition:
+	if inventory == null or not can_switch():
+		return null
+	var item := inventory.toggle_tool_weapon()
+	if item == null:
+		var notices := get_tree().root.find_children("*", "QuestNotification", true, false)
+		if not notices.is_empty():
+			(notices[0] as QuestNotification).push_message("Nothing to switch to: own a weapon and a tool first.", QuestNotification.KIND_INFO)
+	return item
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"quick_switch_tool"):
+		if can_switch():
+			quick_switch()
+			get_viewport().set_input_as_handled()
+		return
 	for index in CourierInventory.QUICK_SLOT_COUNT:
 		if event.is_action_pressed(StringName("quick_slot_%d" % (index + 1))):
 			if can_switch():
@@ -104,6 +126,13 @@ func refresh() -> void:
 			button.add_theme_stylebox_override(state, style)
 		button.modulate = Color.WHITE if item != null else Color(1, 1, 1, 0.55)
 		button.tooltip_text = ("%s [%s]" % [item.display_name, key]) if item != null else "Empty slot [%s]: assign a weapon or tool in Equipment [%s]" % [key, InputHints.key_for(&"toggle_equipment")]
+	var tool_mode := equipped != null and equipped.is_tool()
+	var target := inventory.get_switch_target()
+	mode_label.text = "TOOL MODE" if tool_mode else "WEAPON MODE"
+	# The header has no room for the key and the other item's name (the key guide shows
+	# T); the bar's tooltip names the item T switches to.
+	tooltip_text = "[%s] switches to %s" % [InputHints.key_for(&"quick_switch_tool"), target.display_name] if target != null else ""
+	mode_label.add_theme_color_override(&"font_color", Color(0.55, 0.9, 0.6) if tool_mode else Color(1.0, 0.62, 0.45))
 	if equipped != null and equipped.is_tool():
 		info_label.text = equipped.display_name
 		stats_label.text = "Tool: no attacks  ·  [%s] use" % InputHints.key_for(&"combat_magic_bolt")
@@ -123,12 +152,25 @@ func _build() -> void:
 	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	body.add_theme_constant_override(&"separation", 4)
 	add_child(body)
+	# Name on the left, mode on the right of the same line, so the bar keeps its height.
+	var header := HBoxContainer.new()
+	header.name = "Header"
+	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.add_child(header)
 	info_label = Label.new()
 	info_label.name = "WeaponName"
 	info_label.add_theme_font_size_override(&"font_size", 18)
 	info_label.add_theme_color_override(&"font_color", GOLD)
 	info_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	body.add_child(info_label)
+	info_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info_label.clip_text = true
+	header.add_child(info_label)
+	mode_label = Label.new()
+	mode_label.name = "Mode"
+	mode_label.add_theme_font_size_override(&"font_size", 13)
+	mode_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mode_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	header.add_child(mode_label)
 	stats_label = Label.new()
 	stats_label.name = "WeaponStats"
 	stats_label.add_theme_font_size_override(&"font_size", 13)

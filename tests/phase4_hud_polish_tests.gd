@@ -87,14 +87,14 @@ func _run() -> void:
 				check(not panels[i].get_global_rect().intersects(panels[j].get_global_rect()), "%s / %s disjoint at %s" % [panels[i].name, panels[j].name, resolution])
 		await snapshot("forest_cargo", resolution)
 		var key := InputEventKey.new()
-		key.physical_keycode = KEY_M
+		key.physical_keycode = KEY_TAB
 		key.pressed = true
-		minimap._unhandled_input(key)
+		minimap._input(key)
 		await settle()
-		check(minimap.expanded.visible, "M expands map at %s" % resolution)
+		check(minimap.expanded.visible, "Tab expands map at %s" % resolution)
 		check(viewport.encloses(minimap.expanded.get_global_rect()), "expanded map fits %s" % resolution)
 		await snapshot("expanded", resolution)
-		minimap._unhandled_input(key)
+		minimap._input(key)
 		check(not minimap.expanded.visible, "M closes map")
 	carrier.get_package().set_temperature(50)
 	player.teleport_to(Vector3(14, 0, -101.2))
