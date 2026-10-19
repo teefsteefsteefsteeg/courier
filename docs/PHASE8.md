@@ -26,7 +26,7 @@ regeneration, dragon companion and flight).
 | 1 | Controls: Tab map, Q inventory, R shield, T tool/weapon switch, Ctrl jump | **Done** (below) |
 | 2 | Resource respawn without countdowns; tools in every map | **Done** (below) |
 | 3 | Weapon enhancement VFX rework (+1 silver spark .. +5 legendary elemental) | **Done** (below) |
-| 4 | Animated HUD avatar | not started |
+| 4 | Animated HUD avatar | **Done** (below) |
 | 5 | Enterable houses (Armory, Post Office, one home) with NPCs | not started |
 | 6 | Food market, consumables, food slots 6-0, MP and rage, HP regeneration | not started |
 | 7 | Staff spells and weapon ultimates (Z / X / C) | not started |
@@ -131,3 +131,21 @@ held model by `EnhancementVisuals`; `elements` lists them for tests):
 - Known: from the default camera the bow is held in front of the body, so its effects are
   mostly hidden behind the courier when idle (the light still shows); +1 is deliberately the
   quietest tier.
+
+## 4. Animated HUD avatar
+- `scripts/gameplay_ui/animated_portrait.gd` (`AnimatedPortrait`, a SubViewport): renders the
+  player's own model (the KayKit Ranger the Player uses) head and shoulders, framed like the
+  old still portrait, in its own tiny world (8 meshes, two lights, no shadows), 128x128, one
+  render every other frame (about 30 fps). `CombatHUD` shows its texture in the round frame
+  (the still `courier_portrait.png` stays as the fallback).
+- Alive: the idle clip breathes and moves the head; every 3.5-7 s it glances left or right.
+- Reactions: a hit plays `Hit_A` and the portrait flushes red; at 25% health or less the
+  idle slows to 0.6x, the courier sags forward and the portrait pulses red; healing restores
+  it; a quest reward (`QuestManager.quest_rewarded`) plays a cheer (the FREE pack has no
+  cheer clip: `Spawn_Air`, a happy hop). Boss victory will call `celebrate()` too.
+- Fix during the work: the HUD's heal flash must stay the `elif` of the damage branch (a
+  misplaced insert briefly turned it off; `status_hud_tests` caught it).
+- Tests: new `tests/phase8_avatar_tests.gd` (live texture in the frame, the player's model,
+  budget, idle motion, glance, flinch + red, low + sag + pulse, recover, cheer).
+- Rendered: `tests/capture_phase8_avatar.gd` -> `docs/validation/phase8/28..32` (nine
+  portrait crops over 2.7 s of idling, all different; idle HUD; hit; low health; cheer).

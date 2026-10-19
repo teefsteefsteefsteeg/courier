@@ -33,6 +33,8 @@ const MARGIN := 16.0
 
 var panel: PanelContainer
 var portrait: TextureRect
+## The animated courier shown in the portrait (Phase 8).
+var live_portrait: AnimatedPortrait
 var level_badge: PanelContainer
 var level_label: Label
 var name_label: Label
@@ -108,10 +110,14 @@ func set_health(current: float, maximum: float) -> void:
 	var new_current := clampf(current, 0.0, new_max)
 	if new_current < health_current:
 		_damage_flash = 1.0
+		if live_portrait != null:
+			live_portrait.react_damage()
 	elif new_current > health_current + 0.01 * new_max:
 		_heal_from = health_current / new_max
 		_heal_to = new_current / new_max
 		_heal_flash = 1.0
+	if live_portrait != null:
+		live_portrait.set_health_ratio(new_current / new_max)
 	health_max = new_max
 	health_current = new_current
 	health_trail.max_value = health_max
@@ -278,6 +284,10 @@ func _refresh() -> void:
 	var glow := maxf(_damage_flash * 0.5, (0.5 + 0.5 * sin(_low_pulse)) * 0.35 if low else 0.0)
 	_health_fill.modulate_color = Color.WHITE.lerp(Color(1.6, 1.35, 1.35), glow)
 	health_label.add_theme_color_override(&"font_color", Color(1.0, 0.78, 0.74) if low else IVORY)
+	# The live portrait flushes red with a hit and pulses red while health is low.
+	if portrait != null:
+		var red := maxf(_damage_flash * 0.75, (0.5 + 0.5 * sin(_low_pulse)) * 0.45 if low else 0.0)
+		portrait.self_modulate = Color.WHITE.lerp(Color(1.0, 0.45, 0.42), red)
 	heal_flash.visible = _heal_flash > 0.0
 	if heal_flash.visible:
 		var track := heal_flash.get_parent() as Control
@@ -471,7 +481,11 @@ func _build_portrait() -> Control:
 	portrait = TextureRect.new()
 	portrait.name = "Image"
 	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	portrait.texture = PORTRAIT
+	# Phase 8: a live render of the courier (AnimatedPortrait); the still is the fallback.
+	live_portrait = AnimatedPortrait.new()
+	live_portrait.name = "LivePortrait"
+	frame.add_child(live_portrait)
+	portrait.texture = live_portrait.get_texture() if live_portrait != null else PORTRAIT
 	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	portrait.set_anchors_preset(Control.PRESET_FULL_RECT)

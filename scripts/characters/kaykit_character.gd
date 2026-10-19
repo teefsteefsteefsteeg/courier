@@ -35,6 +35,8 @@ const ACTIONS := {
 	&"revive": [&"general/Spawn_Ground", &"general/Idle_A"],
 	&"interact": [&"general/Interact"],
 	&"pickup": [&"general/PickUp"],
+	# No cheer clip in the FREE pack: the spawn hop reads as a happy jump (HUD portrait).
+	&"cheer": [&"general/Spawn_Air", &"general/Interact"],
 	# Tools (Phase 5H). No tool clips in the FREE pack either: the overhead throw is the
 	# chop, the mining swing and the fishing cast; the reach-forward interact is a hammer or
 	# trowel stroke; the pick-up bend is a shovel dig; use-item reels a fish in.
