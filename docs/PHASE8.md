@@ -30,7 +30,7 @@ regeneration, dragon companion and flight).
 | 5 | Enterable houses (Armory, Post Office, one home) with NPCs | **Done** (below) |
 | 6 | Food market, consumables, food slots 6-0, MP and rage, HP regeneration | not started |
 | 7 | Staff spells and weapon ultimates (Z / X / C) | not started |
-| 8 | New region: waterfall, river, bridge, fishing spot, gateway | not started |
+| 8 | New region: waterfall, river, bridge, fishing spot, gateway | **in progress** (design in DEVELOPMENT_HANDOFF; only the waterfall shader and vendored water kit exist, uncommitted) |
 | 9 | Dungeon, Bestiary enemies, dragon boss (bite, breath, AoE), HP bar, rewards | not started |
 | 10 | Dragon companion: base placement, Earthquake, Fire, summon, mount and flight | not started |
 
