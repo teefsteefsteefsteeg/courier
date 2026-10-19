@@ -165,6 +165,10 @@ func _test_clearances() -> void:
 		var body := cs.get_parent()
 		if not (body is PhysicsBody3D) or body.name in ["Ground", "Boundary"] or armory.is_ancestor_of(cs) or body == player:
 			continue
+		# Only surface solids can collide with the armory: rooms built more than 3 m below the
+		# village (an underground level) share its XZ footprint without touching it.
+		if cs.global_position.y < -3.0:
+			continue
 		var rect := _footprint(cs)
 		for mine in own:
 			if mine.intersects(rect):

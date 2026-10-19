@@ -32,6 +32,8 @@ const WIDENED := [
 ## Narrowest gap allowed anywhere: the alley between the blacksmith and the post office
 ## (2.9 m, unchanged: moving the blacksmith west would put it on the farm track).
 const MIN_GAP := 2.8
+## Colliders whose centre is deeper than this are below the surface the courier walks on.
+const SURFACE_DEPTH := -3.0
 ## Scattered dressing allowed against a house wall (flower beds, vines).
 const WALL_DRESSING := ["VillageDressing/Homes/", "MegaKitPilotDressing/Houses/"]
 
@@ -104,7 +106,7 @@ func _test_armory_layout() -> void:
 	var blocking: Array[String] = []
 	for shape in level.find_children("*", "CollisionShape3D", true, false):
 		var body := shape.get_parent()
-		if body is PhysicsBody3D and not body.name in ["Ground", "Boundary"] and body != player and _footprint(shape).intersects(corridor):
+		if body is PhysicsBody3D and not body.name in ["Ground", "Boundary"] and body != player and _at_surface(shape) and _footprint(shape).intersects(corridor):
 			blocking.append(str(level.get_path_to(body)))
 	_check(blocking.is_empty(), "the walk-up corridor to the counter is clear %s" % [blocking])
 
@@ -178,7 +180,7 @@ func _test_moved_buildings_clear() -> void:
 		var solids: Array[String] = []
 		for shape in level.find_children("*", "CollisionShape3D", true, false):
 			var body := shape.get_parent()
-			if not body is PhysicsBody3D or body.name in ["Ground", "Boundary"] or body == player or building.is_ancestor_of(shape):
+			if not body is PhysicsBody3D or body.name in ["Ground", "Boundary"] or body == player or building.is_ancestor_of(shape) or not _at_surface(shape):
 				continue
 			if _footprint(shape).intersects(rect.grow(-0.05)):
 				solids.append(str(level.get_path_to(body)))
@@ -345,7 +347,7 @@ func _walk_grid(area: Rect2) -> AStarGrid2D:
 	grid.update()
 	for shape in level.find_children("*", "CollisionShape3D", true, false):
 		var body := shape.get_parent()
-		if not body is PhysicsBody3D or body.name in ["Ground", "Boundary"] or body == player:
+		if not body is PhysicsBody3D or body.name in ["Ground", "Boundary"] or body == player or not _at_surface(shape):
 			continue
 		var footprint := _footprint(shape).grow(BODY_CLEARANCE)
 		if not footprint.intersects(area):
@@ -388,6 +390,14 @@ func _gap(a: String, b: String) -> float:
 	var dx := maxf(0.0, maxf(ra.position.x - rb.end.x, rb.position.x - ra.end.x))
 	var dz := maxf(0.0, maxf(ra.position.y - rb.end.y, rb.position.y - ra.end.y))
 	return Vector2(dx, dz).length()
+
+
+## True for an active collider the courier can meet on the village surface. XZ footprints
+## alone would also count rooms built below the village (an underground level) and switched-off
+## bodies (a felled tree's trunk).
+func _at_surface(shape: Node) -> bool:
+	var body := shape.get_parent()
+	return (shape as Node3D).global_position.y > SURFACE_DEPTH and body.can_process()
 
 
 ## World XZ bounds of a building's colliders.
