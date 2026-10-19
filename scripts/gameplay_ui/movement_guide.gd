@@ -1,11 +1,14 @@
 class_name MovementGuide
 extends PanelContainer
-## HUD movement key guide: the four movement bindings as pixel-art keycaps in the usual
-## inverted-T (forward on top; left, back, right below) with a "Move" label.
+## HUD keyboard guide: the courier's controls as animated pixel-art keycaps, no text. The
+## four movement keys sit in the usual inverted T (forward on top; left, back, right below);
+## a second block shows the other controls (interact, shield, map, journal, equipment on top;
+## run/dash and attack below). Each keycap presses down while its key is held
+## (AnimatedKeycap), so W + D show together.
 ##
-## Keys are read from the InputMap (InputPromptIcons.primary_event), so rebinding to the
-## arrow keys shows the arrows; a key without an icon gets a drawn keycap. The guide
-## rebuilds itself when a binding changes. GameplayHUD places it and hides it when the
+## Keys are read from the InputMap (InputPromptIcons.primary_event), so rebinding shows the
+## new key; a key without an icon gets a drawn keycap. The guide rebuilds itself when a
+## binding changes. GameplayHUD places it and hides it when the
 ## UISettings.SHOW_MOVEMENT_GUIDE preference is off.
 
 const THEME := preload("res://scenes/gameplay/ui/gameplay_ui_theme.tres")
@@ -14,16 +17,20 @@ const LEFT := &"move_left"
 const BACK := &"move_back"
 const RIGHT := &"move_right"
 const ACTIONS: Array[StringName] = [FORWARD, LEFT, BACK, RIGHT]
+## The other controls, as two rows (top, bottom). Actions without a binding are skipped.
+const CONTROL_ROWS: Array = [
+	[&"interact", &"package_shield", &"toggle_map", &"toggle_journal", &"toggle_equipment"],
+	[&"run", &"combat_magic_bolt"],
+]
 const KEY_GAP := 4
 ## Seconds between binding checks.
 const BINDING_CHECK_INTERVAL := 0.5
 
-@export var label_text: String = "Move"
-
-## Action -> keycap Control currently shown (read by tests).
+## Action -> keycap face (the icon TextureRect, or a drawn fallback) currently shown.
 var keycaps: Dictionary[StringName, Control] = {}
-var label: Label
-var _keys: VBoxContainer
+## Action -> the AnimatedKeycap holding that face (every key in the guide).
+var animated: Dictionary[StringName, AnimatedKeycap] = {}
+var _keys: HBoxContainer
 var _binding_signature := ""
 var _check_left: float = 0.0
 
@@ -35,21 +42,15 @@ func _init() -> void:
 
 
 func _ready() -> void:
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override(&"separation", 12)
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(row)
-	_keys = VBoxContainer.new()
-	_keys.add_theme_constant_override(&"separation", KEY_GAP)
+	var compact := StyleBoxFlat.new()
+	compact.bg_color = Color(0.07, 0.06, 0.12, 0.55)
+	compact.set_corner_radius_all(8)
+	compact.set_content_margin_all(8)
+	add_theme_stylebox_override(&"panel", compact)
+	_keys = HBoxContainer.new()
+	_keys.add_theme_constant_override(&"separation", 14)
 	_keys.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(_keys)
-	label = Label.new()
-	label.text = label_text
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	label.add_theme_font_size_override(&"font_size", 18)
-	label.add_theme_color_override(&"font_color", Color(0.92, 0.9, 0.98))
-	row.add_child(label)
+	add_child(_keys)
 	refresh()
 
 
@@ -62,36 +63,48 @@ func _process(delta: float) -> void:
 		refresh()
 
 
-## Rebuilds the keycaps from the current movement bindings.
+## Rebuilds the keycaps from the current bindings.
 func refresh() -> void:
 	_binding_signature = binding_signature()
 	for child in _keys.get_children():
 		_keys.remove_child(child)
 		child.queue_free()
 	keycaps.clear()
-	var top := _row([FORWARD])
-	var bottom := _row([LEFT, BACK, RIGHT])
-	_keys.add_child(top)
-	_keys.add_child(bottom)
+	animated.clear()
+	_keys.add_child(_block([[FORWARD], [LEFT, BACK, RIGHT]], BoxContainer.ALIGNMENT_CENTER))
+	var rows: Array = []
+	for row: Array in CONTROL_ROWS:
+		rows.append(row.filter(func(action: StringName) -> bool: return InputPromptIcons.primary_event(action) != null))
+	_keys.add_child(_block(rows, BoxContainer.ALIGNMENT_BEGIN))
 
 
-## Text of the four bindings, e.g. "W|A|S|D" (changes when a binding changes).
+## Every shown action's key, e.g. "W|A|S|D|E|..." (changes when a binding changes).
 static func binding_signature() -> String:
 	var parts: PackedStringArray = []
-	for action in ACTIONS:
+	var all: Array[StringName] = ACTIONS.duplicate()
+	for row: Array in CONTROL_ROWS:
+		for action: StringName in row:
+			all.append(action)
+	for action in all:
 		var event := InputPromptIcons.primary_event(action)
 		parts.append(InputPromptIcons.event_text(event) if event != null else "?")
 	return "|".join(parts)
 
 
-func _row(actions: Array[StringName]) -> HBoxContainer:
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override(&"separation", KEY_GAP)
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	for action in actions:
-		var keycap := InputPrompt.make_keycap_for_event(InputPromptIcons.primary_event(action))
-		keycap.name = String(action)
-		keycaps[action] = keycap
-		row.add_child(keycap)
-	return row
+func _block(rows: Array, alignment: BoxContainer.AlignmentMode) -> VBoxContainer:
+	var block := VBoxContainer.new()
+	block.add_theme_constant_override(&"separation", KEY_GAP - AnimatedKeycap.PRESS_DEPTH + 2)
+	block.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	block.size_flags_vertical = Control.SIZE_SHRINK_END
+	for actions: Array in rows:
+		var row := HBoxContainer.new()
+		row.alignment = alignment
+		row.add_theme_constant_override(&"separation", KEY_GAP)
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		for action: StringName in actions:
+			var keycap := AnimatedKeycap.create(action)
+			keycaps[action] = keycap.face
+			animated[action] = keycap
+			row.add_child(keycap)
+		block.add_child(row)
+	return block

@@ -26,8 +26,8 @@ var _combat_scan_left: float = 0.0
 
 func _ready() -> void:
 	onboarding = Label.new()
-	onboarding.text = "[%s] Read the quest board at the post office\nAccept a delivery, then collect its package.\n! and ? mark villagers who need you.\n[%s] Journal    [%s] Map" % [
-			InputHints.key_for(&"interact"), InputHints.key_for(&"toggle_journal"), InputHints.key_for(&"toggle_map")]
+	# Journal and map keys are on the keyboard guide (MovementGuide), so no text for them here.
+	onboarding.text = "[%s] Read the quest board at the post office\nAccept a delivery, then collect its package.\n! and ? mark villagers who need you." % InputHints.key_for(&"interact")
 	onboarding.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	onboarding.add_theme_font_size_override("font_size", 18)
 	onboarding.add_theme_color_override("font_outline_color", Color(0.03, 0.04, 0.06))

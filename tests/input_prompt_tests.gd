@@ -233,7 +233,8 @@ func _test_parse() -> void:
 func _test_hud_hints() -> void:
 	print("[HUD hints use keycaps]")
 	var onboarding := hud.onboarding
-	_check(_overlay_keys(onboarding) == PackedStringArray(["key_e", "key_j", "key_m"]), "onboarding hints: %s" % _overlay_keys(onboarding))
+	# Journal and map keys moved to the keyboard guide (keycaps only, no labels).
+	_check(_overlay_keys(onboarding) == PackedStringArray(["key_e"]), "onboarding hints: %s" % _overlay_keys(onboarding))
 	_check(onboarding.self_modulate.a == 0.0, "onboarding's own text is replaced by the keycap row")
 	_check(journal.hint_label.text == "[J] Journal" and _overlay_keys(journal.hint_label) == PackedStringArray(["key_j"]), "journal hint keeps its text and shows J")
 	_check(_overlay_keys(journal.close_hint) == PackedStringArray(["key_j"]), "journal close hint shows J")
