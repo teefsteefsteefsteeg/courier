@@ -1,10 +1,10 @@
 extends SceneTree
 ## Phase 8 milestone 1, controls, with real key events in the village:
-## - Bindings: Space attack, Ctrl jump, Tab map, Q inventory, R package shield, T tool/weapon
-##   switch, M free; no gameplay key is bound twice.
-## - Tab opens and closes the map even while a button has keyboard focus (Tab is also the
-##   GUI's focus-next key); Q opens and closes the inventory; Tab never opens the inventory.
-## - T swaps the last weapon and the last tool: hand model, attack style, HUD mode line,
+## - Bindings (Phase 8 revision): Space attack, Ctrl jump, M map, Tab inventory, R package
+##   shield, Q tool/weapon switch, T free; no gameplay key is bound twice.
+## - Tab opens and closes the inventory even while a button has keyboard focus (Tab is also
+##   the GUI's focus-next key); M opens and closes the map; neither opens the other.
+## - Q swaps the last weapon and the last tool: hand model, attack style, HUD mode line,
 ##   enhancement levels kept, remembered across save/load, refused in windows and dialogue.
 ## - Jump: from the ground only (no double jump), about 1.2 m high, keeps running speed,
 ##   lands, plays its poses, works with attacks and does not disturb the Shift dash.
@@ -110,13 +110,13 @@ func _held_path() -> String:
 func _test_bindings() -> void:
 	print("[Bindings]")
 	var expected := {
-		&"combat_magic_bolt": KEY_SPACE, &"jump": KEY_CTRL, &"toggle_map": KEY_TAB,
-		&"toggle_equipment": KEY_Q, &"package_shield": KEY_R, &"quick_switch_tool": KEY_T,
+		&"combat_magic_bolt": KEY_SPACE, &"jump": KEY_CTRL, &"toggle_map": KEY_M,
+		&"toggle_equipment": KEY_TAB, &"package_shield": KEY_R, &"quick_switch_tool": KEY_Q,
 		&"combat_dash": KEY_SHIFT, &"interact": KEY_E, &"toggle_journal": KEY_J,
 	}
 	for action in expected:
 		_check(_has_key(action, expected[action]), "%s is %s" % [action, OS.get_keycode_string(expected[action])])
-	var bound_to_m: Array[StringName] = []
+	var bound_to_t: Array[StringName] = []
 	var used := {}
 	var clash: Array[String] = []
 	for action in InputMap.get_actions():
@@ -126,50 +126,54 @@ func _test_bindings() -> void:
 			var key := event as InputEventKey
 			if key == null:
 				continue
-			if key.physical_keycode == KEY_M:
-				bound_to_m.append(action)
+			if key.physical_keycode == KEY_T:
+				bound_to_t.append(action)
 			# Shift is run and dash on purpose (hold to run, tap to dash).
 			if used.has(key.physical_keycode) and key.physical_keycode != KEY_SHIFT:
 				clash.append("%s/%s" % [used[key.physical_keycode], action])
 			used[key.physical_keycode] = action
-	_check(bound_to_m.is_empty(), "M is free (%s)" % [bound_to_m])
+	_check(bound_to_t.is_empty(), "T is free (%s)" % [bound_to_t])
 	_check(clash.is_empty(), "no key is bound to two gameplay actions (%s)" % [clash])
 
 
 func _test_map_and_inventory_keys() -> void:
-	print("[Tab map, Q inventory]")
-	await _tap(KEY_TAB)
-	_check(minimap.call(&"is_expanded") and not equipment.is_open(), "Tab opens the map, not the inventory")
+	print("[M map, Tab inventory]")
+	await _tap(KEY_M)
+	_check(minimap.call(&"is_expanded") and not equipment.is_open(), "M opens the map, not the inventory")
 	_check(not player.input_enabled, "the open map pauses the courier")
 	await _tap(KEY_TAB)
-	_check(not minimap.call(&"is_expanded"), "Tab closes the map")
+	_check(minimap.call(&"is_expanded") and not equipment.is_open(), "Tab does not open the inventory over the map")
+	await _tap(KEY_M)
+	_check(not minimap.call(&"is_expanded"), "M closes the map")
 	await _frames(2)
 	_check(player.input_enabled, "closing the map returns control")
-	# A focused button would take Tab for focus navigation; the map must still open.
+	await _tap(KEY_TAB)
+	_check(equipment.is_open() and not minimap.call(&"is_expanded"), "Tab opens the inventory")
+	await _tap(KEY_M)
+	_check(equipment.is_open() and not minimap.call(&"is_expanded"), "M does not open the map over the inventory")
+	await _tap(KEY_TAB)
+	_check(not equipment.is_open(), "Tab closes the inventory")
+	await _frames(2)
+	_check(player.input_enabled, "and returns control")
+	# A focused button would take Tab for focus navigation; the inventory must still open.
 	var focus := Button.new()
 	focus.text = "focus probe"
 	level.get_node("GameplayHUD").add_child(focus)
 	focus.grab_focus()
 	await _frames(1)
 	await _tap(KEY_TAB)
-	_check(minimap.call(&"is_expanded"), "Tab opens the map while a button has keyboard focus")
+	_check(equipment.is_open(), "Tab opens the inventory while a button has keyboard focus")
 	await _tap(KEY_TAB)
+	_check(not equipment.is_open(), "and closes it again")
 	focus.queue_free()
 	await _frames(2)
-	await _tap(KEY_M)
-	_check(not minimap.call(&"is_expanded") and not equipment.is_open(), "M opens nothing now")
-	await _tap(KEY_Q)
-	_check(equipment.is_open() and not minimap.call(&"is_expanded"), "Q opens the inventory")
-	await _tap(KEY_TAB)
-	_check(equipment.is_open() and not minimap.call(&"is_expanded"), "Tab does not open the map over the inventory")
-	await _tap(KEY_Q)
-	_check(not equipment.is_open(), "Q closes the inventory")
+	await _tap(KEY_T)
+	_check(not minimap.call(&"is_expanded") and not equipment.is_open(), "T opens nothing now")
 	await _frames(2)
-	_check(player.input_enabled, "and returns control")
 
 
 func _test_quick_switch() -> void:
-	print("[T: tool / weapon quick switch]")
+	print("[Q: tool / weapon quick switch]")
 	for id in [&"iron_sword", &"battle_axe", &"miner_pickaxe", &"woodcutter_axe"]:
 		inventory.add_item(inventory.get_definition(id))
 	inventory.set_enhancement(&"iron_sword", 3)
@@ -179,45 +183,45 @@ func _test_quick_switch() -> void:
 	inventory.equip(&"miner_pickaxe")
 	inventory.equip(&"iron_sword")
 	await _frames(2)
-	_check(bar.tooltip_text.contains("[T]") and bar.tooltip_text.contains("Miner's Pickaxe"), "the tooltip names the key and the tool T takes up (%s)" % bar.tooltip_text)
+	_check(bar.tooltip_text.contains("[Q]") and bar.tooltip_text.contains("Miner's Pickaxe"), "the tooltip names the key and the tool Q takes up (%s)" % bar.tooltip_text)
 	_check(bar.get_global_rect().encloses(bar.mode_label.get_global_rect()), "the mode badge fits inside the bar")
-	await _tap(KEY_T)
+	await _tap(KEY_Q)
 	var pickaxe := inventory.get_definition(&"miner_pickaxe")
-	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND) == pickaxe, "T takes up the last tool (pickaxe)")
+	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND) == pickaxe, "Q takes up the last tool (pickaxe)")
 	_check(_held_path() == pickaxe.held_model.resource_path, "the pickaxe is in the courier's hand")
 	_check(combat.get_attack_style() == CombatController.AttackStyle.TOOL, "Space now uses the tool")
 	_check(bar.mode_label.text.begins_with("TOOL MODE") and bar.tooltip_text.contains("Iron Sword"), "the HUD shows tool mode; the tooltip names the sword to return to (%s)" % bar.tooltip_text)
-	await _tap(KEY_T)
+	await _tap(KEY_Q)
 	var sword := inventory.get_definition(&"iron_sword")
-	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND) == sword and _held_path() == sword.held_model.resource_path, "T returns to the sword")
+	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND) == sword and _held_path() == sword.held_model.resource_path, "Q returns to the sword")
 	_check(combat.get_attack_style() == CombatController.AttackStyle.FAST_MELEE and inventory.get_enhancement(&"iron_sword") == 3, "fast melee again, still +3")
 	_check(is_equal_approx(combat.melee_damage, sword.attack_damage * Enhancement.damage_multiplier(3)), "the +3 damage applies (%.0f)" % combat.melee_damage)
 	# Weapon and tool are remembered independently.
 	inventory.equip(&"battle_axe")
 	inventory.equip(&"woodcutter_axe")
-	await _tap(KEY_T)
+	await _tap(KEY_Q)
 	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND).item_id == &"battle_axe", "the weapon remembered is the last one used (battle axe)")
-	await _tap(KEY_T)
+	await _tap(KEY_Q)
 	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND).item_id == &"woodcutter_axe", "the tool remembered is the last one used (woodcutter's axe)")
 	var saved := inventory.to_dict()
 	inventory.equip(&"iron_sword")
 	inventory.from_dict(saved)
 	await _frames(2)
 	_check(inventory.last_weapon == &"battle_axe" and inventory.last_tool == &"woodcutter_axe", "both are saved and loaded")
-	await _tap(KEY_T)
-	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND).item_id == &"battle_axe", "T after loading returns to the battle axe")
+	await _tap(KEY_Q)
+	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND).item_id == &"battle_axe", "Q after loading returns to the battle axe")
 	# Refused while a window is open.
 	equipment.open()
 	await _frames(2)
-	await _tap(KEY_T)
-	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND).item_id == &"battle_axe", "T does not swap while the inventory is open")
+	await _tap(KEY_Q)
+	_check(inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND).item_id == &"battle_axe", "Q does not swap while the inventory is open")
 	equipment.close()
 	await _frames(3)
 	# Nothing to switch to.
 	var data := inventory.to_dict()
 	inventory.from_dict({"owned": ["iron_sword"], "equipped": {"MAIN_HAND": "iron_sword"}})
 	await _frames(2)
-	_check(bar.quick_switch() == null and inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND).item_id == &"iron_sword", "with no tool owned, T changes nothing")
+	_check(bar.quick_switch() == null and inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND).item_id == &"iron_sword", "with no tool owned, Q changes nothing")
 	inventory.from_dict(data)
 	await _frames(2)
 

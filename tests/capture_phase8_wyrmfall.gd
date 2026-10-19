@@ -2,7 +2,7 @@ extends SceneTree
 ## Renders Phase 8 Wyrmfall Vale in the real game (GPU window, NOT --headless): the gate on
 ## Willowmere's south edge, the real E key into the vale, its landmarks (arrival, the falls
 ## and pool, the river and the Old Stone Bridge, the fisher's camp, the ruins, the cliffs),
-## walking over the bridge with real keys, the Tab map, and the real E key back through the
+## walking over the bridge with real keys, the M map, and the real E key back through the
 ## gate to Willowmere. SaveGame is removed and UISettings does not persist.
 ##   godot --path . --resolution 1600x900 --script res://tests/capture_phase8_wyrmfall.gd -- <output_dir>
 
@@ -83,10 +83,10 @@ func _run() -> void:
 	_expect(crossed.dot(along) > 4.0, "walked across the bridge (%.1f m past its middle)" % crossed.dot(along))
 
 	# The map.
-	await _key(KEY_TAB)
+	await _key(KEY_M)
 	await _seconds(0.5)
 	await _shot("wyrmfall_map")
-	await _key(KEY_TAB)
+	await _key(KEY_M)
 	await _seconds(0.3)
 
 	# Back home through the gate.

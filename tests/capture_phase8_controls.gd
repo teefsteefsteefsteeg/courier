@@ -1,7 +1,8 @@
 extends SceneTree
 ## Renders Phase 8 milestone 1 (controls) in the real village with real key events (GPU
-## window, NOT --headless): Tab map, Q inventory, T tool/weapon switch with the HUD mode
-## line, a Ctrl jump in mid-air, and the key guide. SaveGame is removed and UISettings does
+## window, NOT --headless), revised layout: M map, Tab inventory, Q tool/weapon switch with
+## the HUD mode line (and the inventory view while open), the bow's enhancement effects from
+## the gameplay camera, a Ctrl jump in mid-air, and the key guide. SaveGame is removed and UISettings does
 ## not persist, so the player's real save and settings are never touched.
 ##   godot --path . --resolution 1600x900 --script res://tests/capture_phase8_controls.gd -- <output_dir>
 
@@ -46,33 +47,55 @@ func _run() -> void:
 	var minimap := hud.get_node("Minimap")
 	var equipment := hud.get_node("EquipmentUI") as EquipmentUI
 
-	await _shot("01_weapon_mode_hud_and_key_guide")
-	await _key(KEY_TAB)
-	_expect(minimap.call(&"is_expanded") and not equipment.is_open(), "Tab opened the map")
+	# Phase 8 controls revision: M map, Tab inventory, Q tool/weapon switch (and the
+	# inventory's view while it is open). Shots 01..06 showed the first layout.
+	await _shot("59_revised_key_guide_weapon_mode")
+	await _key(KEY_M)
+	_expect(minimap.call(&"is_expanded") and not equipment.is_open(), "M opened the map")
 	await _wait(10)
-	await _shot("02_tab_opens_map")
+	await _shot("60_m_opens_map")
+	await _key(KEY_M)
+	_expect(not minimap.call(&"is_expanded"), "M closed the map")
 	await _key(KEY_TAB)
-	_expect(not minimap.call(&"is_expanded"), "Tab closed the map")
-	await _key(KEY_Q)
-	_expect(equipment.is_open() and not minimap.call(&"is_expanded"), "Q opened the inventory")
+	_expect(equipment.is_open() and not minimap.call(&"is_expanded"), "Tab opened the inventory")
 	await _wait(10)
-	await _shot("03_q_opens_inventory")
-	await _key(KEY_T)
-	_expect(equipment.view == EquipmentUI.View.TOOLS, "T switched the inventory view")
-	await _wait(6)
-	await _shot("04_t_switches_inventory_view")
+	await _shot("61_tab_opens_inventory")
 	await _key(KEY_Q)
-	_expect(not equipment.is_open(), "Q closed the inventory")
+	_expect(equipment.view == EquipmentUI.View.TOOLS, "Q switched the inventory view")
 	await _wait(6)
-	await _key(KEY_T)
+	await _shot("62_q_switches_inventory_view")
+	await _key(KEY_TAB)
+	_expect(not equipment.is_open(), "Tab closed the inventory")
+	await _wait(6)
+	await _key(KEY_Q)
 	var main := inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND)
-	_expect(main != null and main.item_id == &"miner_pickaxe", "T took up the pickaxe")
+	_expect(main != null and main.item_id == &"miner_pickaxe", "Q took up the pickaxe")
 	await _wait(20)
-	await _shot("05_t_tool_mode_pickaxe_in_hand")
-	await _key(KEY_T)
+	await _shot("63_q_tool_mode_pickaxe_in_hand")
+	await _key(KEY_Q)
 	main = inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND)
-	_expect(main != null and main.item_id == &"iron_sword", "T returned to the sword")
+	_expect(main != null and main.item_id == &"iron_sword", "Q returned to the sword")
 	await _wait(20)
+	# The bow's enhancement effects from the gameplay camera (default zoom), idle and running.
+	inventory.add_item(inventory.get_definition(&"hunting_bow"))
+	inventory.equip(&"hunting_bow")
+	rig.set_zoom(14.0)
+	rig.snap_to_target()
+	for level_index in [4, 5]:
+		inventory.set_enhancement(&"hunting_bow", level_index)
+		await _wait(30)
+		var glow := EnhancementVisuals.find(self).weapon_glow
+		_expect(glow != null and glow.shows_over_body, "bow +%d effects draw over the body" % level_index)
+		await _shot("%d_bow_plus%d_gameplay_camera" % [62 + level_index, level_index])
+	Input.action_press(&"move_back")
+	await _wait(30)
+	await _shot("68_bow_plus5_running_towards_camera")
+	Input.action_release(&"move_back")
+	inventory.equip(&"iron_sword")
+	rig.set_zoom(10.0)
+	player.teleport_to(ARENA)
+	rig.snap_to_target()
+	await _wait(30)
 	var ground := player.global_position.y
 	var peak := ground
 	await _key_down(KEY_CTRL)
@@ -81,7 +104,7 @@ func _run() -> void:
 		peak = maxf(peak, player.global_position.y)
 		if player.velocity.y <= 0.3:
 			break
-	await _shot("06_ctrl_jump_mid_air")
+	await _shot("69_ctrl_jump_mid_air")
 	await _key_up(KEY_CTRL)
 	_expect(peak - ground > 0.8, "the jump rose %.2f m" % (peak - ground))
 	for i in 90:

@@ -4,7 +4,7 @@ extends PanelContainer
 ## 5H, tools). Each slot shows its item's icon and key (quick_slot_1..5, keys 1-5 by default); the equipped weapon is
 ## outlined in gold and empty slots are dim. Above the slots: the weapon in hand, how it
 ## attacks and its stats, with WEAPON MODE / TOOL MODE beside the name (Phase 8). A key
-## press or a click equips the slot's weapon, and [T] (quick_switch_tool) swaps the last
+## press or a click equips the slot's weapon, and [Q] (quick_switch_tool) swaps the last
 ## weapon and the last tool, except while a modal window (group ui_modal) or a dialogue
 ## line is open, or the courier's input is off.
 
@@ -18,7 +18,7 @@ const GOLD := Color(1, 0.84, 0.3)
 @export var inventory: CourierInventory
 @export var player: PlayerController
 
-## "WEAPON MODE" / "TOOL MODE" and what [T] switches to (Phase 8).
+## "WEAPON MODE" / "TOOL MODE" and what [Q] switches to (Phase 8).
 var mode_label: Label
 var info_label: Label
 var stats_label: Label
@@ -71,7 +71,7 @@ func select(index: int) -> bool:
 	return ok
 
 
-## Phase 8: [T] swaps between the last weapon and the last tool (CourierInventory).
+## Phase 8: [Q] swaps between the last weapon and the last tool (CourierInventory).
 ## Returns the item now in hand, or null when the switch was refused or impossible.
 func quick_switch() -> ItemDefinition:
 	if inventory == null or not can_switch():
@@ -130,7 +130,7 @@ func refresh() -> void:
 	var target := inventory.get_switch_target()
 	mode_label.text = "TOOL MODE" if tool_mode else "WEAPON MODE"
 	# The header has no room for the key and the other item's name (the key guide shows
-	# T); the bar's tooltip names the item T switches to.
+	# Q); the bar's tooltip names the item Q switches to.
 	tooltip_text = "[%s] switches to %s" % [InputHints.key_for(&"quick_switch_tool"), target.display_name] if target != null else ""
 	mode_label.add_theme_color_override(&"font_color", Color(0.55, 0.9, 0.6) if tool_mode else Color(1.0, 0.62, 0.45))
 	if equipped != null and equipped.is_tool():

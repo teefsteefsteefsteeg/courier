@@ -154,6 +154,18 @@ func _test_placement() -> void:
 			low = minf(low, t)
 			high = maxf(high, t)
 	_check(low < -0.3 and high > 0.3, "hunting bow: effects on both limbs (t %.2f..%.2f)" % [low, high])
+	# Regression: the bow is held across the body, so its effects were hidden behind the
+	# courier from the gameplay camera; they now draw over the body.
+	for level in [1, 4, 5]:
+		var bow_glow := await _glow_for(&"hunting_bow", level)
+		var over := bow_glow.shows_over_body and not bow_glow.strips.is_empty()
+		for strip in bow_glow.strips:
+			over = over and (strip.material_override as StandardMaterial3D).no_depth_test
+		for p in bow_glow.particles:
+			over = over and ((p.mesh as QuadMesh).material as StandardMaterial3D).no_depth_test
+		_check(over, "hunting bow +%d: every effect draws over the courier's body" % level)
+	var sword_glow := await _glow_for(&"iron_sword", 4)
+	_check(not sword_glow.shows_over_body and not (sword_glow.strips[0].material_override as StandardMaterial3D).no_depth_test, "a sword's effects keep normal depth")
 	# Still attached while the courier runs.
 	var glow := await _glow_for(&"iron_sword", 5)
 	Input.action_press(&"move_right")

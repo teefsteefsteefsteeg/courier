@@ -113,7 +113,7 @@ Key gameplay scripts:
 - **Dev mode:** `scripts/core/dev_mode.gd`: debug build with a window. Override with `-- --dev` / `-- --no-dev`.
 
 Bindings (from `project.godot`): WASD move, Shift run **and** dash, E interact, G drop package,
-Space attack (bolt / melee / arrow by weapon; with a tool in hand: use the tool), Ctrl jump, 1-5 weapon/tool quick slots, T tool/weapon quick switch (switches inventory views while the inventory is open), Q inventory, Tab world map, R package shield, J journal, M free (Phase 8 layout, `docs/PHASE8.md`), mouse wheel or `=` `-` zoom, F3 debug HUD,
+Space attack (bolt / melee / arrow by weapon; with a tool in hand: use the tool), Ctrl jump, 1-5 weapon/tool quick slots, Q tool/weapon quick switch (switches inventory views while the inventory is open), Tab inventory, M world map, R package shield, J journal, T free (Phase 8 revised layout, `docs/PHASE8.md` section 1b), mouse wheel or `=` `-` zoom, F3 debug HUD,
 Esc close (`ui_cancel`).
 
 ## Assets

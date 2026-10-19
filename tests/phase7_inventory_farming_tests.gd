@@ -88,8 +88,8 @@ func _test_inventory_views() -> void:
 	for id in [&"iron_sword", &"wooden_shield", &"woodcutter_axe"]:
 		inventory.add_item(inventory.get_definition(id))
 	await _press(&"toggle_equipment")
-	_check(equipment.is_open() and equipment.view == EquipmentUI.View.WEAPONS, "Q opens the inventory on Weapons & Gear")
-	_check(equipment.title_label.text == "Weapons & Gear" and equipment.switch_hint.text == "[T] Tools & Goods", "the header names the view and says [T] switches (%s)" % equipment.switch_hint.text)
+	_check(equipment.is_open() and equipment.view == EquipmentUI.View.WEAPONS, "Tab opens the inventory on Weapons & Gear")
+	_check(equipment.title_label.text == "Weapons & Gear" and equipment.switch_hint.text == "[Q] Tools & Goods", "the header names the view and says [Q] switches (%s)" % equipment.switch_hint.text)
 	var panel_rect := equipment.panel.get_global_rect()
 	_check(Rect2(Vector2.ZERO, Vector2(1600, 900)).encloses(panel_rect) and panel_rect.size.x > 900, "the window fits the screen (%s)" % panel_rect)
 	_check((equipment.rows[&"iron_sword"]["row"] as Control).is_visible_in_tree() and not (equipment.rows[&"woodcutter_axe"]["row"] as Control).is_visible_in_tree(), "weapons show, tools are on the other view")

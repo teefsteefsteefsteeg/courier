@@ -17,11 +17,11 @@ const LEFT := &"move_left"
 const BACK := &"move_back"
 const RIGHT := &"move_right"
 const ACTIONS: Array[StringName] = [FORWARD, LEFT, BACK, RIGHT]
-## The other controls, as rows. Actions without a binding are skipped. Phase 8 added T and
-## Ctrl, so the block has three short rows to stay as narrow as before.
+## The other controls, as rows. Actions without a binding are skipped. Three short rows
+## keep the block as narrow as before: E Q R M / Tab J Ctrl / Shift Space.
 const CONTROL_ROWS: Array = [
-	[&"interact", &"toggle_equipment", &"quick_switch_tool", &"package_shield"],
-	[&"toggle_map", &"toggle_journal", &"jump"],
+	[&"interact", &"quick_switch_tool", &"package_shield", &"toggle_map"],
+	[&"toggle_equipment", &"toggle_journal", &"jump"],
 	[&"run", &"combat_magic_bolt"],
 ]
 const KEY_GAP := 4

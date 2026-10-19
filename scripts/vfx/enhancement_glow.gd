@@ -26,7 +26,12 @@ const SPAN := {
 	ItemDefinition.WeaponType.NONE: Vector2(0.2, 0.8),
 }
 
+const OVER_BODY_PRIORITY := 10
+const BOW_SIZE := 1.3
+
 var level: int = 0
+## True for a bow's effects, which draw over the courier's body (see _show_over_body).
+var shows_over_body := false
 ## The tier's elements, for tests: &"spark", &"glint", &"motes", &"nature", &"leaves",
 ## &"swirl", &"bubbles", &"drips", &"crackle", &"bolt", &"flame", &"embers", &"light".
 var elements: Array[StringName] = []
@@ -65,6 +70,8 @@ static func build(held: Node3D, item_level: int, weapon_type: ItemDefinition.Wea
 	glow.tip[axis] = tip_value
 	held.add_child(glow)
 	glow._populate()
+	if weapon_type == ItemDefinition.WeaponType.BOW:
+		glow._show_over_body()
 	return glow
 
 
@@ -147,6 +154,24 @@ func _legendary() -> void:
 
 
 # --- builders ------------------------------------------------------------------
+
+## The courier holds a bow across the body, so from the iso camera most of it is behind the
+## courier and its effects were hidden. The bow's flipbooks and particles draw over the
+## body (no depth test, drawn after it) and a little larger.
+func _show_over_body() -> void:
+	shows_over_body = true
+	for sprite in strips:
+		var material := sprite.material_override as StandardMaterial3D
+		material.no_depth_test = true
+		material.render_priority = OVER_BODY_PRIORITY
+		sprite.pixel_size *= BOW_SIZE
+	for emitter in particles:
+		var quad := emitter.mesh as QuadMesh
+		quad.size *= BOW_SIZE
+		var material := quad.material as StandardMaterial3D
+		material.no_depth_test = true
+		material.render_priority = OVER_BODY_PRIORITY
+
 
 ## A flipbook (VfxStrip of source) at a point of the weapon, recorded as element.
 func _strip(element: StringName, source: StringName, size: float, tint: Color, looping: bool, at: Vector3, start_frame: int = 0) -> VfxStrip:

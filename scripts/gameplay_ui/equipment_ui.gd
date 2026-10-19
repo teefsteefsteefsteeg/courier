@@ -2,7 +2,7 @@ class_name EquipmentUI
 extends CanvasLayer
 ## Inventory window (toggle_equipment, Q since Phase 8). Phase 7 redesign: a slate frame and parchment
 ## page (Humble Pixel inventory pack, assets/ui/inventory/) with two views, switched with
-## the side tabs or [T] (quick_switch_tool; the courier's tool switch cannot fire while the window
+## the side tabs or [Q] (quick_switch_tool; the courier's tool switch cannot fire while the window
 ## is open, so the key is free here):
 ##   Weapons & Gear  weapons, then off-hand and armor, as a grid of item cells
 ##   Tools & Goods   tools, then seeds, produce and gathered materials with their counts
@@ -148,23 +148,22 @@ func toggle_view() -> void:
 	set_view(View.TOOLS if view == View.WEAPONS else View.WEAPONS)
 
 
-## Closing runs in _input: a focused button would otherwise take Tab for focus navigation.
-## [T] (quick_switch_tool) switches the view while the window is open, before the
-## tool/weapon switch could see it.
+## Opening and closing run in _input: the inventory key is Tab (Phase 8 revision), and a
+## focused button would otherwise take Tab for focus navigation; opening consumes the key
+## only when the window actually opens. [Q] (quick_switch_tool) switches the view while
+## the window is open, before the tool/weapon switch could see it.
 func _input(event: InputEvent) -> void:
 	if not is_open():
+		if event.is_action_pressed(&"toggle_equipment"):
+			open()
+			if is_open():
+				get_viewport().set_input_as_handled()
 		return
 	if event.is_action_pressed(&"toggle_equipment") or event.is_action_pressed(&"ui_cancel"):
 		close()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed(&"quick_switch_tool"):
 		toggle_view()
-		get_viewport().set_input_as_handled()
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if not is_open() and event.is_action_pressed(&"toggle_equipment"):
-		open()
 		get_viewport().set_input_as_handled()
 
 

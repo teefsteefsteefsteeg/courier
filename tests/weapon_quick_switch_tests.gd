@@ -332,8 +332,8 @@ func _test_blocked_switching() -> void:
 	await _frames(1)
 	await _press_key(KEY_2)
 	_check(_holding(&"wooden_sword"), "keys 1-5 do nothing while the Equipment window is open")
-	await _press_key(KEY_Q)
-	_check(not equipment_ui.is_open(), "Q closes the Equipment window")
+	await _press_key(KEY_TAB)
+	_check(not equipment_ui.is_open(), "Tab closes the Equipment window")
 	await _frames(2)
 	var journal := level.get_node("QuestJournal") as QuestJournal
 	journal.open()
@@ -390,11 +390,11 @@ func _test_bindings() -> void:
 			if used.has(code) and (String(action).begins_with("quick_slot") or String(used[code]).begins_with("quick_slot") or action == &"toggle_equipment" or used[code] == &"toggle_equipment"):
 				clash.append("%s/%s" % [used[code], action])
 			used[code] = action
-	_check(clash.is_empty(), "keys 1-5 and Q (inventory) clash with no other action (%s)" % [clash])
+	_check(clash.is_empty(), "keys 1-5 and Tab (inventory) clash with no other action (%s)" % [clash])
 	for index in CourierInventory.QUICK_SLOT_COUNT:
 		_check(InputHints.key_for(StringName("quick_slot_%d" % (index + 1))) == str(index + 1), "quick_slot_%d is key %d" % [index + 1, index + 1])
-	_check(InputHints.key_for(&"toggle_equipment") == "Q", "Equipment is on Q")
-	_check(InputHints.key_for(&"toggle_map") == "Tab" and InputHints.key_for(&"quick_switch_tool") == "T" and InputHints.key_for(&"package_shield") == "R" and InputHints.key_for(&"jump") == "Ctrl", "Phase 8 keys: Tab map, T tool/weapon, R shield, Ctrl jump")
+	_check(InputHints.key_for(&"toggle_equipment") == "Tab", "Equipment is on Tab")
+	_check(InputHints.key_for(&"toggle_map") == "M" and InputHints.key_for(&"quick_switch_tool") == "Q" and InputHints.key_for(&"package_shield") == "R" and InputHints.key_for(&"jump") == "Ctrl", "Phase 8 keys: M map, Q tool/weapon, R shield, Ctrl jump")
 
 
 func _test_save_and_reload() -> void:

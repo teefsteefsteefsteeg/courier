@@ -28,7 +28,7 @@ const HINT_HEIGHT := 18.0
 @export var start_expanded := false
 ## Input action used when it exists in the InputMap; otherwise `toggle_key`.
 @export var toggle_action: StringName = &"toggle_map"
-@export var toggle_key: Key = KEY_TAB
+@export var toggle_key: Key = KEY_M
 @export var compact_size := Vector2(196, 196)
 @export var compact_radius := 30.0
 @export var expanded_radius := 80.0

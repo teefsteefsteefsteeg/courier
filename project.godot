@@ -25,7 +25,7 @@ window/stretch/aspect="expand"
 [input]
 toggle_map={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"physical_keycode":4194306)]
+"events": [Object(InputEventKey,"physical_keycode":77)]
 }
 
 move_forward={
@@ -102,7 +102,7 @@ quick_slot_5={
 }
 toggle_equipment={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"physical_keycode":81)]
+"events": [Object(InputEventKey,"physical_keycode":4194306)]
 }
 toggle_debug_hud={
 "deadzone": 0.2,
@@ -130,7 +130,7 @@ package_shield={
 }
 quick_switch_tool={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"physical_keycode":84)]
+"events": [Object(InputEventKey,"physical_keycode":81)]
 }
 jump={
 "deadzone": 0.5,

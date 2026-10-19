@@ -20,10 +20,14 @@ regeneration, dragon companion and flight).
   InputMap had Tab = inventory, M = map, and a rendered run with real keys did that). The
   new layout makes Tab the map on purpose.
 
+- **Controls revision (later the same day, user request):** M world map, Tab inventory, Q
+  tool/weapon quick switch (and the inventory's view while it is open); T is free again.
+  Sections 1-5 below describe the first layout (Tab map, Q inventory, T switch).
+
 ## Status
 | # | Milestone | Status |
 |---|---|---|
-| 1 | Controls: Tab map, Q inventory, R shield, T tool/weapon switch, Ctrl jump | **Done** (below) |
+| 1 | Controls: M map, Tab inventory, R shield, Q tool/weapon switch, Ctrl jump | **Done** (below; revised layout in section 1b) |
 | 2 | Resource respawn without countdowns; tools in every map | **Done** (below) |
 | 3 | Weapon enhancement VFX rework (+1 silver spark .. +5 legendary elemental) | **Done** (below) |
 | 4 | Animated HUD avatar | **Done** (below) |
@@ -248,3 +252,23 @@ held model by `EnhancementVisuals`; `elements` lists them for tests):
   bridge with real keys, the Tab map, the gate back, back in Willowmere).
 - Not yet: the dungeon entrance at the Ember Cliffs (milestone 9), a portal for fast travel
   inside the vale, the plateau is scenery only.
+
+## 1b. Controls revision and bow effects
+- `project.godot`: `toggle_map` M, `toggle_equipment` Tab, `quick_switch_tool` Q (T free).
+- **Inventory on Tab:** `EquipmentUI` now opens in `_input` too (Tab is the GUI's focus-next
+  key; it consumes the key only when the window actually opens), so a focused button can't
+  swallow it. While open, Q switches its views; Tab or Esc closes it.
+- **Map on M:** `MinimapController` keeps reading `toggle_map` in `_input`; `MinimapHUD`'s
+  fallback key is M.
+- **Key guide:** rows E Q R M / Tab J Ctrl / Shift Space (as narrow as before).
+- **Bow enhancement effects visible:** the courier holds the bow across the body, so from
+  the iso camera its effects were behind the courier. `EnhancementGlow` now draws a bow's
+  flipbooks and particles over the body (`no_depth_test`, render priority 10) and 1.3x
+  larger (`shows_over_body`); other weapons keep normal depth.
+- Tests updated for the keys: `phase8_controls` (M map, Tab inventory with a focused button,
+  T free, Q switch), `keycap`, `phase4_hud_polish`, `input_prompt`, `phase8_interiors`,
+  `weapon_quick_switch`, `phase7_inventory_farming`; `phase8_weapon_vfx` checks the bow
+  effects draw over the body at +1/+4/+5 and a sword's don't.
+- Rendered: `tests/capture_phase8_controls.gd` (now the revised layout) ->
+  `docs/validation/phase8/59..69` (key guide, M map, Tab inventory, Q view switch, Q pickaxe,
+  bow +4 / +5 from the gameplay camera, running towards the camera, Ctrl jump).
