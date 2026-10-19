@@ -25,7 +25,7 @@ regeneration, dragon companion and flight).
 |---|---|---|
 | 1 | Controls: Tab map, Q inventory, R shield, T tool/weapon switch, Ctrl jump | **Done** (below) |
 | 2 | Resource respawn without countdowns; tools in every map | **Done** (below) |
-| 3 | Weapon enhancement VFX rework (+1 silver spark .. +5 legendary elemental) | not started |
+| 3 | Weapon enhancement VFX rework (+1 silver spark .. +5 legendary elemental) | **Done** (below) |
 | 4 | Animated HUD avatar | not started |
 | 5 | Enterable houses (Armory, Post Office, one home) with NPCs | not started |
 | 6 | Food market, consumables, food slots 6-0, MP and rage, HP regeneration | not started |
@@ -96,3 +96,38 @@ regeneration, dragon companion and flight).
 - Rendered: `tests/capture_phase8_resources.gd` -> `docs/validation/phase8/07..12` (village
   rubble prompt, Runewood marked tree, chopping, stump "regrowing", mining, Moonbrook
   fishing with the bobber in the river).
+
+## 3. Weapon enhancement VFX rework
+Before: every level was the same sparkle/aura glow in a different colour. Now each level is
+its own composition of animated elements (`scripts/vfx/enhancement_glow.gd`, built under the
+held model by `EnhancementVisuals`; `elements` lists them for tests):
+
+| Level | On the weapon | Swing / hit (`AttackEffects`) |
+|---|---|---|
+| +0 Normal | nothing | plain arc, impact flash |
+| +1 Silver Spark | spark bursts (Sci-fi Spark Burst) and glints along the blade, drifting silver motes | silver arc |
+| +2 Nature Energy | green sparkle blooms (Round Sparkle Burst 002, own colours), leaf particles spiralling up | green arc |
+| +3 Water | droplet swirl round the weapon (Spell Absorb, blue), bubbles at the tip, dripping water, blue light | blue arc, bubble trail, water splash on hit |
+| +4 Lightning | violet crackle aura in two places (Lightning Aura), bolt flashes (Lightning Burst), flickering violet light | violet arc, lightning flash on the swing, electric strike on hit |
+| +5 Legendary | three flames (Fire Looping 003A/004A, own colours) on the outer blade, violet lightning over them, a water ring and drips by the grip, rising embers, flickering fire light | gold arc plus a larger fire arc, lightning flash, explosion (Stylized Explosion) and electric strike on hit |
+
+- **Assets:** `tools/prep_enhancement_vfx.py` now also builds `spark`, `nature_burst`,
+  `swirl`, `bubbles`, `splash`, `bolt_flash`, `strike`, `flame`, `flame_b`, `blast` from the
+  Gigapack (whitened for tinting, or own colours: `frames.json` `tinted`). Full-colour sheets
+  draw with normal blending, tinted ones additively (`VfxStrip`). Particles (`CPUParticles3D`,
+  world space so they trail behind a swing) use procedural dot and leaf sprites.
+- **Placement by weapon type:** sword along the blade (30-100% of grip to tip), axe round the
+  head (62-100%), staff at the top (72-100%), bow along both limbs (-90..90%), shield face.
+- **Budget:** at most 6 flipbooks and 40 particles per weapon (measured: 18-30 particles).
+- Unchanged: damage, enhancement stats, inventory, save/load and swing timing (tests check
+  the hit damage and the strike timing at every tier).
+- Tests: new `tests/phase8_weapon_vfx_tests.gd` (elements per tier, tiers don't share
+  elements, all flipbooks animate, budgets, placement per weapon, still attached while
+  running, tier trails and impacts with damage and timing, one-shots clean up);
+  `phase7_enhancement_tests` weapon section rewritten for the tiers.
+- Rendered: `tests/capture_phase8_weapon_vfx.gd` -> `docs/validation/phase8/13..26`
+  (Steel Sword +1..+5 close up, the same sword just after a real Space-key hit at every
+  tier, axe +5, bow +4, staff +3, axe +2) and `27_weapon_tiers_side_by_side.png`.
+- Known: from the default camera the bow is held in front of the body, so its effects are
+  mostly hidden behind the courier when idle (the light still shows); +1 is deliberately the
+  quietest tier.

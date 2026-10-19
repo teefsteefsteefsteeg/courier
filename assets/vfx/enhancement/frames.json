@@ -3,24 +3,98 @@
   "frame_width": 96,
   "frame_height": 96,
   "frames": 24,
-  "fps": 15
+  "fps": 15,
+  "tinted": true
  },
  "aura": {
   "frame_width": 96,
   "frame_height": 96,
   "frames": 16,
-  "fps": 15
+  "fps": 15,
+  "tinted": true
  },
  "burst": {
   "frame_width": 64,
   "frame_height": 64,
   "frames": 14,
-  "fps": 15
+  "fps": 15,
+  "tinted": true
  },
  "impact": {
   "frame_width": 96,
   "frame_height": 96,
   "frames": 7,
-  "fps": 15
+  "fps": 15,
+  "tinted": true
+ },
+ "spark": {
+  "frame_width": 128,
+  "frame_height": 128,
+  "frames": 12,
+  "fps": 15,
+  "tinted": true
+ },
+ "nature_burst": {
+  "frame_width": 64,
+  "frame_height": 64,
+  "frames": 18,
+  "fps": 15,
+  "tinted": false
+ },
+ "swirl": {
+  "frame_width": 128,
+  "frame_height": 128,
+  "frames": 31,
+  "fps": 15,
+  "tinted": true
+ },
+ "bubbles": {
+  "frame_width": 128,
+  "frame_height": 128,
+  "frames": 40,
+  "fps": 15,
+  "tinted": true
+ },
+ "splash": {
+  "frame_width": 64,
+  "frame_height": 64,
+  "frames": 10,
+  "fps": 15,
+  "tinted": true
+ },
+ "bolt_flash": {
+  "frame_width": 64,
+  "frame_height": 64,
+  "frames": 8,
+  "fps": 15,
+  "tinted": false
+ },
+ "strike": {
+  "frame_width": 128,
+  "frame_height": 128,
+  "frames": 7,
+  "fps": 15,
+  "tinted": false
+ },
+ "flame": {
+  "frame_width": 80,
+  "frame_height": 128,
+  "frames": 5,
+  "fps": 15,
+  "tinted": false
+ },
+ "flame_b": {
+  "frame_width": 80,
+  "frame_height": 128,
+  "frames": 5,
+  "fps": 15,
+  "tinted": false
+ },
+ "blast": {
+  "frame_width": 96,
+  "frame_height": 96,
+  "frames": 9,
+  "fps": 15,
+  "tinted": false
  }
 }

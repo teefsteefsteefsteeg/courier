@@ -9,8 +9,19 @@ allowed, credit required) and writes to assets/vfx/enhancement/:
   aura.png     Lightning Aura 002 (96 px frames)
   burst.png    Round Sparkle Burst 001 (64 px frames)
   impact.png   Symmetrical Impact 001 (hit flash for melee and arrows)
-Each is re-packed as a single row of frames and whitened (colour from luminance, alpha kept) so
-EnhancementVfx can tint it per level (+1 silver, +2 green, +3 blue, +4 purple, +5 gold).
+Phase 8 tier effects (EnhancementGlow, AttackEffects), one look per enhancement level:
+  spark.png      Sci-fi Spark Burst 001 (+1 silver sparks; whitened)
+  nature_burst.png  Round Sparkle Burst 002 (+2 green nature bloom; own colours)
+  swirl.png      Spell Absorb 001 (+3 water swirl; whitened)
+  bubbles.png    Directional Bubble Burst 001 (+3 droplets; whitened)
+  splash.png     Burst Splatter 001 (+3 water impact; whitened)
+  bolt_flash.png Lightning Burst 001 (+4 attack flash; own violet colours)
+  strike.png     Lightning Strike 001 (+4 electric impact; own colours)
+  flame.png      Fire Looping 003A (+5 flames; own orange colours)
+  flame_b.png    Fire Looping 004A (+5 flames, second shape; own colours)
+  blast.png      Stylized Explosion 001 (+5 impact burst; own colours)
+Each is re-packed as a single row of frames. Whitened sheets (colour from luminance, alpha
+kept) are tinted per level by VfxStrip; the others keep the pack's colours.
 frames.json lists frame size and count; every animation plays at 15 FPS (the pack's guide).
 """
 import json
@@ -26,7 +37,19 @@ SHEETS = {
     "aura": "Lightning/lightning_aura_002/lightning_aura_002_large_blue",
     "burst": "Magic Bursts/round_sparkle_burst_001/round_sparkle_burst_001_large_blue",
     "impact": "Impacts/symmetrical_impact_001/symmetrical_impact_001_large_yellow",
+    "spark": "Sci-fi/scifi_spark_burst_001/scifi_spark_burst_001_large_yellow",
+    "nature_burst": "Magic Bursts/round_sparkle_burst_002/round_sparkle_burst_002_large_green",
+    "swirl": "Fantasy Spells/spell_absorb_001/spell_absorb_001_large_violet",
+    "bubbles": "Magic Bursts/directional_bubble_burst_001/directional_bubble_burst_001_large_green",
+    "splash": "Splatters/burst_splatter_001/burst_splatter_001_large_red",
+    "bolt_flash": "Lightning/lightning_burst_001/lightning_burst_001_large_violet",
+    "strike": "Lightning/lightning_strike_001/lightning_strike_001_large_violet",
+    "flame": "Fire/fire_looping_003A/fire_looping_003A_large_orange",
+    "flame_b": "Fire/fire_looping_004A/fire_looping_004A_large_orange",
+    "blast": "Explosions/stylized_explosion_001/stylized_explosion_001_large_yellow",
 }
+## Sheets that keep the pack's own colours (not whitened for tinting).
+KEEP_COLOUR = {"nature_burst", "bolt_flash", "strike", "flame", "flame_b", "blast"}
 
 
 def frames(folder):
@@ -60,8 +83,8 @@ def main():
         strip = Image.new("RGBA", (w * len(boxes), h))
         for i, (x, y, fw, fh) in enumerate(boxes):
             strip.paste(sheet.crop((x, y, x + fw, y + fh)), (i * w, 0))
-        whiten(strip).save(OUT / f"{name}.png")
-        meta[name] = {"frame_width": w, "frame_height": h, "frames": len(boxes), "fps": 15}
+        (strip if name in KEEP_COLOUR else whiten(strip)).save(OUT / f"{name}.png")
+        meta[name] = {"frame_width": w, "frame_height": h, "frames": len(boxes), "fps": 15, "tinted": name not in KEEP_COLOUR}
     (OUT / "frames.json").write_text(json.dumps(meta, indent=1) + "\n")
     print("wrote", ", ".join(f"{k} ({v['frames']} frames)" for k, v in meta.items()))
 

@@ -67,8 +67,10 @@ func rebuild() -> void:
 	if inventory == null or player == null or not is_showing():
 		return
 	if character != null:
-		weapon_glow = EnhancementGlow.build(character.get_held_item_node(), get_slot_level(ItemDefinition.Slot.MAIN_HAND))
-		shield_glow = EnhancementGlow.build(character.get_off_hand_item_node(), get_slot_level(ItemDefinition.Slot.OFF_HAND))
+		var main := inventory.get_equipped(ItemDefinition.Slot.MAIN_HAND)
+		var weapon_type := main.weapon_type if main != null else ItemDefinition.WeaponType.NONE
+		weapon_glow = EnhancementGlow.build(character.get_held_item_node(), get_slot_level(ItemDefinition.Slot.MAIN_HAND), weapon_type)
+		shield_glow = EnhancementGlow.build(character.get_off_hand_item_node(), get_slot_level(ItemDefinition.Slot.OFF_HAND), ItemDefinition.WeaponType.NONE)
 	var armor_level := get_slot_level(ItemDefinition.Slot.ARMOR)
 	if armor_level > 0:
 		armor_aura = _build_armor_aura(armor_level)

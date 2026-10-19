@@ -41,12 +41,13 @@ static func create(strip_name: StringName, size_m: float, tint: Color, looping: 
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	# Tinted (white) sheets glow additively; full-colour flames and blasts keep their colours.
+	material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD if is_tinted(strip_name) else BaseMaterial3D.BLEND_MODE_MIX
 	material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	material.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 	material.albedo_texture = sprite.texture
-	material.albedo_color = tint
+	material.albedo_color = tint if is_tinted(strip_name) else Color(1, 1, 1, tint.a)
 	sprite.material_override = material
 	sprite._time = float(start_frame % sprite._frame_count) / sprite.fps
 	sprite.frame = start_frame % sprite._frame_count
@@ -84,8 +85,22 @@ func restart() -> void:
 	visible = true
 
 
+## Holds a non-looping strip hidden for seconds before it first plays (staggers copies).
+func delay(seconds: float) -> void:
+	_time = -seconds
+	visible = false
+
+
+## False for sheets that keep the pack's own colours (frames.json "tinted": false); those
+## take a white tint so only the alpha changes.
+static func is_tinted(strip_name: StringName) -> bool:
+	return bool(strip_info(strip_name).get("tinted", true))
+
+
 func _process(delta: float) -> void:
 	_time += delta
+	if _time < 0.0:
+		return
 	var index := int(_time * fps)
 	if loop:
 		frame = index % _frame_count

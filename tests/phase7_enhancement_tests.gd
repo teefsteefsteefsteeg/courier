@@ -329,26 +329,32 @@ func _test_weapon_effects() -> void:
 	inventory.set_enhancement(&"iron_sword", 0)
 	await _frames(3)
 	_check(visuals.weapon_glow == null, "+0: no glow")
-	var counts: Array[int] = []
+	# Phase 8 rework: each level is its own composition, not one glow in five colours.
+	var signatures: Array[String] = []
 	for lvl in range(1, Enhancement.MAX_LEVEL + 1):
 		inventory.set_enhancement(&"iron_sword", lvl)
 		await _frames(3)
 		var glow := visuals.weapon_glow
 		var ok := glow != null and is_instance_valid(glow) and glow.level == lvl and glow.get_parent() == character.get_held_item_node()
-		_check(ok, "+%d: a glow on the held sword" % lvl)
+		_check(ok, "+%d %s: an effect on the held sword (%s)" % [lvl, EnhancementGlow.TIER_NAMES[lvl], glow.elements if ok else []])
 		if not ok:
 			continue
-		counts.append(glow.sparkles.size())
-		_check(glow.sparkles[0].get_tint().is_equal_approx(Color(Enhancement.level_color(lvl), glow.sparkles[0].get_tint().a)), "+%d: sparkles in the level colour" % lvl)
-		_check((glow.aura != null) == (lvl >= 3) and (glow.light != null) == (lvl >= 4) and (glow.burst != null) == (lvl >= 5), "+%d: aura from +3, light from +4, burst at +5" % lvl)
+		var sorted := glow.elements.duplicate()
+		sorted.sort()
+		signatures.append(",".join(sorted))
 		var tip_distance := glow.tip.length() * EnhancementGlow._world_scale(character.get_held_item_node())
 		_check(tip_distance > 0.4 and tip_distance < 2.0, "+%d: effects run along the blade (tip %.2f m from the grip)" % [lvl, tip_distance])
 		if lvl == 5:
-			var first := glow.sparkles[0].frame
-			await _frames(8)
-			_check(glow.sparkles[0].frame != first or glow.sparkles[0].get_duration() > 0.0, "+5: sparkles animate")
-			_check(glow.light.light_color.is_equal_approx(Enhancement.level_color(5)) and Enhancement.TIER_NAMES[5] == "Golden", "+5: golden light")
-	_check(counts == [2, 3, 3, 4, 5], "sparkles grow with the level %s" % [counts])
+			_check(glow.elements.has(&"flame") and glow.elements.has(&"crackle") and glow.elements.has(&"swirl"), "+5: flames, lightning and water together")
+			var animated := glow.strips[0]
+			var first := animated.frame
+			await create_timer(0.25).timeout
+			_check(animated.frame != first, "+5: the flames animate")
+			_check(glow.light != null and glow.light.light_color.r > glow.light.light_color.b, "+5: a warm fire light")
+	var unique := {}
+	for signature in signatures:
+		unique[signature] = true
+	_check(signatures.size() == 5 and unique.size() == 5, "five different effect sets %s" % [signatures])
 	inventory.equip(&"miner_pickaxe")
 	await _frames(3)
 	_check(visuals.weapon_glow == null, "a tool in hand shows no glow (the sword's level stays %d)" % inventory.get_enhancement(&"iron_sword"))
