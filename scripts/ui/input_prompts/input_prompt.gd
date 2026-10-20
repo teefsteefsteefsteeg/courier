@@ -103,6 +103,11 @@ static func make_icon(texture: Texture2D, scale: int = 1) -> TextureRect:
 	return rect
 
 
+## Keycap faces for keys whose names are words (OS.get_keycode_string).
+const GLYPHS := {"Equal": "=", "Minus": "-", "Comma": ",", "Period": ".", "Slash": "/", "Semicolon": ";",
+		"Apostrophe": "'", "BracketLeft": "[", "BracketRight": "]", "Backslash": "\\", "QuoteLeft": "`"}
+
+
 ## A keycap drawn in the sheet's colours, for keys the sheet has no icon for.
 static func make_fallback_keycap(key_text: String, scale: int = 1, fallback_font_size: int = 16) -> PanelContainer:
 	var panel := PanelContainer.new()
@@ -121,7 +126,8 @@ static func make_fallback_keycap(key_text: String, scale: int = 1, fallback_font
 	panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var label := Label.new()
-	label.text = key_text
+	# Punctuation keys show their symbol ("=" rather than "Equal").
+	label.text = GLYPHS.get(key_text, key_text)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override(&"font_size", mini(fallback_font_size, 16) * scale)

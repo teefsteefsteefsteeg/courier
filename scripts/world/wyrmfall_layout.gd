@@ -1,9 +1,11 @@
 class_name WyrmfallLayout
 extends RefCounted
-## Phase 8: the layout of Wyrmfall Vale, the region south of Willowmere (region id
-## `wyrmfall`). tools/generate_wyrmfall.gd builds the region scene from it, and the tests
-## read the same numbers, so the terrain, water, walls and map always agree. Region space
-## is world space (the region root sits at the origin); X east, Z south, metres.
+## Phase 8: the layout of Wyrmfall Vale. tools/generate_wyrmfall.gd builds the vale's
+## streamed chunks from it, and the tests read the same numbers, so the terrain, water,
+## walls and map always agree. Numbers here are in vale space (X east, Z south, metres);
+## open world: the vale is part of the one continuous world, its origin at WORLD_ORIGIN,
+## north of the Whisperwood. The forest trail enters through the PASS in the southern hills
+## (no gate), where the terrain comes down to the forest floor (height 0).
 ##
 ##   - lowland of gentle rolling grass inside a ring of hills (walls at +-BOUNDARY)
 ##   - a plateau PLATEAU_HEIGHT m high north of a cliff (z CLIFF_TOP_Z..CLIFF_BASE_Z); its
@@ -43,11 +45,14 @@ const FALLS_WIDTH := 4.2
 
 ## Over the bridge the road runs exactly north-east (x + z = 12), one of the eight keyboard
 ## directions of the iso camera, so walking across never rubs along a railing.
-const ROAD := [Vector2(-40.0, 44.0), Vector2(-36.0, 38.0), Vector2(-28.0, 30.0), Vector2(-17.0, 20.0), Vector2(-6.0, 13.0),
+const ROAD := [Vector2(-40.0, 61.0), Vector2(-40.0, 50.0), Vector2(-40.0, 44.0), Vector2(-36.0, 38.0), Vector2(-28.0, 30.0), Vector2(-17.0, 20.0), Vector2(-6.0, 13.0),
 		Vector2(1.0, 11.0), Vector2(11.0, 1.0), Vector2(22.0, -6.0), Vector2(28.0, -13.0), Vector2(31.0, -17.5)]
 const ROAD_HALF_WIDTH := 1.7
 ## Side path from the road to the ruins.
 const RUINS_PATH := [Vector2(-17.0, 20.0), Vector2(-22.0, 10.0), Vector2(-27.0, 1.0)]
+## Side path from the road to the falls viewpoint on the west bank, below the pool.
+const FALLS_PATH := [Vector2(-6.0, 13.0), Vector2(-8.5, 4.0), Vector2(-10.0, -4.0)]
+const FALLS_VIEW := Vector2(-10.0, -4.0)
 const PATH_HALF_WIDTH := 1.1
 
 const RUINS_CENTRE := Vector2(-29.0, -4.0)
@@ -58,6 +63,34 @@ const RETURN_GATE := Vector2(-40.5, 44.5)
 const CLIFF_END := Vector2(31.0, -19.0)
 
 const SEED := 8808
+
+## Where vale space (0, 0, 0) is in the world: the pass's south end meets the Whisperwood's
+## north edge at world (14, 0, -124).
+const WORLD_ORIGIN := Vector3(54.0, 0.0, -184.0)
+## The pass through the southern ring of hills (vale space), from the forest edge to the
+## old gate clearing; the hills are cut away within PASS_HALF_WIDTH of it.
+const PASS := [Vector2(-40.0, 61.0), Vector2(-40.0, 50.0), Vector2(-40.5, 44.5)]
+const PASS_HALF_WIDTH := 6.0
+## Walkable width of the pass between its walls.
+const PASS_OPEN := 4.5
+
+
+## Vale space -> world.
+static func to_world(p: Vector2, y: float = 0.0) -> Vector3:
+	return WORLD_ORIGIN + Vector3(p.x, y, p.y)
+
+
+## World -> vale space (X/Z).
+static func to_local(world: Vector3) -> Vector2:
+	return Vector2(world.x - WORLD_ORIGIN.x, world.z - WORLD_ORIGIN.z)
+
+
+## 1 inside the pass corridor, fading to 0 where the hills stand.
+static func pass_factor(x: float, z: float) -> float:
+	if z < 38.0:
+		return 0.0
+	var d := polyline_distance(Vector2(x, z), PASS)
+	return 1.0 - smoothstep(PASS_HALF_WIDTH, PASS_HALF_WIDTH + 5.0, d)
 
 static var _noise: FastNoiseLite
 static var _detail: FastNoiseLite
@@ -107,7 +140,8 @@ static func river_distance(p: Vector2) -> float:
 
 
 static func road_distance(p: Vector2) -> float:
-	return minf(polyline_distance(p, ROAD) - ROAD_HALF_WIDTH, polyline_distance(p, RUINS_PATH) - PATH_HALF_WIDTH)
+	return minf(minf(polyline_distance(p, ROAD) - ROAD_HALF_WIDTH, polyline_distance(p, RUINS_PATH) - PATH_HALF_WIDTH),
+			polyline_distance(p, FALLS_PATH) - PATH_HALF_WIDTH)
 
 
 ## Terrain height at (x, z).
@@ -124,9 +158,13 @@ static func height(x: float, z: float) -> float:
 	# Plateau and cliff.
 	var plateau := plateau_factor(x, z)
 	h += plateau * (PLATEAU_HEIGHT - 0.4 + _noise.get_noise_2d(x * 0.7 + 40.0, z * 0.7) * 0.8 - h * 0.5)
-	# Ring of hills.
+	# Ring of hills, cut away along the pass.
 	var edge := maxf(absf(x), absf(z))
-	h += smoothstep(BOUNDARY - 6.0, HALF, edge) * (7.0 + _noise.get_noise_2d(x + 90.0, z) * 3.0)
+	var gap := pass_factor(x, z)
+	h += smoothstep(BOUNDARY - 6.0, HALF, edge) * (7.0 + _noise.get_noise_2d(x + 90.0, z) * 3.0) * (1.0 - gap)
+	# The pass comes down to the forest floor (height 0) at the vale's south edge.
+	if gap > 0.0:
+		h = lerpf(h, 0.0, gap * smoothstep(50.0, HALF, z))
 	# Plateau stream channel.
 	if plateau > 0.5:
 		var s := polyline_distance(p, STREAM)

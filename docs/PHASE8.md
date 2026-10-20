@@ -34,7 +34,7 @@ regeneration, dragon companion and flight).
 | 5 | Enterable houses (Armory, Post Office, one home) with NPCs | **Done** (below) |
 | 6 | Food market, consumables, food slots 6-0, MP and rage, HP regeneration | **Done** (recovery milestone 1 below) |
 | 7 | Staff spells and weapon ultimates (Z / X / C) | **partly**: the four +5 ultimates on C now cost rage and leave world-space effects (recovery milestone 1); staff bolts and the Arcane Storm spend real MP; Z / X skills not started |
-| 8 | New region: waterfall, river, bridge, fishing spot, gateway | **Done** (below: Wyrmfall Vale) |
+| 8 | New region: waterfall, river, bridge, fishing spot, gateway | **Done**, then made **seamless** (recovery milestone 2: Wyrmfall is part of the open world, no gate) |
 | 9 | Dungeon, Bestiary enemies, dragon boss (bite, breath, AoE), HP bar, rewards | **started** (uncommitted: dragon model with authored Bite/Breath/Slam/Hit/Roar/Death, boss VFX vendored; no dungeon or boss script yet) |
 | 10 | Dragon companion: base placement, Earthquake, Fire, summon, mount and flight | not started |
 
@@ -366,3 +366,82 @@ with rage READY (89).
 - No human playtest. Balance numbers (regen, costs, prices, buff strengths) are first passes.
 - Burn marks are mostly covered by the still-burning flames in the 1.2 s frame.
 - Decals also tint characters standing inside them (they project onto render layer 1).
+
+## Recovery milestone 2 (2026-10-20): the seamless open world, Village -> Whisperwood -> Wyrmfall
+Brief "true seamless open world" (overrides the region-gate design of section 8). Wyrmfall
+Vale is no longer a region behind a gate: the courier walks out of Willowmere, up the
+Whisperwood trail and through a pass in the vale's hills to the waterfall, with no gate,
+portal, prompt, loading screen or scene change.
+
+### Architecture
+- **Coordinates:** one world. Willowmere and the Whisperwood annex stay where they were
+  (village.tscn, origin at the plaza). Wyrmfall Vale's origin is
+  `WyrmfallLayout.WORLD_ORIGIN` = (54, 0, -184): it covers x -6..114, z -244..-124, north of
+  the Whisperwood, and its `PASS` meets the wood's north edge at world (14, -124).
+  `ExplorationService.WORLD_RECT` = Rect2(-64, -256, 192, 320) for the map and fog.
+- **Streaming** (`scripts/world/world_streamer.gd`, node `OpenWorld` in village.tscn):
+  `WorldChunk` resources (scene, world rect, always_loaded, biome) grouped in `WorldChunkSet`s
+  that the generators write. Chunks within 70 m of the courier (plus 2 s of its velocity,
+  plus `extra_distance` for future flight; `focus_override` follows another node) load on a
+  background thread and are added one per frame; beyond 110 m they are parked (out of the
+  tree, kept), so felled trees, mined ore and hurt enemies stay as they were; a chunk the
+  courier stands on loads at once; `prepare_at()` before a teleport. Chunk roots carry their
+  own world transform.
+- **Chunks:** `tools/generate_wyrmfall.gd` builds the vale whole and cuts it into four 60 m
+  tiles (`wyrmfall_<x>_<z>`: terrain tile mesh + HeightMapShape3D, skirted at the outer edge,
+  and everything standing on the tile; undergrowth ScatterFields split per instance), the
+  `wyrmfall_core` chunk (water, waterfall, walls, bridge: whole, so the river never breaks)
+  and `wyrmfall_places` (WorldLocations, always loaded for the map). `tools/generate_outlands.gd`
+  builds `outlands` (always loaded, no collision): low wooded hills round the playable areas,
+  sunk under them, so no bare sky shows at the world's edges or between biomes.
+- **Removed:** the Wyrmfall region scene, the village gate and the gate back, the router's
+  `wyrmfall` region / map / recovery. The Runewood Highlands and the Sentinel Vault (Phase 6)
+  are still router regions behind their gateway; interiors are unchanged.
+
+### The seam
+- The vale's southern hills are cut by `PASS` (6 m half width) and its ground comes down to
+  height 0 at the forest edge; walls line the pass; the village's `AnnexNorth` wall has a 9 m
+  gap there; the village terrain mesh ends at z -124 (no hills under the vale).
+- The Whisperwood trail continues north from the Moonstone Clearing (`PASS_TRAIL` in
+  `tools/generate_whisperwood.gd`, splat lane `phase8-pass`); Tree29 and a mushroom cluster
+  of `forest_entrance.tscn` were moved off it. The vale's grass darkens into the forest floor
+  over its southern 20 m (noisy blend), pines and broadleaf trees continue on both sides.
+- A footpath (`FALLS_PATH`) leads from the vale road to a viewpoint below the waterfall.
+
+### Map
+- One world map (`tools/bake_world_map.gd`: the village splats plus the vale's own image at
+  its world position, plain land elsewhere), fog over the whole world rect (older fog grids
+  are remapped, `LEGACY_RECTS`). M opens it centred on the courier's real position; zoom with
+  the zoom keys / wheel, pan with WASD. Region maps (Runewood, vault) keep the rect they were
+  baked for (`WorldRouter.REGION_MAP_RECT`). Punctuation keys show their symbol on drawn
+  keycaps ("=" not "Equal").
+
+### Validation
+- `tests/phase8_open_world_tests.gd` (56): streamer and chunks, no gate or region, a
+  continuous ground profile across the seam (no hole, no step), **the mandatory walk**:
+  held movement keys (8 keyboard directions, running) from the plaza through the forest
+  and the pass to the falls and back. No teleport (largest step 0.14 m in a frame), no
+  region change, the same player and HUD, chunks loaded about 80 m ahead, never below the
+  ground. Also: buff/MP/gold carry over, tool sites stream in, the real E key fells a vale
+  tree, river water for the rod, parked chunks keep a hurt slime and a felled tree, the map.
+  Plus the vale's content checks ported from the removed gated-region suite: terrain tiles
+  match the layout, water/waterfall shaders, baked textures, the bridge carries held keys,
+  bank / pool rim / cliff / boundary / pass walls hold.
+- `weapon_elemental_vfx_tests` now checks the region change with the Runewood and the
+  Earthquake in the streamed vale.
+- Rendered walk (`tests/capture_phase8_open_world.gd` -> `docs/validation/phase8/90..99`):
+  plaza, Whisperwood trail, Moonstone Clearing, approaching the pass, in the pass, the vale
+  road, towards the bridge, at the waterfall (+ zoomed out), world map at the falls and
+  zoomed out. Performance on a GTX 1060 at 1600x900 (`open_world_performance.txt`): 26.7 s
+  walk, average 17.1 ms (59 fps, vsync), 99th percentile 28 ms, worst chunk activation 50 ms.
+
+### Known limits
+- One frame of about 140 ms on the walk is not a chunk activation (those are at most 50 ms);
+  most likely first-use shader compilation of the vale's materials. A shader warm-up (or
+  instancing chunks off the main thread) is the next streaming improvement.
+- The chunk activation itself (add_child of a tile) costs up to ~50 ms on the GPU machine and
+  ~120 ms headless: smaller tiles would spread it.
+- Frostpeak, Ashen Volcano and Sunscorch Desert are not built yet; the outlands fill those
+  directions for now. The Runewood Highlands are still a gated region.
+- No human playtest.
+

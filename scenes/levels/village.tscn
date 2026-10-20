@@ -81,7 +81,10 @@
 [ext_resource type="Script" path="res://scripts/world/house_door.gd" id="p8_house_door"]
 [ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="p8_interactable"]
 [ext_resource type="PackedScene" path="res://assets/models/megakit/buildings/Door_1_Round.gltf" id="p8_door_model"]
-[ext_resource type="PackedScene" path="res://scenes/world/wyrmfall_gate.tscn" id="p8_wyrmfall_gate"]
+[ext_resource type="Script" path="res://scripts/world/world_streamer.gd" id="p8_streamer"]
+[ext_resource type="Resource" path="res://data/world/wyrmfall_chunks.tres" id="p8_wyrmfall_chunks"]
+[ext_resource type="Script" path="res://scripts/world/world_chunk_set.gd" id="p8_chunk_set"]
+[ext_resource type="Resource" path="res://data/world/outlands_chunks.tres" id="p8_outlands_chunks"]
 
 [sub_resource type="Environment" id="Environment_village"]
 background_mode = 1
@@ -193,7 +196,10 @@ size = Vector3(0.5, 4, 168.5)
 size = Vector3(0.5, 4, 80.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_annex_north"]
-size = Vector3(64.5, 4, 0.5)
+size = Vector3(29.75, 4, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_annex_north_east"]
+size = Vector3(25.75, 4, 0.5)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_p8_door"]
 radius = 0.9
@@ -230,7 +236,7 @@ shape = SubResource("BoxShape3D_ground_annex")
 [node name="Terrain" type="MeshInstance3D" parent="."]
 script = ExtResource("60_terrain")
 ground_material = ExtResource("61_ground")
-mesh_rect = Rect2(-80, -144, 160, 224)
+mesh_rect = Rect2(-80, -124, 160, 204)
 flat_rects = Array[Rect2]([Rect2(-44, -44, 88, 88), Rect2(-20, -124, 64, 80)])
 tree_scenes = Array[PackedScene]([ExtResource("70_ctree1"), ExtResource("71_ctree2"), ExtResource("72_ctree3"), ExtResource("73_ctree4"), ExtResource("74_ptree1"), ExtResource("75_ptree2"), ExtResource("76_ptree3")])
 tree_count = 110
@@ -302,13 +308,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 2, -84)
 shape = SubResource("BoxShape3D_annex_west")
 
 [node name="AnnexNorth" type="CollisionShape3D" parent="Boundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 2, -124)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.375, 2, -124)
 shape = SubResource("BoxShape3D_annex_north")
+
+[node name="AnnexNorthEast" type="CollisionShape3D" parent="Boundary"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.375, 2, -124)
+shape = SubResource("BoxShape3D_annex_north_east")
 
 [node name="PostOffice" parent="." instance=ExtResource("8_post")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, -0, 0, 1, -14, 0, -6)
 
 [node name="WhisperwoodForest" parent="." instance=ExtResource("p7_whisperwood")]
+
+[node name="OpenWorld" type="Node3D" parent="."]
+script = ExtResource("p8_streamer")
+chunk_sets = Array[ExtResource("p8_chunk_set")]([ExtResource("p8_outlands_chunks"), ExtResource("p8_wyrmfall_chunks")])
 
 [node name="ForestEntrance" parent="." instance=ExtResource("9_forest")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -90)
@@ -1076,8 +1090,6 @@ notifier = NodePath("../GameplayHUD/QuestNotification")
 destination_target = NodePath("../ForestEntrance/Markers/ForestClearingSpot")
 recipient_target = NodePath("../NPCs/MageElowen")
 knockout_respawn = NodePath("../Markers/PlayerSpawn")
-
-[node name="WyrmfallGate" parent="." instance=ExtResource("p8_wyrmfall_gate")]
 
 [node name="HouseDoors" type="Node3D" parent="."]
 

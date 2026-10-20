@@ -4,19 +4,19 @@ extends Node
 signal region_changed(region_id: StringName)
 const OUTDOOR := "res://scenes/phase6/runewood_outdoors.tscn"
 const DUNGEON := "res://scenes/phase6/sentinel_dungeon.tscn"
-## Phase 8: Wyrmfall Vale, through the gate on the village's south edge (RegionGate).
-const WYRMFALL := "res://scenes/regions/wyrmfall_vale.tscn"
-## Outdoor regions and dungeons (not interiors).
-const REGIONS: Array[StringName] = [&"village", &"runewood", &"sentinel_vault", &"wyrmfall"]
-## Map per region: image (covers ExplorationService.WORLD_RECT), expanded view radius and
-## centre, title, legend shown.
+## Outdoor regions and dungeons (not interiors). Phase 8 open world: Wyrmfall Vale is no
+## longer a region; it is streamed into the village's world by WorldStreamer (OpenWorld).
+const REGIONS: Array[StringName] = [&"village", &"runewood", &"sentinel_vault"]
+## Map per region: image (covers REGION_MAP_RECT), expanded view radius and centre, title,
+## legend shown.
 const REGION_MAPS := {
 	"runewood": ["res://assets/generated/phase6/runewood_map.png", 60.0, Vector2.ZERO, "Runewood Highlands", true],
 	"sentinel_vault": ["res://assets/generated/phase6/vault_map.png", 29.0, Vector2(-8, -7), "Sentinel Vault", false],
-	"wyrmfall": ["res://assets/generated/wyrmfall/wyrmfall_map.png", 60.0, Vector2.ZERO, "Wyrmfall Vale", true],
 }
 ## Where a knockout outside the village sends the courier back to (region -> recovery region).
-const RECOVERY := {"runewood": &"runewood", "sentinel_vault": &"runewood", "wyrmfall": &"wyrmfall"}
+const RECOVERY := {"runewood": &"runewood", "sentinel_vault": &"runewood"}
+## The area the region map images were baked over (the world rect before Phase 8 grew it).
+const REGION_MAP_RECT := Rect2(-64.0, -128.0, 128.0, 192.0)
 const MapModel := preload("res://scripts/phase4_integration_visual/minimap_model.gd")
 const REGION_TOOL_SITES := {"runewood": "res://scenes/world/tools/runewood_tool_sites.tscn"}
 ## Phase 8 interiors: enterable buildings of the village (HouseDoor -> region id). Each is a
@@ -142,8 +142,6 @@ func _cross(next: StringName, spawn: StringName) -> void:
 			text = "Runewood Highlands — follow the ochre road to the northern crypt."
 		elif next == &"sentinel_vault":
 			text = "The Sentinel Vault — the stairs behind you lead out."
-		elif next == &"wyrmfall":
-			text = "Wyrmfall Vale — the road crosses the river to the falls. The gate behind you leads home."
 		elif is_interior(next):
 			var place := String(active_level.get(&"display_name"))
 			text = "%s — the door behind you leads out." % (place.left(1).to_upper() + place.substr(1))
@@ -199,8 +197,6 @@ func is_interior(id: StringName) -> bool:
 func _scene_for(id: StringName) -> String:
 	if INTERIORS.has(String(id)):
 		return INTERIORS[String(id)]
-	if id == &"wyrmfall":
-		return WYRMFALL
 	return OUTDOOR if id == &"runewood" else DUNGEON
 
 
@@ -225,7 +221,7 @@ func _setup_map() -> void:
 	for view: Control in [controller.compact,controller.expanded]:
 		view.set_model(_map_model)
 		view.map_texture = load(map[0])
-		view.map_world_rect = ExplorationService.WORLD_RECT
+		view.map_world_rect = REGION_MAP_RECT
 		view.exploration = ExplorationService.find(get_tree())
 	controller.compact.world_radius = 17.0
 	controller.expanded.world_radius = map[1]
@@ -245,7 +241,7 @@ func _restore_map() -> void:
 			view.set(key,state[key])
 	_map_states.clear()
 	controller.legend.visible = true
-	controller.expanded_hint.text = "Map    [%s] / [%s] Close"%[InputHints.key_for(&"toggle_map"),InputHints.key_for(&"ui_cancel")]
+	controller.expanded_hint.text = controller.world_map_hint()
 
 
 func claim_victory() -> bool:
@@ -286,21 +282,6 @@ func _clear_gateway_trail() -> void:
 			if not node is Node3D or (path=="Props" and not node.name.begins_with("Rock")): continue
 			var p := Vector2(node.global_position.x,node.global_position.z)
 			if p.distance_to(Geometry2D.get_closest_point_to_segment(p,Vector2(18,-22),Vector2(33,-32))) < 2.5 or Rect2(27,-37,12,8).has_point(p):
-				node.visible = false
-				for s: CollisionShape3D in node.find_children("*","CollisionShape3D",true,false): s.set_deferred(&"disabled",true)
-	# Phase 8: the passage through the Wyrmfall gate on the south edge.
-	var gate := get_parent().get_node_or_null("WyrmfallGate") as Node3D
-	if gate == null:
-		return
-	var through := Vector2(gate.global_position.x,gate.global_position.z)
-	var exit := (gate as RegionGate).get_exit_point()
-	for path in ["VillageDressing/Trees","VillageDressing/Details","Trees","Props"]:
-		var holder := get_parent().get_node_or_null(path)
-		if holder == null: continue
-		for node in holder.get_children():
-			if not node is Node3D: continue
-			var p := Vector2(node.global_position.x,node.global_position.z)
-			if p.distance_to(Geometry2D.get_closest_point_to_segment(p,through,Vector2(exit.x,exit.z)+(Vector2(exit.x,exit.z)-through))) < 3.6:
 				node.visible = false
 				for s: CollisionShape3D in node.find_children("*","CollisionShape3D",true,false): s.set_deferred(&"disabled",true)
 

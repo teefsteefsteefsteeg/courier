@@ -145,7 +145,8 @@ func _draw() -> void:
 	else:
 		_draw_grid()
 	if exploration != null and map_world_rect.has_area():
-		_draw_world_texture(exploration.get_fog_texture(), Color.WHITE)
+		# The fog grid always covers the exploration rect (the region maps keep their own).
+		_draw_world_texture(exploration.get_fog_texture(), Color.WHITE, ExplorationService.WORLD_RECT)
 	if exploration != null and show_locations:
 		_draw_locations()
 	if show_route and model != null:
@@ -164,14 +165,15 @@ func _draw() -> void:
 		_draw_north()
 
 
-## Draws a texture that covers map_world_rect, clipped to the map outline (circle or box):
-## the outline polygon with each point's UV taken from its world position.
-func _draw_world_texture(texture: Texture2D, tint: Color) -> void:
+## Draws a texture that covers rect (map_world_rect by default), clipped to the map outline
+## (circle or box): the outline polygon with each point's UV taken from its world position.
+func _draw_world_texture(texture: Texture2D, tint: Color, rect: Rect2 = Rect2()) -> void:
+	var area := rect if rect.has_area() else map_world_rect
 	var outline := projection.get_outline(1.0)
 	var uvs := PackedVector2Array()
 	for point in outline:
 		var world := projection.map_to_world(point)
-		uvs.append((Vector2(world.x, world.z) - map_world_rect.position) / map_world_rect.size)
+		uvs.append((Vector2(world.x, world.z) - area.position) / area.size)
 	draw_polygon(outline, PackedColorArray([tint]), uvs, texture)
 
 

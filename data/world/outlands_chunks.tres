@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WorldChunkSet" format=3]
+
+[ext_resource type="Script" path="res://scripts/world/world_chunk.gd" id="1_3dnbq"]
+[ext_resource type="Script" path="res://scripts/world/world_chunk_set.gd" id="2_2t1vo"]
+
+[sub_resource type="Resource" id="Resource_ugluw"]
+script = ExtResource("1_3dnbq")
+chunk_id = &"outlands"
+scene_path = "res://scenes/world/chunks/outlands/outlands.tscn"
+bounds = Rect2(-112, -300, 288, 410)
+always_loaded = true
+biome = &"outlands"
+
+[resource]
+script = ExtResource("2_2t1vo")
+biome = &"outlands"
+chunks = Array[ExtResource("1_3dnbq")]([SubResource("Resource_ugluw")])

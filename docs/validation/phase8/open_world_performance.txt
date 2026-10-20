@@ -1,0 +1,5 @@
+Open world walk, plaza -> Whisperwood -> pass -> Wyrmfall falls (GPU, NVIDIA GeForce GTX 1060 6GB, (1600, 900))
+walk time 26.7 s, 1491 frames
+frame time: average 17.07 ms (59 fps), 99th percentile 28.05 ms, worst 141.78 ms
+streaming: 7 chunk activations, worst activation 49.7 ms, last 4.2 ms
+active chunks at the falls: [&"outlands", &"wyrmfall_0_0", &"wyrmfall_1_0", &"wyrmfall_0_1", &"wyrmfall_1_1", &"wyrmfall_core", &"wyrmfall_places"]

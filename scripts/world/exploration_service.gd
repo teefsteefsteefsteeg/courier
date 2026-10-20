@@ -15,11 +15,13 @@ signal portal_activated(portal_id: StringName)
 signal explored_changed
 
 const GROUP := &"exploration_service"
-## World X/Z area the map and fog cover: the village terrain (128 m across) plus, since Phase 7,
-## the Whisperwood annex to the north (z down to -128).
-const WORLD_RECT := Rect2(-64.0, -128.0, 128.0, 192.0)
-## The area saves before Phase 7 covered; their fog grids are remapped into WORLD_RECT.
-const LEGACY_RECT := Rect2(-64.0, -64.0, 128.0, 128.0)
+## World X/Z area the map and fog cover: the one open world. The village terrain (128 m
+## across), since Phase 7 the Whisperwood annex to the north, and since Phase 8 Wyrmfall Vale
+## beyond it (WyrmfallLayout.WORLD_ORIGIN +- 60 m: x -6..114, z -244..-124).
+const WORLD_RECT := Rect2(-64.0, -256.0, 192.0, 320.0)
+## Areas older saves covered (before Phase 7, before Phase 8); their fog grids are remapped
+## cell for cell into WORLD_RECT.
+const LEGACY_RECTS: Array[Rect2] = [Rect2(-64.0, -64.0, 128.0, 128.0), Rect2(-64.0, -128.0, 128.0, 192.0)]
 const CELL_SIZE := 2.0
 const SCAN_INTERVAL := 0.2
 ## Fog texel colours: unexplored parchment-dark, explored clear.
@@ -253,7 +255,7 @@ func set_region(next: StringName) -> void:
 	explored_changed.emit()
 
 
-## Decodes a saved fog grid. Grids saved over LEGACY_RECT (before Phase 7 grew the world) are
+## Decodes a saved fog grid. Grids saved over one of LEGACY_RECTS (before the world grew) are
 ## remapped cell for cell into WORLD_RECT, so explored areas survive the change. Returns an
 ## empty array for anything unreadable.
 func _decode_cells(encoded: String) -> PackedByteArray:
@@ -265,10 +267,16 @@ func _decode_cells(encoded: String) -> PackedByteArray:
 	var cells := raw.decompress_dynamic(-1, FileAccess.COMPRESSION_DEFLATE)
 	if cells.size() == _grid.x * _grid.y:
 		return cells
-	var legacy := Vector2i(ceili(LEGACY_RECT.size.x / CELL_SIZE), ceili(LEGACY_RECT.size.y / CELL_SIZE))
-	if cells.size() != legacy.x * legacy.y:
+	var source := Rect2()
+	var legacy := Vector2i.ZERO
+	for rect in LEGACY_RECTS:
+		var grid := Vector2i(ceili(rect.size.x / CELL_SIZE), ceili(rect.size.y / CELL_SIZE))
+		if cells.size() == grid.x * grid.y:
+			source = rect
+			legacy = grid
+	if legacy == Vector2i.ZERO:
 		return PackedByteArray()
-	var offset := Vector2i(((LEGACY_RECT.position - WORLD_RECT.position) / CELL_SIZE).round())
+	var offset := Vector2i(((source.position - WORLD_RECT.position) / CELL_SIZE).round())
 	var out := PackedByteArray()
 	out.resize(_grid.x * _grid.y)
 	out.fill(0)

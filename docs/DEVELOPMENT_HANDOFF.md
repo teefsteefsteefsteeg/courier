@@ -12,12 +12,21 @@ then the dragon companion, then the new biomes, each validated with screenshots.
   inventory view, provisions slots 6-0. Suite `phase8_vitals_tests` (115/0); all other suites
   pass after updating expectations the features changed (sword +4/+5 scorch effect, Q cycles
   three inventory views, Toolwright's stall found by path, HP regen off in the vault HP check).
-- **In progress (uncommitted): seamless open world.** `WorldStreamer` / `WorldChunk` /
-  `WorldChunkSet` (`scripts/world/`), Wyrmfall moved to `WyrmfallLayout.WORLD_ORIGIN`
-  (54, 0, -184) with a pass in its south hills, and `tools/generate_wyrmfall.gd` now writes
-  chunks (`scenes/world/chunks/wyrmfall/`, `data/world/wyrmfall_chunks.tres`). Still to do:
-  streamer in `village.tscn`, Whisperwood trail and boundary opening to the pass, router /
-  gate removal, one world map and fog rect, tests and captures.
+- **Recovery milestone 2 (seamless open world) is done and committed** (`docs/PHASE8.md`
+  "Recovery milestone 2"): Wyrmfall Vale streamed into the one world north of the
+  Whisperwood (no gate, no region, no loading screen), `WorldStreamer` / `WorldChunk` /
+  `WorldChunkSet`, generated chunks and outlands, one world map with zoom and pan.
+  `phase8_open_world_tests` 56/0 (twice in a row), every other suite passes, clean boot,
+  rendered walk 90..99 with performance numbers.
+- **Master brief of 2026-10-20 (Kaiizen -> Personal handover), in progress:** Part 1 elemental
+  identities per item id (user decision: Steel Sword = Lightning, Iron Sword = Water, Wooden
+  Sword = Nature, Hunting Bow = Fire, Battle Axe = Earth, Magic Staff = Arcane) with new +5
+  ultimates (Storm Wrath, Tidal Slash, Thorn Bloom, Inferno Arrow; Earthquake and Arcane
+  Storm stay) and staff spells Magic Wave (Z) / Mana Shield (X); Part 2 ranges tuned to the
+  camera (default zoom shows ~25 m across, ~24 m deep: major impacts within ~10 m); Part 4
+  a Quest Items inventory category. Drafts on disk, not wired yet: `scripts/vfx/arc_web.gd`,
+  `scripts/combat/staff_spells.gd`. Then: dungeon + dragon boss, dragon companion and
+  flight, the new biomes. The brief text the user pasted was cut off in Part 7.
 - **Another Claude session works in this worktree at the same time** (elemental VFX
   showcases: `scripts/vfx/{tempest_lightning,pyre_fire,nine_heavens_storm,elemental_showcase*}.gd`,
   `scenes/vfx/`, `tests/render_*`, `docs/validation/{lightning,fire,elemental}-demo*/`,

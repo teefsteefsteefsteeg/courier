@@ -26,9 +26,15 @@ const REFRESH_INTERVAL := 0.2
 const NPC_SCAN_INTERVAL := 1.0
 const Legend = preload("res://scripts/phase4_integration_visual/map_legend.gd")
 const WORLD_MAP := preload("res://assets/textures/map/world_map.png")
-## Full map framing: world X/Z centre and half-extent (village and Whisperwood).
-const FULL_MAP_CENTER := Vector2(0.0, -4.0)
-const FULL_MAP_RADIUS := 50.0
+## Full map framing: world X/Z centre and half-extent of the whole open world
+## (ExplorationService.WORLD_RECT: Willowmere, the Whisperwood and Wyrmfall Vale).
+const FULL_MAP_CENTER := Vector2(32.0, -96.0)
+const FULL_MAP_RADIUS := 165.0
+## Phase 8 world map: it opens centred on the courier at OPEN_RADIUS; zoom (zoom_in /
+## zoom_out: mouse wheel, = -) between MIN_RADIUS and FULL_MAP_RADIUS, pan with the move keys.
+const OPEN_RADIUS := 75.0
+const MIN_RADIUS := 25.0
+const PAN_SPEED := 1.2
 
 var model = Model.new()
 var compact: Control
@@ -54,7 +60,7 @@ func _ready():
 	expanded = View.new(); expanded.circular=false; expanded.show_labels=true; expanded.custom_minimum_size=Vector2(620,620); expanded.set_model(model); add_child(expanded)
 	expanded.anchor_left=.5; expanded.anchor_right=.5; expanded.anchor_top=.5; expanded.anchor_bottom=.5; expanded.offset_left=-310; expanded.offset_right=310; expanded.offset_top=-310; expanded.offset_bottom=310; expanded.visible=false
 	expanded_hint = Label.new()
-	expanded_hint.text = "Map    [%s] / [%s] Close" % [InputHints.key_for(&"toggle_map"), InputHints.key_for(&"ui_cancel")]
+	expanded_hint.text = world_map_hint()
 	expanded_hint.add_theme_font_size_override(&"font_size", 16)
 	expanded_hint.add_theme_color_override(&"font_outline_color", Color(0.03, 0.04, 0.06))
 	expanded_hint.add_theme_constant_override(&"outline_size", 6)
@@ -104,6 +110,11 @@ func _process(delta):
 		_refresh_left = REFRESH_INTERVAL
 		refresh_objective()
 	for n in get_tree().get_nodes_in_group(&"phase4_encounter_enemy"): model.set_marker(Model.id_for_node(n,"enemy"),Model.KIND_ENEMY,n)
+	if is_expanded() and _is_overworld():
+		var pan := Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
+		if pan != Vector2.ZERO:
+			var rect := ExplorationService.WORLD_RECT
+			expanded.fixed_center = (expanded.fixed_center + pan * expanded.world_radius * PAN_SPEED * delta).clamp(rect.position, rect.end)
 
 
 ## The map key is M (Phase 8 revision; Tab before it). The map reads it here, before a
@@ -112,6 +123,27 @@ func _process(delta):
 func _input(e):
 	if e.is_action_pressed(&"toggle_map") and toggle_expanded():
 		get_viewport().set_input_as_handled()
+	elif is_expanded() and _is_overworld() and (e.is_action_pressed(&"zoom_in") or e.is_action_pressed(&"zoom_out")):
+		zoom_map(0.8 if e.is_action_pressed(&"zoom_in") else 1.25)
+		get_viewport().set_input_as_handled()
+
+
+## The hint line of the world map (keys from the InputMap).
+static func world_map_hint() -> String:
+	return "World Map    [%s] [%s] Zoom    [%s] [%s] [%s] [%s] Pan    [%s] / [%s] Close" % [InputHints.key_for(&"zoom_in"), InputHints.key_for(&"zoom_out"),
+			InputHints.key_for(&"move_forward"), InputHints.key_for(&"move_left"), InputHints.key_for(&"move_back"), InputHints.key_for(&"move_right"),
+			InputHints.key_for(&"toggle_map"), InputHints.key_for(&"ui_cancel")]
+
+
+## Zooms the open world map by factor (below 1 = closer).
+func zoom_map(factor: float) -> void:
+	expanded.world_radius = clampf(expanded.world_radius * factor, MIN_RADIUS, FULL_MAP_RADIUS)
+
+
+## True in the open world (not inside a separate region such as the Runewood or a house).
+func _is_overworld() -> bool:
+	var router := get_tree().get_first_node_in_group(&"phase6_router")
+	return router == null or router.get(&"region_id") == &"village"
 
 
 func _unhandled_input(e):
@@ -136,6 +168,11 @@ func set_expanded(value: bool) -> bool:
 	if value and _other_modal_open():
 		return false
 	expanded.visible = value
+	if value and _is_overworld():
+		# The world map opens on the courier's real position.
+		var courier := get_tree().get_first_node_in_group(&"combat_player") as Node3D
+		expanded.fixed_center = Vector2(courier.global_position.x, courier.global_position.z) if courier != null else FULL_MAP_CENTER
+		expanded.world_radius = OPEN_RADIUS
 	if value:
 		add_to_group(MODAL_GROUP)
 		_player = get_tree().get_first_node_in_group(&"combat_player")

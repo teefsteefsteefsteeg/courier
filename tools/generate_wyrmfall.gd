@@ -1,9 +1,19 @@
 extends SceneTree
-## Phase 8: builds Wyrmfall Vale, the region reached through the gate on Willowmere's
-## south edge (WorldRouter region `wyrmfall`), from scripts/world/wyrmfall_layout.gd:
-##   res://scenes/regions/wyrmfall_vale.tscn   the region (root at the world origin)
-##   res://scenes/world/wyrmfall_gate.tscn     the village's gate to it (village.tscn places it)
-##   res://assets/generated/wyrmfall/          terrain mesh and height collision, newmap
+## Phase 8: builds Wyrmfall Vale from scripts/world/wyrmfall_layout.gd as part of the one
+## continuous open world (no gate, no region scene): the vale lies north of the Whisperwood,
+## its origin at WyrmfallLayout.WORLD_ORIGIN, and the forest trail walks into it through a
+## pass in its southern hills. The vale is built whole in vale space, then cut into
+## streamable chunks (WorldStreamer):
+##   res://scenes/world/chunks/wyrmfall/wyrmfall_<x>_<z>.tscn  four 60 x 60 m tiles: terrain
+##       tile (mesh and HeightMapShape3D, skirted at the vale's outer edge) and everything
+##       standing on it (trees, rocks, props, undergrowth instances, camp and ruin pieces,
+##       lamps, tool sites, creatures)
+##   res://scenes/world/chunks/wyrmfall/wyrmfall_core.tscn    water, waterfall, walls and the
+##       bridge, kept whole so the river never breaks at a tile edge
+##   res://scenes/world/chunks/wyrmfall/wyrmfall_places.tscn  the vale's WorldLocations (always
+##       loaded, for the map and discovery)
+##   res://data/world/wyrmfall_chunks.tres                    the WorldChunkSet listing them
+##   res://assets/generated/wyrmfall/          terrain tiles and height collision, newmap
 ##                                             meshes (with opaque materials), the map image
 ## Contents of the region:
 ##   Terrain       flat-shaded height field (vertex colours: grass, road, banks, cliff rock)
@@ -20,18 +30,21 @@ extends SceneTree
 ##                 undergrowth (ScatterField)
 ##   ToolSites     two trees, two ore rocks and soft soil (region-prefixed target ids)
 ##   Creatures     forest slimes on the far bank
-##   Spawns, Gate  Arrival marker, the gate back to Willowmere (RegionGate), WorldLocations
+##   Pass, Places  the pass from the Whisperwood (signpost), Arrival marker, WorldLocations
 ## Change this generator, not the scenes:
 ##   godot --headless --path . --script res://tools/generate_wyrmfall.gd
 
 const L := preload("res://scripts/world/wyrmfall_layout.gd")
-const OUT := "res://scenes/regions/wyrmfall_vale.tscn"
-const GATE_OUT := "res://scenes/world/wyrmfall_gate.tscn"
+const CHUNK_DIR := "res://scenes/world/chunks/wyrmfall/"
+const CHUNK_SET := "res://data/world/wyrmfall_chunks.tres"
+## Tile edge (m): the vale (2 x HALF across) is cut into 2 x 2 tiles.
+const TILE := 60
+## Kept whole in the core chunk / always-loaded places chunk.
+const CORE_NODES := ["Water", "Waterfall", "Walls", "OldStoneBridge"]
+const PLACE_NODES := ["Locations", "Spawns"]
 const GEN := "res://assets/generated/wyrmfall/"
 const NEWMAP := "res://assets/newmap/FreeVersion/AllModelsInOne/AllAssets_with_texture.glb"
 const NATURE := "res://assets/models/quaternius/ultimate_nature/"
-const REGION_SCRIPT := preload("res://scripts/world/wyrmfall_vale.gd")
-const GATE_SCRIPT := preload("res://scripts/world/region_gate.gd")
 const INTERACTABLE := preload("res://scripts/interaction/interactable.gd")
 const LOCATION := preload("res://scripts/world/world_location.gd")
 const OCCLUDER := preload("res://scripts/world/camera_occluder.gd")
@@ -50,7 +63,6 @@ const FISH := ["res://data/materials/pond_perch.tres", "res://data/materials/sil
 const ROCKS := ["res://scenes/props/nature/rock_moss_2.tscn", "res://scenes/props/nature/rock_2.tscn", "res://scenes/props/nature/rock_3.tscn"]
 
 ## Where the village's gate stands (south edge of Willowmere) and its passage direction.
-const VILLAGE_GATE := Vector3(3.0, 0.0, 41.2)
 
 ## model, weight, scale min, scale max, trunk radius
 const TREES := [
@@ -87,14 +99,13 @@ func _initialize() -> void:
 func _run() -> void:
 	rng.seed = L.SEED
 	DirAccess.make_dir_recursive_absolute(GEN + "newmap")
-	DirAccess.make_dir_recursive_absolute(OUT.get_base_dir())
+	DirAccess.make_dir_recursive_absolute(CHUNK_DIR)
+	DirAccess.make_dir_recursive_absolute(CHUNK_SET.get_base_dir())
 	_sample_heights()
 	_extract_newmap()
 
 	root_node = Node3D.new()
 	root_node.name = "WyrmfallVale"
-	root_node.set_script(REGION_SCRIPT)
-	_environment()
 	_terrain()
 	_water()
 	_waterfall()
@@ -102,7 +113,7 @@ func _run() -> void:
 	_bridge()
 	_camp()
 	_ruins()
-	_gate_back()
+	_pass()
 	_tool_sites()
 	_locations()
 	_creatures()
@@ -110,11 +121,9 @@ func _run() -> void:
 	_trees()
 	_props()
 	_undergrowth()
-	_save(root_node, OUT)
 	print("wyrmfall: %d trees, %d obstacles" % [root_node.get_node("Trees").get_child_count(), obstacles.size()])
+	_split_and_save()
 	root_node.free()
-
-	_village_gate()
 	_map_image()
 	quit()
 
@@ -257,77 +266,94 @@ func _newmap_prop(parent: Node, node_name: String, key: String, p: Vector2, yaw:
 
 # --- environment ---------------------------------------------------------------
 
-func _environment() -> void:
-	var world := WorldEnvironment.new()
-	world.name = "WorldEnvironment"
-	var env := Environment.new()
-	env.background_mode = Environment.BG_SKY
-	var sky := Sky.new()
-	var sky_material := ProceduralSkyMaterial.new()
-	sky_material.sky_top_color = Color(0.32, 0.55, 0.82)
-	sky_material.sky_horizon_color = Color(0.72, 0.82, 0.88)
-	sky_material.ground_horizon_color = Color(0.62, 0.7, 0.68)
-	sky_material.ground_bottom_color = Color(0.3, 0.36, 0.3)
-	sky.sky_material = sky_material
-	env.sky = sky
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.75
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.ssao_enabled = true
-	env.ssao_radius = 1.1
-	env.ssao_intensity = 1.1
-	env.glow_enabled = true
-	env.glow_intensity = 0.35
-	world.environment = env
-	root_node.add_child(world)
-	var sun := DirectionalLight3D.new()
-	sun.name = "Sun"
-	sun.rotation_degrees = Vector3(-52.0, 28.0, 0.0)
-	sun.light_color = Color(1.0, 0.95, 0.86)
-	sun.light_energy = 1.15
-	sun.shadow_enabled = true
-	sun.directional_shadow_max_distance = 70.0
-	root_node.add_child(sun)
-
-
 # --- terrain -------------------------------------------------------------------
 
+## The terrain as TILE x TILE m tiles (mesh and HeightMapShape3D each, same samples and the
+## same triangle split as the collision), skirted down where a tile meets the vale's outer
+## edge so the edge reads as solid ground from the neighbouring biome.
 func _terrain() -> void:
-	var st := SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for zi in L.GRID - 1:
-		for xi in L.GRID - 1:
-			var p00 := Vector3(xi - L.HALF, _h(xi, zi), zi - L.HALF)
-			var p10 := Vector3(xi + 1 - L.HALF, _h(xi + 1, zi), zi - L.HALF)
-			var p01 := Vector3(xi - L.HALF, _h(xi, zi + 1), zi + 1 - L.HALF)
-			var p11 := Vector3(xi + 1 - L.HALF, _h(xi + 1, zi + 1), zi + 1 - L.HALF)
-			# Same split as HeightMapShape3D (p00-p11 diagonal).
-			_triangle(st, p00, p10, p11)
-			_triangle(st, p00, p11, p01)
-	var mesh := st.commit()
 	var material := StandardMaterial3D.new()
 	material.vertex_color_use_as_albedo = true
 	material.vertex_color_is_srgb = true
 	material.roughness = 0.95
-	mesh.surface_set_material(0, material)
-	ResourceSaver.save(mesh, GEN + "terrain_mesh.res")
-	var terrain := MeshInstance3D.new()
-	terrain.name = "Terrain"
-	terrain.mesh = load(GEN + "terrain_mesh.res")
-	root_node.add_child(terrain)
+	var tiles := (L.GRID - 1) / TILE
+	for tz in tiles:
+		for tx in tiles:
+			var st := SurfaceTool.new()
+			st.begin(Mesh.PRIMITIVE_TRIANGLES)
+			for zi in range(tz * TILE, (tz + 1) * TILE):
+				for xi in range(tx * TILE, (tx + 1) * TILE):
+					var p00 := Vector3(xi - L.HALF, _h(xi, zi), zi - L.HALF)
+					var p10 := Vector3(xi + 1 - L.HALF, _h(xi + 1, zi), zi - L.HALF)
+					var p01 := Vector3(xi - L.HALF, _h(xi, zi + 1), zi + 1 - L.HALF)
+					var p11 := Vector3(xi + 1 - L.HALF, _h(xi + 1, zi + 1), zi + 1 - L.HALF)
+					# Same split as HeightMapShape3D (p00-p11 diagonal).
+					_triangle(st, p00, p10, p11)
+					_triangle(st, p00, p11, p01)
+			_skirts(st, tx, tz, tiles)
+			var mesh := st.commit()
+			mesh.surface_set_material(0, material)
+			var mesh_path := GEN + "terrain_%d_%d.res" % [tx, tz]
+			ResourceSaver.save(mesh, mesh_path)
+			var terrain := MeshInstance3D.new()
+			terrain.name = "Terrain_%d_%d" % [tx, tz]
+			terrain.mesh = load(mesh_path)
+			root_node.add_child(terrain)
+			var data := PackedFloat32Array()
+			for zi in range(tz * TILE, (tz + 1) * TILE + 1):
+				for xi in range(tx * TILE, (tx + 1) * TILE + 1):
+					data.append(_h(xi, zi))
+			var shape := HeightMapShape3D.new()
+			shape.map_width = TILE + 1
+			shape.map_depth = TILE + 1
+			shape.map_data = data
+			var shape_path := GEN + "terrain_shape_%d_%d.res" % [tx, tz]
+			ResourceSaver.save(shape, shape_path)
+			var body := StaticBody3D.new()
+			body.name = "TerrainCollision_%d_%d" % [tx, tz]
+			body.position = Vector3(tx * TILE + TILE * 0.5 - L.HALF, 0.0, tz * TILE + TILE * 0.5 - L.HALF)
+			var collision := CollisionShape3D.new()
+			collision.name = "HeightField"
+			collision.shape = load(shape_path)
+			body.add_child(collision)
+			root_node.add_child(body)
 
-	var shape := HeightMapShape3D.new()
-	shape.map_width = L.GRID
-	shape.map_depth = L.GRID
-	shape.map_data = heights
-	ResourceSaver.save(shape, GEN + "terrain_shape.res")
-	var body := StaticBody3D.new()
-	body.name = "TerrainCollision"
-	var collision := CollisionShape3D.new()
-	collision.name = "HeightField"
-	collision.shape = load(GEN + "terrain_shape.res")
-	body.add_child(collision)
-	root_node.add_child(body)
+
+## Earth-coloured walls from the terrain edge down to below the neighbouring ground, on the
+## sides of tile (tx, tz) that are the vale's outer edge.
+func _skirts(st: SurfaceTool, tx: int, tz: int, tiles: int) -> void:
+	var bottom := -6.0
+	var earth := Color(0.38, 0.31, 0.24)
+	var sides: Array = []
+	if tz == 0:
+		sides.append([Vector2i(1, 0), 0, Vector2(0, -1)])
+	if tz == tiles - 1:
+		sides.append([Vector2i(1, 0), L.GRID - 1, Vector2(0, 1)])
+	if tx == 0:
+		sides.append([Vector2i(0, 1), 0, Vector2(-1, 0)])
+	if tx == tiles - 1:
+		sides.append([Vector2i(0, 1), L.GRID - 1, Vector2(1, 0)])
+	for side: Array in sides:
+		var along: Vector2i = side[0]
+		var fixed: int = side[1]
+		var out: Vector2 = side[2]
+		var start := tx * TILE if along.x == 1 else tz * TILE
+		for i in range(start, start + TILE):
+			var a := Vector2i(i, fixed) if along.x == 1 else Vector2i(fixed, i)
+			var b := a + along
+			var top_a := Vector3(a.x - L.HALF, _h(a.x, a.y), a.y - L.HALF)
+			var top_b := Vector3(b.x - L.HALF, _h(b.x, b.y), b.y - L.HALF)
+			var low_a := Vector3(top_a.x, bottom, top_a.z)
+			var low_b := Vector3(top_b.x, bottom, top_b.z)
+			var normal := Vector3(out.x, 0.0, out.y)
+			st.set_normal(normal)
+			st.set_color(earth)
+			# Wind the quad so its front faces outward.
+			var quad := [top_a, top_b, low_b, top_a, low_b, low_a]
+			if (top_b - top_a).cross(low_a - top_a).dot(normal) < 0.0:
+				quad = [top_a, low_b, top_b, top_a, low_a, low_b]
+			for v: Vector3 in quad:
+				st.add_vertex(v)
 
 
 func _triangle(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3) -> void:
@@ -355,6 +381,10 @@ func _ground_color(p: Vector3, normal: Vector3) -> Color:
 		color = Color(0.34, 0.5, 0.27).lerp(Color(0.44, 0.56, 0.3), n * 0.5 + 0.5)
 	if maxf(absf(p.x), absf(p.z)) > L.BOUNDARY:
 		color = color.lerp(Color(0.33, 0.45, 0.27), 0.5)
+	# Open world: towards the south edge the grass darkens into the Whisperwood's floor, with
+	# a wavy (noise) blend so the seam is no straight line.
+	var forest := smoothstep(38.0, L.HALF, p.z + n * 6.0)
+	color = color.lerp(Color(0.25, 0.36, 0.19).lerp(Color(0.33, 0.4, 0.22), n * 0.5 + 0.5), forest * 0.85)
 	var road := L.road_distance(flat)
 	if road < 0.0:
 		color = Color(0.6, 0.48, 0.33).lerp(Color(0.66, 0.55, 0.38), n * 0.5 + 0.5)
@@ -708,6 +738,15 @@ func _walls() -> void:
 	var b := L.BOUNDARY
 	var corners := [Vector2(-b, -b), Vector2(b, -b), Vector2(b, b), Vector2(-b, b), Vector2(-b, -b)]
 	for i in 4:
+		if i == 2:
+			# South edge: open where the pass comes in from the Whisperwood, with walls
+			# along the pass to the vale's edge.
+			var pass_x: float = (L.PASS[0] as Vector2).x
+			_wall(faces, corners[2], Vector2(pass_x + L.PASS_OPEN, b), low, high)
+			_wall(faces, Vector2(pass_x - L.PASS_OPEN, b), corners[3], low, high)
+			for x in [pass_x - L.PASS_OPEN, pass_x + L.PASS_OPEN]:
+				_wall(faces, Vector2(x, b), Vector2(x, L.HALF), low, high)
+			continue
 		_wall(faces, corners[i], corners[i + 1], low, high)
 	# Foot of the cliff (the plateau is scenery).
 	_wall(faces, Vector2(-b, L.CLIFF_BASE_Z + 0.7), Vector2(b, L.CLIFF_BASE_Z + 0.7), low, high)
@@ -943,28 +982,13 @@ func _ruins() -> void:
 	obstacles.append([c, 7.5])
 
 
-func _gate_back() -> void:
-	var gate := Node3D.new()
-	gate.set_script(GATE_SCRIPT)
-	gate.name = "ReturnGate"
-	var towards := (L.ARRIVAL - L.RETURN_GATE).normalized()
-	# The gate's passage runs along its Z; the Interactable stands on the vale's side.
-	gate.transform = Transform3D(Basis(Vector3.UP, atan2(towards.x, towards.y)), _at(L.RETURN_GATE))
-	gate.set(&"target_region", &"village")
-	gate.set(&"spawn", &"")
-	gate.set(&"place_name", "Willowmere")
-	var model := (load(GATE_MODEL) as PackedScene).instantiate()
-	model.name = "Model"
-	gate.add_child(model)
-	var area := _interactable("Interactable", 0.95)
-	area.position = Vector3(0, 0.8, 1.6)
-	gate.add_child(area)
-	root_node.add_child(gate)
+## The pass from the Whisperwood: a signpost pointing home, and the Arrival marker (where
+## a test or fast travel puts the courier in the vale).
+func _pass() -> void:
 	var sign_post := (load(SIGNPOST) as PackedScene).instantiate() as Node3D
 	sign_post.name = "WillowmereSign"
 	sign_post.set(&"text", "Willowmere")
-	var p := L.RETURN_GATE + towards * 2.2 + Vector2(-towards.y, towards.x) * 3.4
-	sign_post.transform = Transform3D(Basis(Vector3.UP, atan2(towards.x, towards.y)), _at(p))
+	sign_post.transform = Transform3D(Basis(Vector3.UP, PI), _at(Vector2(-36.0, 50.5)))
 	root_node.add_child(sign_post)
 	var spawns := Node3D.new()
 	spawns.name = "Spawns"
@@ -973,7 +997,8 @@ func _gate_back() -> void:
 	arrival.name = "Arrival"
 	arrival.position = _at(L.ARRIVAL, 0.1)
 	spawns.add_child(arrival)
-	obstacles.append([L.RETURN_GATE, 5.0])
+	for point: Vector2 in L.PASS:
+		obstacles.append([point, 6.5])
 	obstacles.append([L.ARRIVAL, 4.0])
 
 
@@ -1006,7 +1031,7 @@ func _locations() -> void:
 	var bridge := L.bridge_point()
 	# id, name, subtitle, kind, position, discover radius, hidden
 	var entries := [
-		[&"wyrmfall_gate", "Willowmere Gate", "The road home", WorldLocation.Kind.PORTAL, L.RETURN_GATE, 8.0, false],
+		[&"wyrmfall_pass", "Wyrmfall Pass", "The trail from the Whisperwood", WorldLocation.Kind.CLEARING, Vector2(-40.0, 50.0), 9.0, false],
 		[&"wyrmfall_falls", "Wyrmfall", "The great falls and their pool", WorldLocation.Kind.CLEARING, L.POOL_CENTRE + Vector2(0, 3), 12.0, true],
 		[&"wyrmfall_bridge", "Old Stone Bridge", "Over the Wyrm River", WorldLocation.Kind.CLEARING, bridge, 8.0, true],
 		[&"wyrmfall_ruins", "Drakeward Ruins", "Walls older than Willowmere", WorldLocation.Kind.CLEARING, L.RUINS_CENTRE, 9.0, true],
@@ -1024,7 +1049,8 @@ func _locations() -> void:
 		marker.set(&"kind", entry[3])
 		marker.set(&"discover_radius", entry[5])
 		marker.set(&"hidden_until_discovered", entry[6])
-		marker.set(&"region_id", &"wyrmfall")
+		# Open world: the vale is part of the overworld (one map, one fog of war).
+		marker.set(&"region_id", &"village")
 		places.add_child(marker)
 
 
@@ -1257,50 +1283,121 @@ func _undergrowth() -> void:
 		group.add_child(field)
 
 
-# --- the village's gate --------------------------------------------------------
+# --- chunks --------------------------------------------------------------------
 
-func _village_gate() -> void:
-	var gate := Node3D.new()
-	gate.set_script(GATE_SCRIPT)
-	gate.name = "WyrmfallGate"
-	# Faces north (the village): the passage runs north-south.
-	gate.transform = Transform3D(Basis(Vector3.UP, PI), VILLAGE_GATE)
-	gate.set(&"target_region", &"wyrmfall")
-	gate.set(&"spawn", &"Arrival")
-	gate.set(&"place_name", "Wyrmfall Vale")
-	var model := (load(GATE_MODEL) as PackedScene).instantiate()
-	model.name = "Model"
-	gate.add_child(model)
-	var area := _interactable("Interactable", 0.95)
-	area.position = Vector3(0, 0.8, 1.4)
-	gate.add_child(area)
-	var exit := Marker3D.new()
-	exit.name = "Exit"
-	exit.position = Vector3(0, 0.1, 2.6)
-	gate.add_child(exit)
-	var sign_post := (load(SIGNPOST) as PackedScene).instantiate() as Node3D
-	sign_post.name = "Sign"
-	sign_post.set(&"text", "Wyrmfall Vale")
-	sign_post.position = Vector3(3.6, 0, 1.8)
-	gate.add_child(sign_post)
-	var marker := Marker3D.new()
-	marker.set_script(LOCATION)
-	marker.name = "wyrmfall_road"
-	marker.position = Vector3(0, 0, 2.0)
-	marker.set(&"location_id", &"wyrmfall_road")
-	marker.set(&"display_name", "Road to Wyrmfall")
-	marker.set(&"kind", WorldLocation.Kind.PORTAL)
-	marker.set(&"discover_radius", 8.0)
-	gate.add_child(marker)
-	_save(gate, GATE_OUT)
-	gate.free()
+## Cuts the built vale into its streamed chunks and saves them with the chunk set.
+func _split_and_save() -> void:
+	var tiles := {}
+	var count := (L.GRID - 1) / TILE
+	for tz in count:
+		for tx in count:
+			tiles[Vector2i(tx, tz)] = _chunk_root("wyrmfall_%d_%d" % [tx, tz])
+	var core := _chunk_root("wyrmfall_core")
+	var places := _chunk_root("wyrmfall_places")
+	for child in root_node.get_children():
+		var child_name := String(child.name)
+		if child_name in CORE_NODES:
+			_move(child, core)
+		elif child_name in PLACE_NODES:
+			_move(child, places)
+		elif child_name.begins_with("Terrain"):
+			var parts := child_name.split("_")
+			_move(child, tiles[Vector2i(int(parts[1]), int(parts[2]))])
+		elif _is_group(child):
+			# A plain group: each member goes to the tile it stands on, in a group of the
+			# same name there. Scatter fields are split by instance.
+			for member in child.get_children():
+				if member is ScatterField:
+					_split_scatter(member as ScatterField, child_name, tiles)
+				else:
+					_move(member, _group_in(tiles[_tile_of(member as Node3D)], child_name))
+		else:
+			_move(child, tiles[_tile_of(child as Node3D)])
+	var chunk_set := WorldChunkSet.new()
+	chunk_set.biome = &"wyrmfall"
+	var whole := Rect2(L.WORLD_ORIGIN.x - L.HALF, L.WORLD_ORIGIN.z - L.HALF, L.HALF * 2.0, L.HALF * 2.0)
+	for tile: Vector2i in tiles:
+		var bounds := Rect2(L.WORLD_ORIGIN.x - L.HALF + tile.x * TILE, L.WORLD_ORIGIN.z - L.HALF + tile.y * TILE, TILE, TILE)
+		chunk_set.chunks.append(_save_chunk(tiles[tile], bounds, false))
+	chunk_set.chunks.append(_save_chunk(core, whole, false))
+	chunk_set.chunks.append(_save_chunk(places, whole, true))
+	var err := ResourceSaver.save(chunk_set, CHUNK_SET)
+	print("saved %s (%d chunks) err=%d" % [CHUNK_SET, chunk_set.chunks.size(), err])
+
+
+func _chunk_root(chunk_name: String) -> Node3D:
+	var chunk := Node3D.new()
+	chunk.name = chunk_name
+	chunk.position = L.WORLD_ORIGIN
+	return chunk
+
+
+func _save_chunk(chunk: Node3D, bounds: Rect2, always: bool) -> WorldChunk:
+	var path := CHUNK_DIR + String(chunk.name) + ".tscn"
+	_save(chunk, path)
+	var entry := WorldChunk.new()
+	entry.chunk_id = StringName(chunk.name)
+	entry.scene_path = path
+	entry.bounds = bounds
+	entry.always_loaded = always
+	entry.biome = &"wyrmfall"
+	chunk.free()
+	return entry
+
+
+func _move(node: Node, target: Node) -> void:
+	node.get_parent().remove_child(node)
+	target.add_child(node)
+
+
+func _is_group(node: Node) -> bool:
+	return node.get_class() == "Node3D" and node.get_script() == null and node.get_child_count() > 0 \
+			and (node as Node3D).transform.is_equal_approx(Transform3D.IDENTITY)
+
+
+func _group_in(chunk: Node3D, group_name: String) -> Node3D:
+	var group := chunk.get_node_or_null(NodePath(group_name)) as Node3D
+	if group == null:
+		group = Node3D.new()
+		group.name = group_name
+		chunk.add_child(group)
+	return group
+
+
+## The tile a node stands on (by its position in vale space).
+func _tile_of(node: Node3D) -> Vector2i:
+	return _tile_at(Vector2(node.position.x, node.position.z))
+
+
+func _tile_at(p: Vector2) -> Vector2i:
+	var last := (L.GRID - 1) / TILE - 1
+	return Vector2i(clampi(floori((p.x + L.HALF) / TILE), 0, last), clampi(floori((p.y + L.HALF) / TILE), 0, last))
+
+
+func _split_scatter(field: ScatterField, group_name: String, tiles: Dictionary) -> void:
+	var parts := {}
+	for xform: Transform3D in field.transforms:
+		var tile := _tile_at(Vector2(xform.origin.x, xform.origin.z))
+		if not parts.has(tile):
+			parts[tile] = [] as Array[Transform3D]
+		(parts[tile] as Array[Transform3D]).append(xform)
+	for tile: Vector2i in parts:
+		var piece := MultiMeshInstance3D.new()
+		piece.set_script(SCATTER)
+		piece.name = field.name
+		piece.set(&"source", field.source)
+		piece.set(&"colors", field.colors)
+		piece.set(&"transforms", parts[tile])
+		piece.cast_shadow = field.cast_shadow
+		_group_in(tiles[tile], group_name).add_child(piece)
 
 
 # --- map -------------------------------------------------------------------------
 
-## The world map image: covers ExplorationService.WORLD_RECT like the other regions' maps.
+## The vale's part of the world map: vale space -HALF..HALF at 4 px/m. tools/bake_world_map.gd
+## paints it into the one world map at WORLD_ORIGIN.
 func _map_image() -> void:
-	var rect := ExplorationService.WORLD_RECT
+	var rect := Rect2(-L.HALF, -L.HALF, L.HALF * 2.0, L.HALF * 2.0)
 	var scale := 4.0
 	var image := Image.create(int(rect.size.x * scale), int(rect.size.y * scale), false, Image.FORMAT_RGB8)
 	var parchment := Color(0.2, 0.22, 0.2)

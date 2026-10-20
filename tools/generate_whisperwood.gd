@@ -33,6 +33,9 @@ const WOOD := Rect2(-18.0, -122.0, 60.0, 69.0)
 const OUTSKIRTS := Rect2(-18.0, -53.0, 60.0, 9.0)
 const TRAIL := [Vector2(14.0, -28.6), Vector2(12.6, -36.0), Vector2(15.5, -45.0), Vector2(14.2, -53.0), Vector2(18.5, -62.0),
 		Vector2(13.5, -71.0), Vector2(16.5, -80.0), Vector2(14.0, -90.0), Vector2(14.0, -98.6)]
+## Phase 8 open world: the trail goes on north through the Moonstone Clearing to the Wyrmfall
+## Pass at the wood's north edge (WyrmfallLayout.PASS starts at world (14, -124)).
+const PASS_TRAIL := [Vector2(14.0, -104.0), Vector2(14.0, -111.0), Vector2(13.2, -117.5), Vector2(14.0, -124.0), Vector2(14.0, -126.0)]
 const GLADE_PATH := [Vector2(13.5, -71.0), Vector2(6.0, -76.0), Vector2(-2.0, -80.0)]
 const HOLLOW_PATH := [Vector2(16.5, -80.0), Vector2(25.0, -84.0), Vector2(31.0, -86.0), Vector2(35.0, -90.0)]
 ## (centre, radius) of open ground: the Moonstone Clearing and two glades.
@@ -142,6 +145,7 @@ func _collect_obstacles(village: Node) -> void:
 ## negative inside it.
 func _open_distance(p: Vector2) -> float:
 	var d := _polyline_distance(p, TRAIL) - 1.7
+	d = minf(d, _polyline_distance(p, PASS_TRAIL) - 1.7)
 	d = minf(d, _polyline_distance(p, GLADE_PATH) - 1.0)
 	d = minf(d, _polyline_distance(p, HOLLOW_PATH) - 1.0)
 	for clearing in CLEARINGS:
@@ -306,7 +310,7 @@ func _undergrowth() -> void:
 			if open < float(layer[2]) or open > float(layer[3]):
 				continue
 			# Plants and flowers stay on the path verges, not on the paths themselves.
-			if _polyline_distance(p, TRAIL) < 1.9 or _polyline_distance(p, GLADE_PATH) < 1.2 or _polyline_distance(p, HOLLOW_PATH) < 1.2:
+			if _polyline_distance(p, TRAIL) < 1.9 or _polyline_distance(p, PASS_TRAIL) < 1.9 or _polyline_distance(p, GLADE_PATH) < 1.2 or _polyline_distance(p, HOLLOW_PATH) < 1.2:
 				continue
 			if p.y > WOOD.end.y and rng.randf() > remap(p.y, WOOD.end.y, OUTSKIRTS.end.y, 0.6, 0.1):
 				continue

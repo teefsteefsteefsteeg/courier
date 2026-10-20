@@ -2,7 +2,11 @@ extends SceneTree
 ## Bakes the world map's terrain image from the real village: ground surfaces from the
 ## Phase 5E splat maps (grass, dirt lanes, cobbled roads, flagstone plazas, tilled fields,
 ## forest floor, clearing moss), trees as canopies, and every building, wall and large prop
-## as its collider footprint. Writes res://assets/textures/map/world_map.png covering
+## as its collider footprint. Phase 8 open world: the map covers the whole world
+## (ExplorationService.WORLD_RECT); Wyrmfall Vale is painted from its own map image
+## (tools/generate_wyrmfall.gd, assets/generated/wyrmfall/wyrmfall_map.png) at
+## WyrmfallLayout.WORLD_ORIGIN, and land outside the painted areas is plain OUTLANDS.
+## Writes res://assets/textures/map/world_map.png covering
 ## ExplorationService.WORLD_RECT at PIXELS_PER_METRE. Re-run after moving buildings or roads:
 ##   godot --headless --path . --script res://tools/bake_world_map.gd
 
@@ -12,6 +16,8 @@ const SPLAT_B := "res://assets/textures/terrain/village_splat_b.png"
 const SPLAT_ORIGIN := Vector2(-96.0, -128.0)
 const SPLAT_SIZE := 192.0
 const PIXELS_PER_METRE := 4
+const VALE_MAP := "res://assets/generated/wyrmfall/wyrmfall_map.png"
+const OUTLANDS := Color(0.33, 0.4, 0.29)
 
 const GRASS := Color(0.47, 0.6, 0.33)
 const GRASS_DRY := Color(0.6, 0.6, 0.38)
@@ -59,17 +65,21 @@ func _run() -> void:
 
 
 func _paint_ground() -> void:
+	image.fill(OUTLANDS)
 	var a := Image.load_from_file(ProjectSettings.globalize_path(SPLAT_A))
 	var b := Image.load_from_file(ProjectSettings.globalize_path(SPLAT_B))
-	# The splats cover a larger square than the map: crop them to the map's rect first.
+	# The splats cover the village and the Whisperwood: crop them to where they overlap the map.
 	var per_metre := a.get_width() / SPLAT_SIZE
-	var crop := Rect2i(Vector2i(((rect.position - SPLAT_ORIGIN) * per_metre).round()), Vector2i((rect.size * per_metre).round()))
+	var area := rect.intersection(Rect2(SPLAT_ORIGIN, Vector2.ONE * SPLAT_SIZE))
+	var crop := Rect2i(Vector2i(((area.position - SPLAT_ORIGIN) * per_metre).round()), Vector2i((area.size * per_metre).round()))
 	a = a.get_region(crop)
 	b = b.get_region(crop)
-	a.resize(size.x, size.y, Image.INTERPOLATE_BILINEAR)
-	b.resize(size.x, size.y, Image.INTERPOLATE_BILINEAR)
-	for y in size.y:
-		for x in size.x:
+	var span := Vector2i((area.size * PIXELS_PER_METRE).round())
+	var offset := Vector2i(((area.position - rect.position) * PIXELS_PER_METRE).round())
+	a.resize(span.x, span.y, Image.INTERPOLATE_BILINEAR)
+	b.resize(span.x, span.y, Image.INTERPOLATE_BILINEAR)
+	for y in span.y:
+		for x in span.x:
 			var sa := a.get_pixel(x, y)
 			var sb := b.get_pixel(x, y)
 			var c := GRASS.lerp(GRASS_DRY, sb.b * 0.7)
@@ -82,7 +92,12 @@ func _paint_ground() -> void:
 			# A little paper grain so flat areas read as a drawn map.
 			var grain := (sin(x * 12.9898 + y * 78.233) * 43758.5453)
 			grain = (grain - floorf(grain) - 0.5) * 0.035
-			image.set_pixel(x, y, Color(c.r + grain, c.g + grain, c.b + grain, 1.0))
+			image.set_pixel(x + offset.x, y + offset.y, Color(c.r + grain, c.g + grain, c.b + grain, 1.0))
+	# Wyrmfall Vale, north of the Whisperwood.
+	var vale := Image.load_from_file(ProjectSettings.globalize_path(VALE_MAP))
+	vale.convert(Image.FORMAT_RGBA8)
+	var corner := Vector2(WyrmfallLayout.WORLD_ORIGIN.x - WyrmfallLayout.HALF, WyrmfallLayout.WORLD_ORIGIN.z - WyrmfallLayout.HALF)
+	image.blit_rect(vale, Rect2i(Vector2i.ZERO, vale.get_size()), Vector2i(((corner - rect.position) * PIXELS_PER_METRE).round()))
 
 
 func _paint_bodies(level: Node) -> void:

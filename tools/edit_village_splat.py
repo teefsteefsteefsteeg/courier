@@ -26,6 +26,7 @@ Each step was applied once, from the project root:
   python tools/edit_village_splat.py phase5h-stall
   python tools/edit_village_splat.py phase7-world
   python tools/edit_village_splat.py phase7-roads
+  python tools/edit_village_splat.py phase8-pass
 """
 import sys
 
@@ -212,9 +213,18 @@ def phase7_roads(s):
     s.lane(WHISPERWOOD_TRAIL, 3.4)
 
 
+# Phase 8 open world: the Whisperwood trail goes on north from the Moonstone Clearing to the
+# Wyrmfall Pass at the wood's north edge (z -124), where Wyrmfall Vale begins.
+PASS_TRAIL = [(14.0, -104.0), (14.0, -111.0), (13.2, -117.5), (14.0, -124.0), (14.0, -128.0)]
+
+
+def phase8_pass(s):
+    s.lane(PASS_TRAIL, 3.4)
+
+
 # Each step is applied once, in order; re-running one repeats its edits.
 STEPS = {"phase5h": phase5h, "phase5h-tools": phase5h_tools, "phase5h-stall": phase5h_stall,
-         "phase7-world": phase7_world, "phase7-roads": phase7_roads}
+         "phase7-world": phase7_world, "phase7-roads": phase7_roads, "phase8-pass": phase8_pass}
 
 if __name__ == "__main__":
     if len(sys.argv) != 2 or sys.argv[1] not in STEPS:

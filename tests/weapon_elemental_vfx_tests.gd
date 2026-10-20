@@ -420,13 +420,15 @@ func _test_rules_and_hud() -> void:
 func _test_after_region_change() -> void:
 	print("[After a region change]")
 	await _equip(&"battle_axe", 5)
-	router.call(&"travel", &"wyrmfall", &"Arrival", player)
+	# Phase 8 open world: Wyrmfall is streamed in (no region change); the Runewood is still a
+	# region of its own.
+	router.call(&"travel", &"runewood", &"Arrival", player)
 	for i in 120:
 		await physics_frame
-		if router.get(&"region_id") == &"wyrmfall" and not router.get(&"crossing"):
+		if router.get(&"region_id") == &"runewood" and not router.get(&"crossing"):
 			break
 	await _physics(10)
-	_check(visuals.weapon_glow != null and visuals.weapon_glow.is_inside_tree() and visuals.weapon_glow.weapon_type == ItemDefinition.WeaponType.AXE, "the axe's effect is still on it in Wyrmfall")
+	_check(visuals.weapon_glow != null and visuals.weapon_glow.is_inside_tree() and visuals.weapon_glow.weapon_type == ItemDefinition.WeaponType.AXE, "the axe's effect is still on it in the Runewood")
 	var visual := player.facing.visual_root if player.facing != null else null
 	if visual != null:
 		visual.rotation.y = FacingComponent.yaw_for_direction(Vector3.FORWARD)
@@ -435,7 +437,7 @@ func _test_after_region_change() -> void:
 	var log: Array = []
 	var record := func(skill: StringName, target: Node, amount: float) -> void: log.append([skill, target, amount])
 	ultimates.skill_hit.connect(record)
-	_check(ultimates.use(), "the Earthquake works in Wyrmfall")
+	_check(ultimates.use(), "the Earthquake works in the Runewood")
 	await _seconds(1.0)
 	_check(_hits_by(log, &"earthquake").get(slime, 0) == 1, "and hits an enemy there")
 	ultimates.skill_hit.disconnect(record)
@@ -446,3 +448,24 @@ func _test_after_region_change() -> void:
 		await physics_frame
 		if router.get(&"region_id") == &"village" and not router.get(&"crossing"):
 			break
+	await _physics(10)
+	# And in the streamed Wyrmfall Vale.
+	var vale := WyrmfallLayout.to_world(WyrmfallLayout.ARRIVAL, 0.6)
+	WorldStreamer.find(self).prepare_at(vale)
+	await _physics(2)
+	player.teleport_to(vale)
+	await _physics(20)
+	_check(visuals.weapon_glow != null and visuals.weapon_glow.is_inside_tree(), "and in Wyrmfall Vale")
+	var slime_vale := _dummy(player.global_position + Vector3(0, 0.2, -3))
+	var vale_log: Array = []
+	var vale_record := func(skill: StringName, target: Node, _amount: float) -> void: vale_log.append([skill, target])
+	ultimates.skill_hit.connect(vale_record)
+	await _equip(&"battle_axe", 5)
+	_check(ultimates.use(), "the Earthquake works in Wyrmfall")
+	await _seconds(1.0)
+	_check(vale_log.any(func(e: Array) -> bool: return e[1] == slime_vale), "and hits an enemy there")
+	ultimates.skill_hit.disconnect(vale_record)
+	ultimates.cooldowns.clear()
+	await _clear_dummies()
+	player.teleport_to(Vector3(5.6, 0.1, -11.0))
+	await _physics(10)
