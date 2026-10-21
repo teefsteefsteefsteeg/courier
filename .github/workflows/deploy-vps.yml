@@ -1,0 +1,71 @@
+name: Deploy Mystic Courier to VPS
+
+on:
+  push:
+    branches:
+      - phase5f-integrated
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mystic-courier-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install Godot 4.7.2
+        run: |
+          wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q Godot_v4.7.2-stable_linux.x86_64.zip
+          chmod +x Godot_v4.7.2-stable_linux.x86_64
+          sudo mv Godot_v4.7.2-stable_linux.x86_64 /usr/local/bin/godot
+
+      - name: Install export templates
+        run: |
+          wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/4.7.2.stable
+          unzip -q Godot_v4.7.2-stable_export_templates.tpz
+          cp templates/* ~/.local/share/godot/export_templates/4.7.2.stable/
+
+      - name: Import project assets
+        run: |
+          godot --headless --path . --editor --import
+
+      - name: Export Web
+        run: |
+          mkdir -p build/web
+          godot --headless --path . --export-release "Web" build/web/index.html
+          test -s build/web/index.html
+          test -s build/web/index.pck
+          test -s build/web/index.wasm
+
+      - name: Configure SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p "$VPS_PORT" -H "$VPS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload new release
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+        run: |
+          rsync -az --delete \
+            -e "ssh -p $VPS_PORT" \
+            build/web/ \
+            "$VPS_USER@$VPS_HOST:/var/www/mystic-courier/"
